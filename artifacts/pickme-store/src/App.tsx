@@ -100,7 +100,7 @@ function Header() {
             : "bg-transparent"
         }`}
       >
-        <a href="#" className="no-underline flex flex-col leading-none" data-testid="link-logo">
+        <a href="/" className="no-underline flex flex-col leading-none cursor-pointer" data-testid="link-logo">
           <LogoWord />
           <span className="text-[10px] text-muted-foreground font-sans font-normal mt-0.5 tracking-normal">ПикМи — магазин брендовых вещей</span>
         </a>
@@ -192,7 +192,9 @@ function Header() {
             >
               {/* Panel header */}
               <div className="flex items-center justify-between px-7 pt-7 pb-6 border-b border-[rgba(247,109,165,0.15)]">
-                <LogoWord />
+                <a href="/" className="no-underline cursor-pointer" onClick={() => setMobileOpen(false)}>
+                  <LogoWord />
+                </a>
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="w-9 h-9 rounded-full bg-white/60 text-primary flex items-center justify-center hover:bg-white transition-colors"
