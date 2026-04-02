@@ -728,7 +728,7 @@ function FinalCTA() {
             href="https://t.me/V_Limerence"
             target="_blank"
             rel="noreferrer"
-            className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px]"
+            className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px] sm:order-2"
             data-testid="button-final-cta"
           >
             Написать в Telegram ✈️
@@ -737,7 +737,7 @@ function FinalCTA() {
             href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-1"
             data-testid="button-final-avito"
           >
             <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
@@ -747,7 +747,7 @@ function FinalCTA() {
             href="https://tinyurl.com/5h4bbmkr"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-3"
             data-testid="button-final-max"
           >
             <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
