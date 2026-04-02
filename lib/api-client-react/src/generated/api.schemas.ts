@@ -17,6 +17,7 @@ export const ProductCategory = {
   tops: "tops",
   bottoms: "bottoms",
   accessories: "accessories",
+  supplements: "supplements",
 } as const;
 
 export type ProductBadge =
@@ -37,6 +38,7 @@ export interface Product {
   category: ProductCategory;
   caption: string;
   imageUrl: string;
+  imageUrls: string[];
   badge?: ProductBadge;
   telegramUrl: string;
   featured: boolean;
@@ -51,6 +53,7 @@ export const CreateProductCategory = {
   tops: "tops",
   bottoms: "bottoms",
   accessories: "accessories",
+  supplements: "supplements",
 } as const;
 
 export type CreateProductBadge =
@@ -70,6 +73,7 @@ export interface CreateProduct {
   category: CreateProductCategory;
   caption: string;
   imageUrl: string;
+  imageUrls?: string[];
   badge?: CreateProductBadge;
   telegramUrl: string;
   featured?: boolean;
@@ -88,4 +92,5 @@ export const GetProductsCategory = {
   tops: "tops",
   bottoms: "bottoms",
   accessories: "accessories",
+  supplements: "supplements",
 } as const;

@@ -2,7 +2,7 @@ import { pgTable, text, serial, integer, timestamp, pgEnum, boolean } from "driz
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const categoryEnum = pgEnum("category", ["shoes", "tops", "bottoms", "accessories"]);
+export const categoryEnum = pgEnum("category", ["shoes", "tops", "bottoms", "accessories", "supplements"]);
 export const badgeEnum = pgEnum("badge", ["new", "sold"]);
 
 export const productsTable = pgTable("products", {
@@ -14,6 +14,7 @@ export const productsTable = pgTable("products", {
   category: categoryEnum("category").notNull(),
   caption: text("caption").notNull().default(""),
   imageUrl: text("image_url").notNull(),
+  imageUrls: text("image_urls"),
   badge: badgeEnum("badge"),
   telegramUrl: text("telegram_url").notNull(),
   featured: boolean("featured").notNull().default(false),

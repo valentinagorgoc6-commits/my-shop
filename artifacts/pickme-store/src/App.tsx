@@ -436,12 +436,28 @@ function WhyPickMe() {
 }
 
 // -- Shared Product Card --
-function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; telegramUrl: string; caption?: string | null } }) {
+function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; telegramUrl: string; caption?: string | null } }) {
+  const images = product.imageUrls && product.imageUrls.length > 0
+    ? product.imageUrls
+    : product.imageUrl ? [product.imageUrl] : [];
+  const [imgIdx, setImgIdx] = useState(0);
+
+  const prevImg = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setImgIdx(i => (i - 1 + images.length) % images.length);
+  };
+  const nextImg = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setImgIdx(i => (i + 1) % images.length);
+  };
+
+  const currentImg = images[imgIdx] ?? null;
+
   return (
     <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)]">
-      <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden">
-        {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} className="product-img-zoom" />
+      <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden group">
+        {currentImg ? (
+          <img src={currentImg} alt={product.name} className="product-img-zoom" />
         ) : (
           <>
             <span className="text-4xl opacity-60 mb-2">👗</span>
@@ -452,6 +468,27 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white ${product.badge === "new" ? "bg-primary" : "bg-muted-foreground"}`}>
             {product.badge === "new" ? "New" : "Продано"}
           </div>
+        )}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={prevImg}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-primary hover:text-white text-lg font-bold"
+            >‹</button>
+            <button
+              onClick={nextImg}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-primary hover:text-white text-lg font-bold"
+            >›</button>
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => { e.preventDefault(); setImgIdx(i); }}
+                  className={`rounded-full transition-all ${i === imgIdx ? "w-4 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-white/70"}`}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
       <div className="p-5">
@@ -539,7 +576,7 @@ function CatalogPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">("newest");
 
-  const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories") : undefined;
+  const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories" | "supplements") : undefined;
   const { data: allProducts, isLoading } = useGetProducts({ category: queryParam });
 
   const categories = [
@@ -548,6 +585,7 @@ function CatalogPage() {
     { id: "tops", label: "Верх" },
     { id: "bottoms", label: "Низ" },
     { id: "accessories", label: "Аксессуары" },
+    { id: "supplements", label: "БАД" },
   ];
 
   const filtered = React.useMemo(() => {

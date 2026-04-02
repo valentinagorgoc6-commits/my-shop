@@ -4,12 +4,32 @@ import { and, eq } from "drizzle-orm";
 
 const router: IRouter = Router();
 
+const VALID_CATEGORIES = ["shoes", "tops", "bottoms", "accessories", "supplements"] as const;
+type ValidCategory = typeof VALID_CATEGORIES[number];
+
+function parseImageUrls(raw: string | null | undefined, fallback: string): string[] {
+  if (raw) {
+    try { return JSON.parse(raw) as string[]; } catch { /* ignore */ }
+  }
+  return fallback ? [fallback] : [];
+}
+
+function formatProduct(p: { imageUrl: string; imageUrls: string | null; telegramUrl: string; createdAt: Date; [key: string]: unknown }) {
+  return {
+    ...p,
+    imageUrl: p.imageUrl,
+    imageUrls: parseImageUrls(p.imageUrls, p.imageUrl),
+    telegramUrl: p.telegramUrl,
+    createdAt: p.createdAt.toISOString(),
+  };
+}
+
 router.get("/products", async (req, res) => {
   const { category, featured } = req.query as { category?: string; featured?: string };
   try {
     const conditions = [];
-    if (category && ["shoes", "tops", "bottoms", "accessories"].includes(category)) {
-      conditions.push(eq(productsTable.category, category as "shoes" | "tops" | "bottoms" | "accessories"));
+    if (category && (VALID_CATEGORIES as readonly string[]).includes(category)) {
+      conditions.push(eq(productsTable.category, category as ValidCategory));
     }
     if (featured === "true") {
       conditions.push(eq(productsTable.featured, true));
@@ -19,12 +39,7 @@ router.get("/products", async (req, res) => {
       .from(productsTable)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(productsTable.createdAt);
-    res.json(products.map(p => ({
-      ...p,
-      imageUrl: p.imageUrl,
-      telegramUrl: p.telegramUrl,
-      createdAt: p.createdAt.toISOString(),
-    })));
+    res.json(products.map(formatProduct));
   } catch (err) {
     req.log.error({ err }, "Failed to fetch products");
     res.status(500).json({ error: "Internal server error" });
@@ -32,19 +47,21 @@ router.get("/products", async (req, res) => {
 });
 
 router.post("/products", async (req, res) => {
-  const parsed = insertProductSchema.safeParse(req.body);
+  const { imageUrls: rawImageUrls, ...rest } = req.body as { imageUrls?: string[]; [key: string]: unknown };
+  const imageUrls = Array.isArray(rawImageUrls) ? rawImageUrls : [];
+  const body = {
+    ...rest,
+    imageUrl: imageUrls[0] ?? (typeof rest.imageUrl === "string" ? rest.imageUrl : ""),
+    imageUrls: imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
+  };
+  const parsed = insertProductSchema.safeParse(body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input", details: parsed.error.issues });
     return;
   }
   try {
     const [product] = await db.insert(productsTable).values(parsed.data).returning();
-    res.status(201).json({
-      ...product,
-      imageUrl: product.imageUrl,
-      telegramUrl: product.telegramUrl,
-      createdAt: product.createdAt.toISOString(),
-    });
+    res.status(201).json(formatProduct(product));
   } catch (err) {
     req.log.error({ err }, "Failed to create product");
     res.status(500).json({ error: "Internal server error" });
@@ -53,22 +70,11 @@ router.post("/products", async (req, res) => {
 
 router.get("/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ error: "Invalid ID" });
-    return;
-  }
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
   try {
     const [product] = await db.select().from(productsTable).where(eq(productsTable.id, id));
-    if (!product) {
-      res.status(404).json({ error: "Not found" });
-      return;
-    }
-    res.json({
-      ...product,
-      imageUrl: product.imageUrl,
-      telegramUrl: product.telegramUrl,
-      createdAt: product.createdAt.toISOString(),
-    });
+    if (!product) { res.status(404).json({ error: "Not found" }); return; }
+    res.json(formatProduct(product));
   } catch (err) {
     req.log.error({ err }, "Failed to fetch product");
     res.status(500).json({ error: "Internal server error" });
@@ -77,31 +83,23 @@ router.get("/products/:id", async (req, res) => {
 
 router.put("/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ error: "Invalid ID" });
-    return;
-  }
-  const parsed = insertProductSchema.safeParse(req.body);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
+  const { imageUrls: rawImageUrls, ...rest } = req.body as { imageUrls?: string[]; [key: string]: unknown };
+  const imageUrls = Array.isArray(rawImageUrls) ? rawImageUrls : [];
+  const body = {
+    ...rest,
+    imageUrl: imageUrls[0] ?? (typeof rest.imageUrl === "string" ? rest.imageUrl : ""),
+    imageUrls: imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
+  };
+  const parsed = insertProductSchema.safeParse(body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input", details: parsed.error.issues });
     return;
   }
   try {
-    const [product] = await db
-      .update(productsTable)
-      .set(parsed.data)
-      .where(eq(productsTable.id, id))
-      .returning();
-    if (!product) {
-      res.status(404).json({ error: "Not found" });
-      return;
-    }
-    res.json({
-      ...product,
-      imageUrl: product.imageUrl,
-      telegramUrl: product.telegramUrl,
-      createdAt: product.createdAt.toISOString(),
-    });
+    const [product] = await db.update(productsTable).set(parsed.data).where(eq(productsTable.id, id)).returning();
+    if (!product) { res.status(404).json({ error: "Not found" }); return; }
+    res.json(formatProduct(product));
   } catch (err) {
     req.log.error({ err }, "Failed to update product");
     res.status(500).json({ error: "Internal server error" });
@@ -110,10 +108,7 @@ router.put("/products/:id", async (req, res) => {
 
 router.delete("/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400).json({ error: "Invalid ID" });
-    return;
-  }
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
   try {
     await db.delete(productsTable).where(eq(productsTable.id, id));
     res.status(204).send();

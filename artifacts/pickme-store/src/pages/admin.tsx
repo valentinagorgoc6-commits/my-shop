@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 
 const API = "/api";
 
-type Category = "shoes" | "tops" | "bottoms" | "accessories";
+type Category = "shoes" | "tops" | "bottoms" | "accessories" | "supplements";
 type Badge = "new" | "sold" | null;
 
 interface Product {
@@ -14,6 +14,7 @@ interface Product {
   category: Category;
   caption: string;
   imageUrl: string | null;
+  imageUrls?: string[];
   badge: Badge;
   telegramUrl: string;
   featured: boolean;
@@ -25,6 +26,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
   tops: "Верх",
   bottoms: "Низ",
   accessories: "Аксессуары",
+  supplements: "БАД",
 };
 
 const EMPTY_FORM = {
@@ -164,13 +166,29 @@ function ProductForm({
           price: String(initial.price),
           category: initial.category,
           caption: initial.caption,
-          imageUrl: initial.imageUrl ?? "",
           badge: (initial.badge ?? "") as "" | "new" | "sold",
           telegramUrl: initial.telegramUrl,
           featured: initial.featured ?? false,
         }
-      : { ...EMPTY_FORM }
+      : {
+          brand: EMPTY_FORM.brand,
+          name: EMPTY_FORM.name,
+          size: EMPTY_FORM.size,
+          price: EMPTY_FORM.price,
+          category: EMPTY_FORM.category,
+          caption: EMPTY_FORM.caption,
+          badge: EMPTY_FORM.badge,
+          telegramUrl: EMPTY_FORM.telegramUrl,
+          featured: EMPTY_FORM.featured,
+        }
   );
+
+  const initImages = (): string[] => {
+    if (initial?.imageUrls && initial.imageUrls.length > 0) return initial.imageUrls;
+    if (initial?.imageUrl) return [initial.imageUrl];
+    return [];
+  };
+  const [imageUrls, setImageUrls] = useState<string[]>(initImages);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -182,7 +200,9 @@ function ProductForm({
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (imageUrls.length >= 3) { setError("Максимум 3 фото"); return; }
     setUploading(true);
+    setError("");
     try {
       const fd = new FormData();
       fd.append("image", file);
@@ -193,13 +213,16 @@ function ProductForm({
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json() as { imageUrl: string };
-      setForm(f => ({ ...f, imageUrl: data.imageUrl }));
+      setImageUrls(prev => [...prev, data.imageUrl]);
     } catch {
       setError("Ошибка загрузки изображения");
     } finally {
       setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
     }
   };
+
+  const removeImage = (idx: number) => setImageUrls(prev => prev.filter((_, i) => i !== idx));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -212,7 +235,8 @@ function ProductForm({
       price: Number(form.price),
       category: form.category,
       caption: form.caption,
-      imageUrl: form.imageUrl || null,
+      imageUrl: imageUrls[0] ?? "",
+      imageUrls,
       badge: form.badge || null,
       telegramUrl: form.telegramUrl,
       featured: form.featured,
@@ -271,6 +295,7 @@ function ProductForm({
                 <option value="tops">Верх</option>
                 <option value="bottoms">Низ</option>
                 <option value="accessories">Аксессуары</option>
+                <option value="supplements">БАД</option>
               </select>
             </div>
           </div>
@@ -284,7 +309,7 @@ function ProductForm({
           />
 
           <label style={labelStyle}>Ссылка на Telegram *</label>
-          <input value={form.telegramUrl} onChange={set("telegramUrl")} style={inputStyle} required placeholder="https://t.me/pickmestore" />
+          <input value={form.telegramUrl} onChange={set("telegramUrl")} style={inputStyle} required placeholder="https://t.me/V_Limerence" />
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <div>
@@ -296,7 +321,7 @@ function ProductForm({
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Фото</label>
+              <label style={labelStyle}>Фото (до 3)</label>
               <input
                 type="file"
                 accept="image/*"
@@ -307,22 +332,35 @@ function ProductForm({
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                style={{ ...btnSecondary, width: "100%", marginTop: 0 }}
-                disabled={uploading}
+                style={{ ...btnSecondary, width: "100%", marginTop: 0, opacity: imageUrls.length >= 3 ? 0.5 : 1 }}
+                disabled={uploading || imageUrls.length >= 3}
               >
-                {uploading ? "Загрузка..." : form.imageUrl ? "Заменить фото" : "Загрузить фото"}
+                {uploading ? "Загрузка..." : `Добавить фото ${imageUrls.length}/3`}
               </button>
             </div>
           </div>
 
-          {form.imageUrl && (
-            <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
-              <img
-                src={form.imageUrl}
-                alt="preview"
-                style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb" }}
-              />
-              <span style={{ fontSize: 13, color: "#6b7280", wordBreak: "break-all" }}>{form.imageUrl}</span>
+          {imageUrls.length > 0 && (
+            <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {imageUrls.map((url, idx) => (
+                <div key={idx} style={{ position: "relative" }}>
+                  <img
+                    src={url}
+                    alt={`фото ${idx + 1}`}
+                    style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8, border: idx === 0 ? "2px solid #f7147a" : "1px solid #e5e7eb", display: "block" }}
+                  />
+                  {idx === 0 && (
+                    <span style={{ position: "absolute", bottom: 2, left: 2, fontSize: 9, background: "#f7147a", color: "#fff", borderRadius: 3, padding: "1px 4px", fontWeight: 700 }}>главное</span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(idx)}
+                    style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
