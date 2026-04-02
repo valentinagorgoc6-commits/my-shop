@@ -122,7 +122,7 @@ function Header() {
                 className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
                 data-testid="link-nav-avito"
               >
-                <span className="inline-block w-4 h-4 rounded-full bg-primary/15 text-primary text-[9px] font-black flex items-center justify-center leading-none">A</span>
+                <img src="https://www.avito.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
                 Авито
               </a>
             </li>
