@@ -251,7 +251,7 @@ function Hero() {
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
   return (
-    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-32 pb-20 relative overflow-hidden">
+    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-20 pb-12 relative overflow-hidden">
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)] pointer-events-none"
@@ -308,13 +308,33 @@ function Hero() {
           transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0"
         >
-          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
+          <div className="w-full aspect-[9/16] max-w-[380px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
             <img
               src="/hero-photo.png"
               alt="PickMe Store — модная одежда"
               className="w-full h-full object-cover object-center"
             />
           </div>
+
+          {/* Floating sparkle decorations */}
+          <motion.span
+            animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-4 right-0 text-[#f76da5] text-2xl pointer-events-none select-none"
+            aria-hidden="true"
+          >✦</motion.span>
+          <motion.span
+            animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-24 -right-2 text-[#fba2c8] text-xl pointer-events-none select-none"
+            aria-hidden="true"
+          >♡</motion.span>
+          <motion.span
+            animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-1/3 -left-2 text-[#e8609a] text-lg pointer-events-none select-none"
+            aria-hidden="true"
+          >✿</motion.span>
 
           <motion.div
             animate={{ y: [0, -8, 0] }}
