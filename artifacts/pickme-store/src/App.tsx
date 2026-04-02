@@ -682,11 +682,7 @@ function FinalCTA() {
             className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
             data-testid="button-final-avito"
           >
-            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
-              <circle cx="8" cy="2" r="3" fill="#f76da5" />
-              <circle cx="3" cy="11" r="3" fill="#e02163" />
-              <circle cx="13" cy="11" r="3" fill="#fba2c8" />
-            </svg>
+            <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
             Профиль на Авито
           </a>
         </div>
