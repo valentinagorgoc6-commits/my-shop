@@ -308,9 +308,12 @@ function Hero() {
           transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0"
         >
-          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl bg-gradient-to-br from-secondary to-[#fcc8df] flex flex-col items-center justify-center gap-3 relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
-            <span className="text-5xl">📸</span>
-            <span className="text-sm text-muted-foreground font-semibold">Место для фото Валентинки</span>
+          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
+            <img
+              src="/hero-photo.png"
+              alt="PickMe Store — модная одежда"
+              className="w-full h-full object-cover object-center"
+            />
           </div>
 
           <motion.div
