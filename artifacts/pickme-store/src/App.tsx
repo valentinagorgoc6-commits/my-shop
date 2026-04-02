@@ -679,10 +679,14 @@ function FinalCTA() {
             href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-primary text-primary hover:bg-primary/10 px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
             data-testid="button-final-avito"
           >
-            <span className="inline-flex w-5 h-5 rounded-full bg-primary/15 text-primary text-[10px] font-black items-center justify-center shrink-0">A</span>
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true">
+              <circle cx="8" cy="2" r="3" fill="#f76da5" />
+              <circle cx="3" cy="11" r="3" fill="#e02163" />
+              <circle cx="13" cy="11" r="3" fill="#fba2c8" />
+            </svg>
             Профиль на Авито
           </a>
         </div>
