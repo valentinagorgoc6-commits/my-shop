@@ -444,56 +444,140 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
     ? product.imageUrls
     : product.imageUrl ? [product.imageUrl] : [];
   const [imgIdx, setImgIdx] = useState(0);
+
+  // Drag state — all mutable refs so touchmove never triggers re-renders
+  const carouselRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const isHoriz = useRef<boolean | null>(null);
+  const liveDragX = useRef(0);
+
+  // Visual drag offset (causes re-render only when needed)
+  const [dragX, setDragX] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  // Attach non-passive listeners so we can call e.preventDefault()
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+
+    const onStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+      isHoriz.current = null;
+      liveDragX.current = 0;
+      setAnimating(false);
+      setDragX(0);
+    };
+
+    const onMove = (e: TouchEvent) => {
+      if (touchStartX.current === null || touchStartY.current === null) return;
+      const dx = e.touches[0].clientX - touchStartX.current;
+      const dy = e.touches[0].clientY - touchStartY.current;
+
+      // Determine direction once, after at least 5px movement
+      if (isHoriz.current === null && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+        isHoriz.current = Math.abs(dx) >= Math.abs(dy);
+      }
+
+      if (isHoriz.current === true && images.length > 1) {
+        e.preventDefault(); // block page scroll only for horizontal gestures
+        liveDragX.current = dx;
+        setDragX(dx);
+      }
+    };
+
+    const onEnd = () => {
+      if (isHoriz.current !== true) {
+        touchStartX.current = null;
+        return;
+      }
+      const dx = liveDragX.current;
+      setAnimating(true);
+      setDragX(0);
+      if (Math.abs(dx) >= 30 && images.length > 1) {
+        setImgIdx(i => dx < 0
+          ? (i + 1) % images.length
+          : (i - 1 + images.length) % images.length
+        );
+      }
+      liveDragX.current = 0;
+      touchStartX.current = null;
+      isHoriz.current = null;
+    };
+
+    el.addEventListener("touchstart", onStart, { passive: true });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd, { passive: true });
+    el.addEventListener("touchcancel", onEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
+      el.removeEventListener("touchcancel", onEnd);
+    };
+  }, [images.length]);
 
   const prevImg = (e: React.MouseEvent) => {
     e.preventDefault();
+    setAnimating(true);
     setImgIdx(i => (i - 1 + images.length) % images.length);
   };
   const nextImg = (e: React.MouseEvent) => {
     e.preventDefault();
+    setAnimating(true);
     setImgIdx(i => (i + 1) % images.length);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null || images.length <= 1) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) >= 50) {
-      setImgIdx(i => delta < 0
-        ? (i + 1) % images.length
-        : (i - 1 + images.length) % images.length
-      );
-    }
-    touchStartX.current = null;
-  };
-
-  const currentImg = images[imgIdx] ?? null;
-
   return (
     <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full">
+      {/* Carousel container */}
       <div
-        className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden group flex-shrink-0 touch-pan-y"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        ref={carouselRef}
+        className="relative w-full aspect-[3/4] overflow-hidden group flex-shrink-0 bg-gradient-to-br from-[#fef1f6] to-secondary"
+        style={{ touchAction: "pan-y" }}
       >
-        {currentImg ? (
-          <img src={currentImg} alt={product.name} className="product-img-zoom" />
+        {images.length > 0 ? (
+          /* Horizontal strip — all images side by side */
+          <div
+            style={{
+              display: "flex",
+              width: `${images.length * 100}%`,
+              height: "100%",
+              transform: `translateX(calc(${-(imgIdx / images.length) * 100}% + ${dragX}px))`,
+              transition: animating ? "transform 300ms ease-out" : "none",
+              willChange: "transform",
+            }}
+            onTransitionEnd={() => setAnimating(false)}
+          >
+            {images.map((src, i) => (
+              <div
+                key={i}
+                style={{ width: `${100 / images.length}%`, flexShrink: 0, height: "100%", overflow: "hidden", position: "relative" }}
+              >
+                <img
+                  src={src}
+                  alt={product.name}
+                  className="product-img-zoom"
+                />
+              </div>
+            ))}
+          </div>
         ) : (
-          <>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-4xl opacity-60 mb-2">👗</span>
             <span className="text-xs text-muted-foreground font-semibold">Фото товара</span>
-          </>
+          </div>
         )}
+
         {product.badge === "new" && (
-          <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary">
+          <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary" style={{ zIndex: 10 }}>
             New
           </div>
         )}
         {product.badge === "sold" && (
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 10 }}>
             <div style={{
               position: "absolute",
               top: "28px",
@@ -511,21 +595,27 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             }}>ПРОДАНО</div>
           </div>
         )}
+
         {images.length > 1 && (
           <>
+            {/* Desktop-only arrows */}
             <button
               onClick={prevImg}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-primary hover:text-white text-lg font-bold"
+              style={{ zIndex: 10 }}
             >‹</button>
             <button
               onClick={nextImg}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 text-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-primary hover:text-white text-lg font-bold"
+              style={{ zIndex: 10 }}
             >›</button>
-            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5">
+
+            {/* Dot indicators — clickable on all devices */}
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5" style={{ zIndex: 10 }}>
               {images.map((_, i) => (
                 <button
                   key={i}
-                  onClick={(e) => { e.preventDefault(); setImgIdx(i); }}
+                  onClick={(e) => { e.preventDefault(); setAnimating(true); setImgIdx(i); }}
                   className={`rounded-full transition-all ${i === imgIdx ? "w-4 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-white/70"}`}
                 />
               ))}
