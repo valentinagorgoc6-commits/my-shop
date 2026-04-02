@@ -571,14 +571,21 @@ function Catalog() {
   );
 }
 
+const PAGE_SIZE = 15;
+
 // -- Full Catalog Page --
 function CatalogPage() {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">("newest");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories" | "supplements") : undefined;
   const { data: allProducts, isLoading } = useGetProducts({ category: queryParam });
+
+  React.useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [filter, search, sort]);
 
   const categories = [
     { id: "all", label: "Все" },
@@ -601,6 +608,9 @@ function CatalogPage() {
     else list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return list;
   }, [allProducts, search, sort]);
+
+  const visible = filtered.slice(0, visibleCount);
+  const remaining = filtered.length - visibleCount;
 
   return (
     <>
@@ -677,11 +687,23 @@ function CatalogPage() {
                 ))}
               </div>
             ) : filtered.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {filtered.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {visible.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {remaining > 0 && (
+                  <div className="flex justify-center mt-10">
+                    <button
+                      onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
+                      className="px-8 py-3.5 rounded-full bg-white border-2 border-primary text-primary font-bold font-sans text-sm hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-md"
+                    >
+                      Показать ещё (осталось {remaining})
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-24 text-muted-foreground font-medium">
                 <p className="text-lg">Ничего не найдено. Попробуй другой запрос!</p>

@@ -25,7 +25,11 @@ function formatProduct(p: { imageUrl: string; imageUrls: string | null; telegram
 }
 
 router.get("/products", async (req, res) => {
-  const { category, featured } = req.query as { category?: string; featured?: string };
+  const { category, featured, limit: limitRaw, offset: offsetRaw } = req.query as {
+    category?: string; featured?: string; limit?: string; offset?: string;
+  };
+  const limit = limitRaw !== undefined ? parseInt(limitRaw, 10) : undefined;
+  const offset = offsetRaw !== undefined ? parseInt(offsetRaw, 10) : undefined;
   try {
     const conditions = [];
     if (category && (VALID_CATEGORIES as readonly string[]).includes(category)) {
@@ -34,11 +38,15 @@ router.get("/products", async (req, res) => {
     if (featured === "true") {
       conditions.push(eq(productsTable.featured, true));
     }
-    const products = await db
+    let query = db
       .select()
       .from(productsTable)
       .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(productsTable.createdAt);
+      .orderBy(productsTable.createdAt)
+      .$dynamic();
+    if (limit !== undefined && !isNaN(limit)) query = query.limit(limit);
+    if (offset !== undefined && !isNaN(offset)) query = query.offset(offset);
+    const products = await query;
     res.json(products.map(formatProduct));
   } catch (err) {
     req.log.error({ err }, "Failed to fetch products");
