@@ -128,7 +128,7 @@ function Header() {
             </li>
           </ul>
           <a
-            href="https://t.me/pickmestore"
+            href="https://t.me/V_Limerence"
             target="_blank"
             rel="noreferrer"
             className="btn-glow bg-primary hover:bg-[#e02163] text-white px-6 py-2.5 rounded-full font-semibold text-sm"
@@ -225,7 +225,7 @@ function Header() {
               {/* Bottom CTA */}
               <div className="px-7 pb-10 pt-4 border-t border-[rgba(247,109,165,0.15)]">
                 <a
-                  href="https://t.me/pickmestore"
+                  href="https://t.me/V_Limerence"
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => setMobileOpen(false)}
@@ -701,7 +701,7 @@ function FinalCTA() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
-            href="https://t.me/pickmestore"
+            href="https://t.me/V_Limerence"
             target="_blank"
             rel="noreferrer"
             className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px]"
@@ -735,7 +735,7 @@ function Footer() {
       </div>
       <div className="flex items-center justify-center gap-6 mb-4">
         <a
-          href="https://t.me/pickmestore"
+          href="https://t.me/V_Limerence"
           target="_blank"
           rel="noreferrer"
           className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold"
