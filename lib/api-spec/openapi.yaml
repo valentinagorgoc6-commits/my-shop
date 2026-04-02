@@ -1,6 +1,5 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
   description: API specification
@@ -10,6 +9,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product catalog operations
 paths:
   /healthz:
     get:
@@ -24,6 +25,100 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /products:
+    get:
+      operationId: getProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [shoes, tops, bottoms, accessories]
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProduct"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+    put:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProduct"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
 components:
   schemas:
     HealthStatus:
@@ -33,4 +128,76 @@ components:
           type: string
       required:
         - status
-
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        brand:
+          type: string
+        name:
+          type: string
+        size:
+          type: string
+        price:
+          type: integer
+        category:
+          type: string
+          enum: [shoes, tops, bottoms, accessories]
+        caption:
+          type: string
+        imageUrl:
+          type: string
+        badge:
+          type: string
+          enum: [new, sold]
+          nullable: true
+        telegramUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - brand
+        - name
+        - size
+        - price
+        - category
+        - caption
+        - imageUrl
+        - telegramUrl
+        - createdAt
+    CreateProduct:
+      type: object
+      properties:
+        brand:
+          type: string
+        name:
+          type: string
+        size:
+          type: string
+        price:
+          type: integer
+        category:
+          type: string
+          enum: [shoes, tops, bottoms, accessories]
+        caption:
+          type: string
+        imageUrl:
+          type: string
+        badge:
+          type: string
+          enum: [new, sold]
+          nullable: true
+        telegramUrl:
+          type: string
+      required:
+        - brand
+        - name
+        - size
+        - price
+        - category
+        - caption
+        - imageUrl
+        - telegramUrl

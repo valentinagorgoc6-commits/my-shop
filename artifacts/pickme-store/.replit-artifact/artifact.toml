@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "PickMe Store"
+version = "1.0.0"
+id = "artifacts/pickme-store"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18710
+
+[services.development]
+run = "pnpm --filter @workspace/pickme-store run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pickme-store", "run", "build" ]
+publicDir = "artifacts/pickme-store/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18710"
+BASE_PATH = "/"

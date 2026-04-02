@@ -6,4 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./createProduct";
+export * from "./createProductBadge";
+export * from "./createProductCategory";
+export * from "./getProductsCategory";
+export * from "./getProductsParams";
 export * from "./healthStatus";
+export * from "./product";
+export * from "./productBadge";
+export * from "./productCategory";

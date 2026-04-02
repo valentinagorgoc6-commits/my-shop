@@ -8,3 +8,81 @@
 export interface HealthStatus {
   status: string;
 }
+
+export type ProductCategory =
+  (typeof ProductCategory)[keyof typeof ProductCategory];
+
+export const ProductCategory = {
+  shoes: "shoes",
+  tops: "tops",
+  bottoms: "bottoms",
+  accessories: "accessories",
+} as const;
+
+export type ProductBadge =
+  | (typeof ProductBadge)[keyof typeof ProductBadge]
+  | null;
+
+export const ProductBadge = {
+  new: "new",
+  sold: "sold",
+} as const;
+
+export interface Product {
+  id: number;
+  brand: string;
+  name: string;
+  size: string;
+  price: number;
+  category: ProductCategory;
+  caption: string;
+  imageUrl: string;
+  badge?: ProductBadge;
+  telegramUrl: string;
+  createdAt: string;
+}
+
+export type CreateProductCategory =
+  (typeof CreateProductCategory)[keyof typeof CreateProductCategory];
+
+export const CreateProductCategory = {
+  shoes: "shoes",
+  tops: "tops",
+  bottoms: "bottoms",
+  accessories: "accessories",
+} as const;
+
+export type CreateProductBadge =
+  | (typeof CreateProductBadge)[keyof typeof CreateProductBadge]
+  | null;
+
+export const CreateProductBadge = {
+  new: "new",
+  sold: "sold",
+} as const;
+
+export interface CreateProduct {
+  brand: string;
+  name: string;
+  size: string;
+  price: number;
+  category: CreateProductCategory;
+  caption: string;
+  imageUrl: string;
+  badge?: CreateProductBadge;
+  telegramUrl: string;
+}
+
+export type GetProductsParams = {
+  category?: GetProductsCategory;
+};
+
+export type GetProductsCategory =
+  (typeof GetProductsCategory)[keyof typeof GetProductsCategory];
+
+export const GetProductsCategory = {
+  shoes: "shoes",
+  tops: "tops",
+  bottoms: "bottoms",
+  accessories: "accessories",
+} as const;

@@ -1,0 +1,765 @@
+import React, { useState, useEffect, useRef } from "react";
+import { Switch, Route, Router as WouterRouter } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X } from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useGetProducts } from "@workspace/api-client-react";
+
+const queryClient = new QueryClient();
+
+// -- Animation Variants --
+const fadeInUp = {
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.13 } }
+};
+
+// -- Shared Decorator Bar (bigger on desktop) --
+function DecorBar({ align = "center" }: { align?: "center" | "left" }) {
+  const justifyClass = align === "left" ? "justify-start" : "justify-center";
+  return (
+    <div className={`flex items-center ${justifyClass} gap-3 mb-3`}>
+      <span className="text-[#f76da5] text-base md:text-xl">✦</span>
+      <div className="h-[2px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#f76da5] opacity-60" />
+      <span className="text-[#f76da5] text-lg md:text-3xl">💗</span>
+      <div className="h-[2px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#f76da5] opacity-60" />
+      <span className="text-[#f76da5] text-base md:text-xl">✦</span>
+    </div>
+  );
+}
+
+// -- Section Title --
+function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: string; titleNode?: React.ReactNode; id?: string }) {
+  return (
+    <motion.div
+      initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+      className="text-center mb-14"
+      id={id}
+    >
+      <DecorBar />
+      <h2 className="font-serif text-[32px] md:text-[44px] font-bold text-foreground mb-2">
+        {titleNode ?? title}
+      </h2>
+      <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#e8609a]">{sub}</p>
+    </motion.div>
+  );
+}
+
+// -- Logo Word --
+function LogoWord() {
+  return (
+    <span className="font-serif text-2xl font-bold no-underline tracking-tight">
+      <span className="text-[#e02163]">Pick</span><span className="font-script text-[26px] font-semibold text-[#f76da5]">Me</span>
+      <span className="text-[#e02163]"> Store</span>
+    </span>
+  );
+}
+
+// -- Header --
+function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
+  const navLinks = [
+    { name: "Каталог", href: "#catalog" },
+    { name: "Обо мне", href: "#about" },
+    { name: "Отзывы", href: "#reviews" },
+    { name: "FAQ", href: "#faq" },
+  ];
+
+  return (
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between ${
+          scrolled
+            ? "glass-card border-b border-[rgba(251,162,200,0.2)] shadow-[0_4px_24px_rgba(240,69,134,0.06)]"
+            : "bg-transparent"
+        }`}
+      >
+        <a href="#" className="no-underline" data-testid="link-logo">
+          <LogoWord />
+        </a>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-6">
+          <ul className="flex gap-6 list-none m-0 p-0 items-center">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <a href={link.href} className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide" data-testid={`link-nav-${link.href.replace("#", "")}`}>
+                  {link.name}
+                </a>
+              </li>
+            ))}
+            <li>
+              <a
+                href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-semibold text-[#00aaee] hover:text-[#0088cc] transition-colors tracking-wide flex items-center gap-1"
+                data-testid="link-nav-avito"
+              >
+                <span className="inline-block w-4 h-4 rounded bg-[#00aaee] text-white text-[9px] font-black flex items-center justify-center leading-none">A</span>
+                Авито
+              </a>
+            </li>
+          </ul>
+          <a
+            href="https://t.me/pickmestore"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-glow bg-primary hover:bg-[#e02163] text-white px-6 py-2.5 rounded-full font-semibold text-sm"
+            data-testid="button-nav-contact"
+          >
+            Написать мне
+          </a>
+        </nav>
+
+        {/* Mobile burger */}
+        <button
+          className="md:hidden p-2 text-primary"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Открыть меню"
+          data-testid="button-mobile-menu"
+        >
+          <Menu size={28} />
+        </button>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+            />
+
+            {/* Panel */}
+            <motion.div
+              key="panel"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="fixed top-0 right-0 bottom-0 z-[70] w-[300px] sm:w-[340px] flex flex-col"
+              style={{
+                background: "linear-gradient(160deg, #fff5f9 0%, #fde4ef 100%)",
+                borderLeft: "1px solid rgba(247,109,165,0.2)",
+                boxShadow: "-8px 0 48px rgba(240,69,134,0.12)",
+              }}
+            >
+              {/* Panel header */}
+              <div className="flex items-center justify-between px-7 pt-7 pb-6 border-b border-[rgba(247,109,165,0.15)]">
+                <LogoWord />
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="w-9 h-9 rounded-full bg-white/60 text-primary flex items-center justify-center hover:bg-white transition-colors"
+                  aria-label="Закрыть меню"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Nav links */}
+              <div className="flex flex-col gap-1 px-5 pt-6 flex-1">
+                {navLinks.map((link, i) => (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.07 }}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-foreground hover:text-primary hover:bg-white/50 transition-all"
+                  >
+                    <span className="text-primary text-sm">✦</span>
+                    {link.name}
+                  </motion.a>
+                ))}
+
+                <motion.a
+                  href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+                  target="_blank"
+                  rel="noreferrer"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 + navLinks.length * 0.07 }}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-[#00aaee] hover:bg-white/50 transition-all"
+                >
+                  <span className="inline-flex w-5 h-5 rounded bg-[#00aaee] text-white text-[10px] font-black items-center justify-center">A</span>
+                  Авито
+                </motion.a>
+              </div>
+
+              {/* Bottom CTA */}
+              <div className="px-7 pb-10 pt-4 border-t border-[rgba(247,109,165,0.15)]">
+                <a
+                  href="https://t.me/pickmestore"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-glow-strong block w-full bg-primary text-white px-6 py-4 rounded-2xl font-bold text-center text-[16px] tracking-wide"
+                >
+                  Написать мне ✈️
+                </a>
+                <p className="font-script text-[18px] text-[#f76da5] text-center mt-3">на связи 24/7 💕</p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+// -- Hero Section --
+function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+
+  return (
+    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-32 pb-20 relative overflow-hidden section-a">
+      <motion.div
+        style={{ y: bgY }}
+        className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)] pointer-events-none"
+      />
+      <motion.div
+        style={{ y: bgY }}
+        className="absolute -bottom-[100px] -left-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)] pointer-events-none"
+      />
+
+      <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          className="text-center md:text-left"
+        >
+          <div className="inline-block font-script text-[22px] font-semibold text-[#f76da5] mb-4 -rotate-2">
+            ✨ подберём лук и для пикми, и для её масика
+          </div>
+          <h1 className="font-serif text-[40px] md:text-[64px] font-bold leading-[1.1] text-foreground mb-2">
+            Здесь твой <em className="italic text-primary">total slay</em> образ
+          </h1>
+          <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#6b4a5a] mb-6">
+            по цене даже ниже, чем пал твой бывший
+          </p>
+          <p className="text-lg leading-relaxed text-muted-foreground mb-10 max-w-md mx-auto md:mx-0">
+            Оригиналы <strong className="text-foreground font-bold">Nike, Guess, Lacoste</strong> и других брендов — с живыми фото, примеркой на мне и честными ценами от 3 500 ₽. Доставка по всей России.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <a
+              href="#catalog"
+              className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[#e02163] text-white px-8 py-4 rounded-full font-bold text-base"
+              data-testid="button-hero-catalog"
+            >
+              Смотреть каталог ↓
+            </a>
+            <a
+              href="#about"
+              className="inline-flex items-center justify-center bg-transparent border-2 border-secondary hover:border-[#f76da5] text-muted-foreground hover:text-primary px-7 py-4 rounded-full font-bold text-[15px] transition-all"
+              data-testid="button-hero-about"
+            >
+              Узнать больше
+            </a>
+          </div>
+        </motion.div>
+
+        <motion.div
+          style={{ y: badgesY }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="relative mt-12 md:mt-0"
+        >
+          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl bg-gradient-to-br from-secondary to-[#fcc8df] flex flex-col items-center justify-center gap-3 relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
+            <span className="text-5xl">📸</span>
+            <span className="text-sm text-muted-foreground font-semibold">Место для фото Валентинки</span>
+          </div>
+
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-4 -right-4 md:-right-8 glass-card px-5 py-3 rounded-2xl text-sm font-bold text-[#e02163]"
+          >
+            💯 Только оригиналы
+          </motion.div>
+
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-8 -left-4 md:-left-8 glass-card px-5 py-3 rounded-2xl text-sm font-bold text-foreground"
+          >
+            от 3 500 ₽
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// -- Why PickMe Section --
+function WhyPickMe() {
+  const features = [
+    { icon: <Check className="text-primary w-8 h-8" />, title: "Только оригиналы", desc: "Оставь страх фразы \"поясни за шмот\" в 2к16" },
+    { icon: <Camera className="text-primary w-8 h-8" />, title: "Живые фото", desc: "Мне было мало соцсетей — теперь все вещи в PickMe Store тоже с моими фото" },
+    { icon: <DollarSign className="text-primary w-8 h-8" />, title: "Цены 3 500 – 8 000 ₽", desc: "Масику не обязательно знать о нашей тайне 🤫" },
+    { icon: <Clock className="text-primary w-8 h-8" />, title: "На связи 24/7", desc: "Отвечу быстрее, чем турок пришлёт огонёк на твою новую сторис" },
+  ];
+
+  // Custom title with branded PickMe styling
+  const whyTitle = (
+    <>
+      Почему{" "}
+      <span className="text-[#e02163]">Pick</span><span className="font-script text-[38px] md:text-[52px] font-semibold text-[#f76da5]">Me</span>?
+    </>
+  );
+
+  return (
+    <section className="py-24 px-6 section-b">
+      <div className="max-w-5xl mx-auto">
+        <SectionTitle titleNode={whyTitle} sub="мы не такие, мы особенные 💅" />
+
+        <motion.div
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+          className="grid md:grid-cols-2 gap-6"
+        >
+          {features.map((f, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              className="why-card-hover glass-card rounded-[20px] p-8 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)]"
+            >
+              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle,rgba(253,228,239,0.5)_0%,transparent_70%)] pointer-events-none" />
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-[#fef1f6] flex items-center justify-center mb-5">
+                {f.icon}
+              </div>
+              <h3 className="font-serif text-xl font-bold text-foreground mb-2">{f.title}</h3>
+              <p className="font-script text-[22px] font-semibold text-[#e8609a] leading-snug">{f.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// -- Catalog Section --
+function Catalog() {
+  const [filter, setFilter] = useState<string>("all");
+  const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories") : undefined;
+  const { data: products, isLoading } = useGetProducts({ category: queryParam });
+
+  const categories = [
+    { id: "all", label: "Все" },
+    { id: "shoes", label: "Обувь" },
+    { id: "tops", label: "Верх" },
+    { id: "bottoms", label: "Низ" },
+    { id: "accessories", label: "Аксессуары" },
+  ];
+
+  return (
+    <section id="catalog" className="py-24 px-6 section-a">
+      <div className="max-w-[1100px] mx-auto">
+        <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
+
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setFilter(c.id)}
+              className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 ${
+                filter === c.id
+                  ? "bg-primary border-primary text-white shadow-md"
+                  : "bg-transparent border-secondary text-muted-foreground hover:border-[#f76da5] hover:text-primary"
+              }`}
+              data-testid={`filter-${c.id}`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
+                <div className="w-full aspect-[3/4] bg-secondary/50" />
+                <div className="p-5">
+                  <div className="h-3 w-16 bg-secondary rounded mb-2" />
+                  <div className="h-5 w-3/4 bg-secondary rounded mb-2" />
+                  <div className="h-4 w-1/4 bg-secondary rounded mb-4" />
+                  <div className="flex justify-between items-center">
+                    <div className="h-6 w-20 bg-secondary rounded" />
+                    <div className="h-10 w-10 bg-secondary rounded-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : products && products.length > 0 ? (
+          <motion.div
+            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+          >
+            {products.map((product) => (
+              <motion.div
+                key={product.id}
+                variants={fadeInUp}
+                className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)]"
+              >
+                <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden">
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} className="product-img-zoom" />
+                  ) : (
+                    <>
+                      <span className="text-4xl opacity-60 mb-2">👗</span>
+                      <span className="text-xs text-muted-foreground font-semibold">Фото товара</span>
+                    </>
+                  )}
+                  {product.badge && (
+                    <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white ${product.badge === "new" ? "bg-primary" : "bg-muted-foreground"}`}>
+                      {product.badge === "new" ? "New" : "Продано"}
+                    </div>
+                  )}
+                </div>
+                <div className="p-5">
+                  <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-primary mb-1">{product.brand}</div>
+                  <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
+                  <div className="text-[13px] text-muted-foreground mb-3">Размер: {product.size}</div>
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="text-xl font-bold text-foreground">{product.price.toLocaleString("ru-RU")} ₽</div>
+                    <a
+                      href={product.telegramUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                      data-testid={`button-buy-${product.id}`}
+                    >
+                      <ArrowRight size={18} />
+                    </a>
+                  </div>
+                  <p className="font-script text-[20px] font-semibold text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <div className="text-center py-20 text-muted-foreground font-medium">
+            <p>В этой категории пока ничего нет. Загляни позже!</p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// -- About Section --
+function About() {
+  return (
+    <section id="about" className="py-24 px-6 section-b">
+      <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-12 md:gap-16 items-center">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="w-full max-w-[280px] mx-auto md:max-w-none"
+        >
+          <div className="about-photo-frame w-full aspect-square rounded-[24px] bg-gradient-to-br from-secondary to-[#fef1f6] flex flex-col items-center justify-center gap-2">
+            <span className="text-5xl mb-2">🙋‍♀️</span>
+            <span className="text-[13px] text-muted-foreground font-semibold">Фото Валентинки</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <DecorBar align="left" />
+          <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
+            Привет, я — <em className="italic text-primary">Валентинка</em>
+          </h2>
+          <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#e8609a] mb-6">та самая пикми-подружка, которая не бесит 💕</p>
+
+          <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground">
+            <p>Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и кошелёк твоего масика.</p>
+            <p>Я люблю видеть женщин разными: от пикми до пацанок. Каждая индивидуальна и прекрасна в своём естестве. PickMe Store — мой маленький проект, в который я вкладываю всю себя: креатив, заботу и честный внимательный подход к каждому клиенту.</p>
+            <p>Здесь нет конвейера. Есть я, живые фото и желание, чтобы ты ушла довольной. Пиши в любое время, я почти всегда на связи, как будто меня до сих пор в любой момент могут вызвать в небо. Жду твоё сообщение так, как ещё год назад ждала звонка от планирования с фразой "Валентина, нужно срочно слетать на Мальдивы, выручайте, пожалуйста"</p>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// -- How It Works --
+function HowItWorks() {
+  const steps = [
+    { num: "1", title: "Выбираешь", desc: "Листаешь каталог и находишь свою вещь" },
+    { num: "2", title: "Пишешь", desc: "Нажимаешь кнопку и пишешь мне в Telegram" },
+    { num: "3", title: "Обсуждаем", desc: "Договариваемся по деталям и оплате в личке" },
+    { num: "4", title: "Получаешь", desc: "Доставка по всей России — СДЭК или Почта" },
+  ];
+
+  return (
+    <section className="py-24 px-6 section-a">
+      <div className="max-w-[1000px] mx-auto text-center">
+        <SectionTitle title="Как это работает" sub="даже проще, чем пустить стрелку на новых колготках" />
+
+        <div className="relative">
+          <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[#f76da5] to-secondary z-0" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10">
+            {steps.map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#f76da5] to-primary text-white font-serif text-[22px] font-bold flex items-center justify-center mb-5 shadow-[0_8px_24px_rgba(240,69,134,0.3)]">
+                  {step.num}
+                </div>
+                <h3 className="font-serif text-[18px] font-bold text-foreground mb-2">{step.title}</h3>
+                <p className="text-[14px] text-muted-foreground leading-relaxed max-w-[200px]">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// -- Reviews Section --
+function Reviews() {
+  const reviews = [
+    { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
+    { text: "Суперр!! Спасибо вам, Валентина. Все соответствует", author: "Чика", source: "Авито" },
+    { text: "Спасибо большое за чудесное платье!", author: "Наталья", source: "Авито" },
+  ];
+
+  return (
+    <section id="reviews" className="py-24 px-6 section-b">
+      <div className="max-w-[900px] mx-auto text-center">
+        <SectionTitle title="Отзывы" sub="нас уже выбрали 💕" />
+
+        <motion.div
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
+          className="grid md:grid-cols-3 gap-6"
+        >
+          {reviews.map((r, i) => (
+            <motion.div
+              key={i}
+              variants={fadeInUp}
+              className="why-card-hover bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col"
+            >
+              <div className="flex text-[#f76da5] gap-1 mb-4">
+                {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
+              </div>
+              <p className="italic text-[15px] leading-relaxed text-muted-foreground mb-6 flex-grow">«{r.text}»</p>
+              <div>
+                <div className="text-[14px] font-bold text-foreground">{r.author}</div>
+                <div className="text-[12px] text-muted-foreground">{r.source}</div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// -- FAQ Section --
+function FAQ() {
+  const faqs = [
+    { q: "Это точно оригиналы?", a: "Да! Все вещи от официальных поставщиков, которые привозят бренды из-за рубежа в Россию. Готова показать бирки, ярлыки и любые подтверждения." },
+    { q: "Как происходит доставка?", a: "Отправляю СДЭК или Почтой России — на выбор. Срок зависит от города, обычно 3–7 дней. Трек-номер дам сразу после отправки." },
+    { q: "Можно ли вернуть вещь?", a: "Если вещь не подошла — обсудим индивидуально. Мне важно, чтобы ты осталась довольна покупкой." },
+    { q: "Почему так дёшево?", a: "Секрет простой: я закупаю вещи напрямую со склада невыкупленных товаров крупного магазина — поэтому цены значительно ниже розницы. Каждая вещь новая и с бирками." },
+  ];
+
+  return (
+    <section id="faq" className="py-24 px-6 section-a">
+      <div className="max-w-[700px] mx-auto">
+        <SectionTitle title="Частые вопросы" sub="отвечаю, пока ты не спросила 🤓" />
+
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+          <Accordion type="single" collapsible className="w-full space-y-3">
+            {faqs.map((faq, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="glass-card border border-[rgba(251,162,200,0.2)] rounded-2xl px-6 data-[state=open]:border-[#fcc8df] transition-colors"
+              >
+                <AccordionTrigger className="text-[16px] font-bold text-foreground hover:no-underline py-6 text-left">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-[15px] leading-relaxed text-muted-foreground pb-6">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// -- Final CTA Section --
+function FinalCTA() {
+  return (
+    <section className="py-28 px-6 section-cta relative overflow-hidden text-center">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(249,176,208,0.5),transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(254,241,246,0.4),transparent_50%)] pointer-events-none" />
+
+      <motion.div
+        initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+        className="max-w-[700px] mx-auto relative z-10"
+      >
+        <DecorBar />
+        <h2 className="font-serif text-[32px] md:text-[48px] font-bold text-foreground mb-4">
+          Напиши мне — <em className="italic text-primary">подберу вещь под тебя</em>
+        </h2>
+        <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#e8609a] mb-10">
+          отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️
+        </p>
+
+        <a
+          href="https://t.me/pickmestore"
+          target="_blank"
+          rel="noreferrer"
+          className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px]"
+          data-testid="button-final-cta"
+        >
+          Написать в Telegram ✈️
+        </a>
+      </motion.div>
+    </section>
+  );
+}
+
+// -- Footer --
+function Footer() {
+  return (
+    <footer className="bg-foreground py-10 px-6 text-center">
+      <div className="font-serif text-xl font-bold text-[#fba2c8] mb-4">
+        <span className="text-[#fba2c8]">Pick</span><span className="font-script text-[24px] text-[#fcc8df]">Me</span>
+        <span className="text-[#fba2c8]"> Store</span>
+      </div>
+      <div className="flex items-center justify-center gap-6 mb-4">
+        <a
+          href="https://t.me/pickmestore"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold"
+        >
+          Telegram
+        </a>
+        <span className="text-[#fba2c8]/30">·</span>
+        <a
+          href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
+        >
+          <span className="inline-flex w-4 h-4 rounded bg-[#00aaee] text-white text-[9px] font-black items-center justify-center">A</span>
+          Авито
+        </a>
+      </div>
+      <p className="text-[13px] text-muted-foreground/40">
+        © 2026 · Оригинальные бренды с любовью · Доставка по всей России
+      </p>
+    </footer>
+  );
+}
+
+// -- Main App --
+function Home() {
+  return (
+    <>
+      <div className="noise-overlay" aria-hidden="true" />
+      <Header />
+      <main>
+        <Hero />
+        <WhyPickMe />
+        <Catalog />
+        <About />
+        <HowItWorks />
+        <Reviews />
+        <FAQ />
+        <FinalCTA />
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route>
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background">
+          <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Страница не найдена</h1>
+          <a href="/" className="text-primary font-bold hover:underline">Вернуться на главную</a>
+        </div>
+      </Route>
+    </Switch>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;

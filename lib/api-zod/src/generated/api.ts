@@ -14,3 +14,101 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary List all products
+ */
+export const GetProductsQueryParams = zod.object({
+  category: zod.enum(["shoes", "tops", "bottoms", "accessories"]).optional(),
+});
+
+export const GetProductsResponseItem = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  name: zod.string(),
+  size: zod.string(),
+  price: zod.number(),
+  category: zod.enum(["shoes", "tops", "bottoms", "accessories"]),
+  caption: zod.string(),
+  imageUrl: zod.string(),
+  badge: zod.enum(["new", "sold"]).nullish(),
+  telegramUrl: zod.string(),
+  createdAt: zod.coerce.date(),
+});
+export const GetProductsResponse = zod.array(GetProductsResponseItem);
+
+/**
+ * @summary Create a product
+ */
+export const CreateProductBody = zod.object({
+  brand: zod.string(),
+  name: zod.string(),
+  size: zod.string(),
+  price: zod.number(),
+  category: zod.enum(["shoes", "tops", "bottoms", "accessories"]),
+  caption: zod.string(),
+  imageUrl: zod.string(),
+  badge: zod.enum(["new", "sold"]).nullish(),
+  telegramUrl: zod.string(),
+});
+
+/**
+ * @summary Get a product by ID
+ */
+export const GetProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetProductResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  name: zod.string(),
+  size: zod.string(),
+  price: zod.number(),
+  category: zod.enum(["shoes", "tops", "bottoms", "accessories"]),
+  caption: zod.string(),
+  imageUrl: zod.string(),
+  badge: zod.enum(["new", "sold"]).nullish(),
+  telegramUrl: zod.string(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Update a product
+ */
+export const UpdateProductParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateProductBody = zod.object({
+  brand: zod.string(),
+  name: zod.string(),
+  size: zod.string(),
+  price: zod.number(),
+  category: zod.enum(["shoes", "tops", "bottoms", "accessories"]),
+  caption: zod.string(),
+  imageUrl: zod.string(),
+  badge: zod.enum(["new", "sold"]).nullish(),
+  telegramUrl: zod.string(),
+});
+
+export const UpdateProductResponse = zod.object({
+  id: zod.number(),
+  brand: zod.string(),
+  name: zod.string(),
+  size: zod.string(),
+  price: zod.number(),
+  category: zod.enum(["shoes", "tops", "bottoms", "accessories"]),
+  caption: zod.string(),
+  imageUrl: zod.string(),
+  badge: zod.enum(["new", "sold"]).nullish(),
+  telegramUrl: zod.string(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete a product
+ */
+export const DeleteProductParams = zod.object({
+  id: zod.coerce.number(),
+});
