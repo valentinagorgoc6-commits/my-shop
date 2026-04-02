@@ -436,7 +436,7 @@ function WhyPickMe() {
 }
 
 // -- Shared Product Card --
-function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; telegramUrl: string; caption: string } }) {
+function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; telegramUrl: string; caption?: string | null } }) {
   return (
     <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)]">
       <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden">
@@ -470,7 +470,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             <ArrowRight size={18} />
           </a>
         </div>
-        <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
+        {product.caption && <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>}
       </div>
     </div>
   );

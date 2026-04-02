@@ -12,7 +12,7 @@ export const productsTable = pgTable("products", {
   size: text("size").notNull(),
   price: integer("price").notNull(),
   category: categoryEnum("category").notNull(),
-  caption: text("caption").notNull(),
+  caption: text("caption").notNull().default(""),
   imageUrl: text("image_url").notNull(),
   badge: badgeEnum("badge"),
   telegramUrl: text("telegram_url").notNull(),

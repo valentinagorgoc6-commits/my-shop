@@ -275,12 +275,11 @@ function ProductForm({
             </div>
           </div>
 
-          <label style={labelStyle}>Подпись (ироничный текст) *</label>
+          <label style={labelStyle}>Подпись (ироничный текст)</label>
           <textarea
             value={form.caption}
             onChange={set("caption")}
             style={{ ...inputStyle, height: 64, resize: "vertical" }}
-            required
             placeholder="идеально для похода к подружке и её бывшему"
           />
 
