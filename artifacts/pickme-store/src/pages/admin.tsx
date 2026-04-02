@@ -36,7 +36,7 @@ const EMPTY_FORM = {
   caption: "",
   imageUrl: "",
   badge: "" as "" | "new" | "sold",
-  telegramUrl: "https://t.me/pickmestore",
+  telegramUrl: "https://t.me/V_Limerence",
   featured: false,
 };
 
