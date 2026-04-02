@@ -465,9 +465,28 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             <span className="text-xs text-muted-foreground font-semibold">Фото товара</span>
           </>
         )}
-        {product.badge && (
-          <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white ${product.badge === "new" ? "bg-primary" : "bg-muted-foreground"}`}>
-            {product.badge === "new" ? "New" : "Продано"}
+        {product.badge === "new" && (
+          <div className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary">
+            New
+          </div>
+        )}
+        {product.badge === "sold" && (
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+            <div style={{
+              position: "absolute",
+              top: "28px",
+              left: "-36px",
+              width: "148px",
+              background: "#f04586",
+              color: "#fff",
+              textAlign: "center",
+              transform: "rotate(-45deg)",
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "6px 0",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.22)",
+              letterSpacing: "0.08em",
+            }}>ПРОДАНО</div>
           </div>
         )}
         {images.length > 1 && (
@@ -497,16 +516,27 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
         <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
         <div className="text-[13px] text-muted-foreground mb-3">Размер: {product.size}</div>
         <div className="flex items-center justify-between mt-4">
-          <div className="text-xl font-bold text-foreground">{product.price.toLocaleString("ru-RU")} ₽</div>
-          <a
-            href={product.telegramUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
-            data-testid={`button-buy-${product.id}`}
-          >
-            <ArrowRight size={18} />
-          </a>
+          <div className={`text-xl font-bold ${product.badge === "sold" ? "line-through text-muted-foreground" : "text-foreground"}`}>
+            {product.price.toLocaleString("ru-RU")} ₽
+          </div>
+          {product.badge === "sold" ? (
+            <button
+              disabled
+              className="px-4 py-2 rounded-full bg-[#f3f4f6] text-[#9ca3af] text-[13px] font-bold cursor-not-allowed"
+            >
+              Продано
+            </button>
+          ) : (
+            <a
+              href={product.telegramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+              data-testid={`button-buy-${product.id}`}
+            >
+              <ArrowRight size={18} />
+            </a>
+          )}
         </div>
         {product.caption && <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>}
       </div>
@@ -579,13 +609,14 @@ function CatalogPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">("newest");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [hideSold, setHideSold] = useState(false);
 
   const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories" | "supplements") : undefined;
   const { data: allProducts, isLoading } = useGetProducts({ category: queryParam });
 
   React.useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter, search, sort]);
+  }, [filter, search, sort, hideSold]);
 
   const categories = [
     { id: "all", label: "Все" },
@@ -599,6 +630,7 @@ function CatalogPage() {
   const filtered = React.useMemo(() => {
     if (!allProducts) return [];
     let list = [...allProducts];
+    if (hideSold) list = list.filter(p => p.badge !== "sold");
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       list = list.filter(p => p.brand.toLowerCase().includes(q) || p.name.toLowerCase().includes(q));
@@ -607,7 +639,7 @@ function CatalogPage() {
     else if (sort === "price_desc") list.sort((a, b) => b.price - a.price);
     else list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return list;
-  }, [allProducts, search, sort]);
+  }, [allProducts, search, sort, hideSold]);
 
   const visible = filtered.slice(0, visibleCount);
   const remaining = filtered.length - visibleCount;
@@ -667,6 +699,19 @@ function CatalogPage() {
                   {c.label}
                 </button>
               ))}
+              <button
+                onClick={() => setHideSold(v => !v)}
+                className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 flex items-center gap-2 ${
+                  hideSold
+                    ? "bg-foreground border-foreground text-white shadow-md"
+                    : "bg-transparent border-secondary text-muted-foreground hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                <span className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center flex-shrink-0 transition-all ${hideSold ? "border-white bg-white" : "border-current"}`}>
+                  {hideSold && <span className="text-foreground text-[10px] font-black leading-none">✓</span>}
+                </span>
+                Скрыть проданные
+              </button>
             </div>
 
             {isLoading ? (
