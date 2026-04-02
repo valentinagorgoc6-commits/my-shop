@@ -16,6 +16,7 @@ interface Product {
   imageUrl: string | null;
   badge: Badge;
   telegramUrl: string;
+  featured: boolean;
   createdAt: string;
 }
 
@@ -36,6 +37,7 @@ const EMPTY_FORM = {
   imageUrl: "",
   badge: "" as "" | "new" | "sold",
   telegramUrl: "https://t.me/pickmestore",
+  featured: false,
 };
 
 function useAdminToken() {
@@ -165,6 +167,7 @@ function ProductForm({
           imageUrl: initial.imageUrl ?? "",
           badge: (initial.badge ?? "") as "" | "new" | "sold",
           telegramUrl: initial.telegramUrl,
+          featured: initial.featured ?? false,
         }
       : { ...EMPTY_FORM }
   );
@@ -212,6 +215,7 @@ function ProductForm({
       imageUrl: form.imageUrl || null,
       badge: form.badge || null,
       telegramUrl: form.telegramUrl,
+      featured: form.featured,
     };
     try {
       const url = initial ? `${API}/products/${initial.id}` : `${API}/products`;
@@ -322,6 +326,17 @@ function ProductForm({
               <span style={{ fontSize: 13, color: "#6b7280", wordBreak: "break-all" }}>{form.imageUrl}</span>
             </div>
           )}
+
+          <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={form.featured}
+              onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))}
+              style={{ width: 18, height: 18, accentColor: "#f7147a", cursor: "pointer" }}
+            />
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>Показать на главной</span>
+            <span style={{ fontSize: 12, color: "#9ca3af" }}>(отображается в каталоге на главной странице)</span>
+          </label>
 
           {error && <p style={{ color: "#ef4444", fontSize: 13, margin: "12px 0 0" }}>{error}</p>}
 

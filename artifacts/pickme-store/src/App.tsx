@@ -85,7 +85,7 @@ function Header() {
   }, [mobileOpen]);
 
   const navLinks = [
-    { name: "Каталог", href: "#catalog" },
+    { name: "Каталог", href: "/catalog" },
     { name: "Обо мне", href: "#about" },
     { name: "Отзывы", href: "#reviews" },
     { name: "FAQ", href: "#faq" },
@@ -435,45 +435,60 @@ function WhyPickMe() {
   );
 }
 
-// -- Catalog Section --
-function Catalog() {
-  const [filter, setFilter] = useState<string>("all");
-  const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories") : undefined;
-  const { data: products, isLoading } = useGetProducts({ category: queryParam });
+// -- Shared Product Card --
+function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; telegramUrl: string; caption: string } }) {
+  return (
+    <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)]">
+      <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden">
+        {product.imageUrl ? (
+          <img src={product.imageUrl} alt={product.name} className="product-img-zoom" />
+        ) : (
+          <>
+            <span className="text-4xl opacity-60 mb-2">👗</span>
+            <span className="text-xs text-muted-foreground font-semibold">Фото товара</span>
+          </>
+        )}
+        {product.badge && (
+          <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white ${product.badge === "new" ? "bg-primary" : "bg-muted-foreground"}`}>
+            {product.badge === "new" ? "New" : "Продано"}
+          </div>
+        )}
+      </div>
+      <div className="p-5">
+        <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-primary mb-1">{product.brand}</div>
+        <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
+        <div className="text-[13px] text-muted-foreground mb-3">Размер: {product.size}</div>
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-xl font-bold text-foreground">{product.price.toLocaleString("ru-RU")} ₽</div>
+          <a
+            href={product.telegramUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+            data-testid={`button-buy-${product.id}`}
+          >
+            <ArrowRight size={18} />
+          </a>
+        </div>
+        <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
+      </div>
+    </div>
+  );
+}
 
-  const categories = [
-    { id: "all", label: "Все" },
-    { id: "shoes", label: "Обувь" },
-    { id: "tops", label: "Верх" },
-    { id: "bottoms", label: "Низ" },
-    { id: "accessories", label: "Аксессуары" },
-  ];
+// -- Catalog Section (landing page — featured only, max 3) --
+function Catalog() {
+  const { data: products, isLoading } = useGetProducts({ featured: true });
+  const featured = products ? products.slice(0, 3) : [];
 
   return (
     <section id="catalog" className="py-24 px-6">
       <div className="max-w-[1100px] mx-auto">
         <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
 
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {categories.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setFilter(c.id)}
-              className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 ${
-                filter === c.id
-                  ? "bg-primary border-primary text-white shadow-md"
-                  : "bg-transparent border-secondary text-muted-foreground hover:border-[#f76da5] hover:text-primary"
-              }`}
-              data-testid={`filter-${c.id}`}
-            >
-              {c.label}
-            </button>
-          ))}
-        </div>
-
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
                 <div className="w-full aspect-[3/4] bg-secondary/50" />
                 <div className="p-5">
@@ -488,60 +503,156 @@ function Catalog() {
               </div>
             ))}
           </div>
-        ) : products && products.length > 0 ? (
+        ) : featured.length > 0 ? (
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
           >
-            {products.map((product) => (
-              <motion.div
-                key={product.id}
-                variants={fadeInUp}
-                className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)]"
-              >
-                <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden">
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} className="product-img-zoom" />
-                  ) : (
-                    <>
-                      <span className="text-4xl opacity-60 mb-2">👗</span>
-                      <span className="text-xs text-muted-foreground font-semibold">Фото товара</span>
-                    </>
-                  )}
-                  {product.badge && (
-                    <div className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white ${product.badge === "new" ? "bg-primary" : "bg-muted-foreground"}`}>
-                      {product.badge === "new" ? "New" : "Продано"}
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-primary mb-1">{product.brand}</div>
-                  <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
-                  <div className="text-[13px] text-muted-foreground mb-3">Размер: {product.size}</div>
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="text-xl font-bold text-foreground">{product.price.toLocaleString("ru-RU")} ₽</div>
-                    <a
-                      href={product.telegramUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
-                      data-testid={`button-buy-${product.id}`}
-                    >
-                      <ArrowRight size={18} />
-                    </a>
-                  </div>
-                  <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
-                </div>
+            {featured.map((product) => (
+              <motion.div key={product.id} variants={fadeInUp}>
+                <ProductCard product={product} />
               </motion.div>
             ))}
           </motion.div>
         ) : (
           <div className="text-center py-20 text-muted-foreground font-medium">
-            <p>В этой категории пока ничего нет. Загляни позже!</p>
+            <p>Скоро здесь появятся товары. Загляни позже!</p>
           </div>
         )}
+
+        <div className="flex justify-center mt-12">
+          <a
+            href="/catalog"
+            className="inline-flex items-center gap-2 px-10 py-4 rounded-full border-2 border-primary text-primary font-bold text-base hover:bg-primary hover:text-white transition-all"
+          >
+            Смотреть весь ассортимент →
+          </a>
+        </div>
       </div>
     </section>
+  );
+}
+
+// -- Full Catalog Page --
+function CatalogPage() {
+  const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">("newest");
+
+  const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories") : undefined;
+  const { data: allProducts, isLoading } = useGetProducts({ category: queryParam });
+
+  const categories = [
+    { id: "all", label: "Все" },
+    { id: "shoes", label: "Обувь" },
+    { id: "tops", label: "Верх" },
+    { id: "bottoms", label: "Низ" },
+    { id: "accessories", label: "Аксессуары" },
+  ];
+
+  const filtered = React.useMemo(() => {
+    if (!allProducts) return [];
+    let list = [...allProducts];
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(p => p.brand.toLowerCase().includes(q) || p.name.toLowerCase().includes(q));
+    }
+    if (sort === "price_asc") list.sort((a, b) => a.price - b.price);
+    else if (sort === "price_desc") list.sort((a, b) => b.price - a.price);
+    else list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return list;
+  }, [allProducts, search, sort]);
+
+  return (
+    <>
+      <div className="noise-overlay" aria-hidden="true" />
+      <Header />
+      <main className="page-gradient min-h-screen">
+        <section className="py-16 px-6">
+          <div className="max-w-[1100px] mx-auto">
+            <div className="text-center mb-10">
+              <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-3">Каталог</h1>
+              <p className="font-script text-2xl text-[#e8609a]">весь мой гардероб — выбирай своё ✨</p>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4 mb-8">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Поиск по бренду или названию..."
+                  className="w-full px-5 py-3 rounded-full border-2 border-secondary focus:border-primary focus:outline-none font-sans text-sm bg-white/80"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              <select
+                value={sort}
+                onChange={e => setSort(e.target.value as typeof sort)}
+                className="px-5 py-3 rounded-full border-2 border-secondary focus:border-primary focus:outline-none font-sans text-sm bg-white/80 cursor-pointer"
+              >
+                <option value="newest">Новинки</option>
+                <option value="price_asc">Цена ↑</option>
+                <option value="price_desc">Цена ↓</option>
+              </select>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3 mb-10">
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setFilter(c.id)}
+                  className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 ${
+                    filter === c.id
+                      ? "bg-primary border-primary text-white shadow-md"
+                      : "bg-transparent border-secondary text-muted-foreground hover:border-[#f76da5] hover:text-primary"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
+                    <div className="w-full aspect-[3/4] bg-secondary/50" />
+                    <div className="p-5">
+                      <div className="h-3 w-16 bg-secondary rounded mb-2" />
+                      <div className="h-5 w-3/4 bg-secondary rounded mb-2" />
+                      <div className="h-4 w-1/4 bg-secondary rounded mb-4" />
+                      <div className="flex justify-between items-center">
+                        <div className="h-6 w-20 bg-secondary rounded" />
+                        <div className="h-10 w-10 bg-secondary rounded-full" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filtered.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {filtered.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-24 text-muted-foreground font-medium">
+                <p className="text-lg">Ничего не найдено. Попробуй другой запрос!</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 }
 
@@ -830,6 +941,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/admin" component={AdminPage} />
+      <Route path="/catalog" component={CatalogPage} />
       <Route>
         <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background">
           <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Страница не найдена</h1>

@@ -1,25 +1,24 @@
 import { Router, type IRouter } from "express";
 import { db, productsTable, insertProductSchema } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 const router: IRouter = Router();
 
 router.get("/products", async (req, res) => {
-  const { category } = req.query as { category?: string };
+  const { category, featured } = req.query as { category?: string; featured?: string };
   try {
-    let products;
+    const conditions = [];
     if (category && ["shoes", "tops", "bottoms", "accessories"].includes(category)) {
-      products = await db
-        .select()
-        .from(productsTable)
-        .where(eq(productsTable.category, category as "shoes" | "tops" | "bottoms" | "accessories"))
-        .orderBy(productsTable.createdAt);
-    } else {
-      products = await db
-        .select()
-        .from(productsTable)
-        .orderBy(productsTable.createdAt);
+      conditions.push(eq(productsTable.category, category as "shoes" | "tops" | "bottoms" | "accessories"));
     }
+    if (featured === "true") {
+      conditions.push(eq(productsTable.featured, true));
+    }
+    const products = await db
+      .select()
+      .from(productsTable)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(productsTable.createdAt);
     res.json(products.map(p => ({
       ...p,
       imageUrl: p.imageUrl,

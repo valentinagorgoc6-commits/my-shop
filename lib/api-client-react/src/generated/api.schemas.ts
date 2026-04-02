@@ -39,6 +39,7 @@ export interface Product {
   imageUrl: string;
   badge?: ProductBadge;
   telegramUrl: string;
+  featured: boolean;
   createdAt: string;
 }
 
@@ -71,10 +72,12 @@ export interface CreateProduct {
   imageUrl: string;
   badge?: CreateProductBadge;
   telegramUrl: string;
+  featured?: boolean;
 }
 
 export type GetProductsParams = {
   category?: GetProductsCategory;
+  featured?: boolean;
 };
 
 export type GetProductsCategory =
