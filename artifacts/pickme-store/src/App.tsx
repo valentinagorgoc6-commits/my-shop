@@ -355,9 +355,9 @@ function Hero() {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-8 -left-4 md:-left-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]"
+            className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]"
           >
-            от 3 500 ₽
+            Низкие цены 💰
           </motion.div>
         </motion.div>
       </div>
