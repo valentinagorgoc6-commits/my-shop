@@ -100,8 +100,9 @@ function Header() {
             : "bg-transparent"
         }`}
       >
-        <a href="#" className="no-underline" data-testid="link-logo">
+        <a href="#" className="no-underline flex flex-col leading-none" data-testid="link-logo">
           <LogoWord />
+          <span className="text-[10px] text-muted-foreground font-sans font-normal mt-0.5 tracking-normal">ПикМи — магазин брендовых вещей</span>
         </a>
 
         {/* Desktop Nav */}
@@ -912,10 +913,11 @@ function FinalCTA() {
 function Footer() {
   return (
     <footer className="bg-foreground py-10 px-6 text-center">
-      <div className="font-serif text-xl font-bold text-[#fba2c8] mb-4">
+      <div className="font-serif text-xl font-bold text-[#fba2c8] mb-1">
         <span className="text-[#fba2c8]">Pick</span><span className="font-script text-[24px] text-[#fcc8df]">Me</span>
         <span className="text-[#fba2c8]"> Store</span>
       </div>
+      <p className="text-[10px] text-[#fba2c8]/60 font-sans mb-4">ПикМи — магазин брендовых вещей</p>
       <div className="flex items-center justify-center gap-6 mb-4">
         <a
           href="https://t.me/V_Limerence"
