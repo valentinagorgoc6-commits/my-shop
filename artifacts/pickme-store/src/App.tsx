@@ -455,8 +455,8 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   const currentImg = images[imgIdx] ?? null;
 
   return (
-    <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)]">
-      <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden group">
+    <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full">
+      <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden group flex-shrink-0">
         {currentImg ? (
           <img src={currentImg} alt={product.name} className="product-img-zoom" />
         ) : (
@@ -511,10 +511,13 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           </>
         )}
       </div>
-      <div className="p-5">
-        <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-primary mb-1">{product.brand}</div>
-        <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
-        <div className="text-[13px] text-muted-foreground mb-3">Размер: {product.size}</div>
+      <div className="p-5 flex flex-col flex-1">
+        <div>
+          <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-primary mb-1">{product.brand}</div>
+          <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
+          <div className="text-[13px] text-muted-foreground mb-3">Размер: {product.size}</div>
+        </div>
+        <div className="flex-1" />
         <div className="flex items-center justify-between mt-4">
           <div className={`text-xl font-bold ${product.badge === "sold" ? "line-through text-muted-foreground" : "text-foreground"}`}>
             {product.price.toLocaleString("ru-RU")} ₽
@@ -538,7 +541,9 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             </a>
           )}
         </div>
-        {product.caption && <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>}
+        <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight min-h-[1.75rem]">
+          {product.caption ?? ""}
+        </p>
       </div>
     </div>
   );
@@ -577,7 +582,7 @@ function Catalog() {
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
           >
             {featured.map((product) => (
-              <motion.div key={product.id} variants={fadeInUp}>
+              <motion.div key={product.id} variants={fadeInUp} className="h-full">
                 <ProductCard product={product} />
               </motion.div>
             ))}
