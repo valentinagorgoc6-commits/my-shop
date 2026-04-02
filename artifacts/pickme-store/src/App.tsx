@@ -3,6 +3,7 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import AdminPage from "@/pages/admin";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X } from "lucide-react";
@@ -739,6 +740,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/admin" component={AdminPage} />
       <Route>
         <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background">
           <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Страница не найдена</h1>
