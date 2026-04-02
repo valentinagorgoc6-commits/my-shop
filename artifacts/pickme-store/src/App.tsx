@@ -38,7 +38,7 @@ function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsiv
 }
 
 // -- Section Title --
-function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: string; titleNode?: React.ReactNode; id?: string }) {
+function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: React.ReactNode; titleNode?: React.ReactNode; id?: string }) {
   return (
     <motion.div
       initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
@@ -680,7 +680,7 @@ function FAQ() {
   return (
     <section id="faq" className="py-24 px-6">
       <div className="max-w-[700px] mx-auto">
-        <SectionTitle title="Частые вопросы" sub="отвечаю, пока ты не спросила 🤓" />
+        <SectionTitle title="Частые вопросы" sub={<>отвечаю, пока ты не спросила <img src="/faq-emoji.png" width={28} height={28} alt="" aria-hidden="true" style={{ display: "inline", verticalAlign: "middle" }} /></>} />
 
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <Accordion type="single" collapsible className="w-full space-y-3">
