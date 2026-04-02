@@ -651,8 +651,7 @@ function FAQ() {
 function FinalCTA() {
   return (
     <section className="py-28 px-6 section-cta relative overflow-hidden text-center">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(249,176,208,0.5),transparent_60%)] pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(254,241,246,0.4),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(249,176,208,0.3),transparent_60%)] pointer-events-none" />
 
       <motion.div
         initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
