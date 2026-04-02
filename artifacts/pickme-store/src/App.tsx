@@ -308,7 +308,7 @@ function Hero() {
           transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0"
         >
-          <div className="w-full aspect-[9/16] max-w-[380px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
+          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
             <img
               src="/hero-photo.png"
               alt="PickMe Store — модная одежда"
@@ -339,15 +339,23 @@ function Hero() {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-4 -right-4 md:-right-8 glass-card px-5 py-3 rounded-2xl text-sm font-bold text-[#e02163]"
+            className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-[#e02163] shadow-[0_8px_24px_rgba(240,69,134,0.22)]"
           >
             💯 Только оригиналы
           </motion.div>
 
           <motion.div
             animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+            className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold text-[#e02163] shadow-[0_8px_24px_rgba(240,69,134,0.22)]"
+          >
+            Живые фото 📸
+          </motion.div>
+
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-8 -left-4 md:-left-8 glass-card px-5 py-3 rounded-2xl text-sm font-bold text-foreground"
+            className="absolute bottom-8 -left-4 md:-left-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]"
           >
             от 3 500 ₽
           </motion.div>
