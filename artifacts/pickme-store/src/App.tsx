@@ -502,7 +502,7 @@ function About() {
           transition={{ duration: 0.7 }}
           className="w-full max-w-[280px] mx-auto md:max-w-none"
         >
-          <div className="about-photo-frame w-full aspect-[3/4] rounded-[24px] overflow-hidden">
+          <div className="about-photo-frame w-full aspect-[9/16] rounded-[24px] overflow-hidden">
             <img
               src="/about-photo.jpg"
               alt="Валентинка — основательница PickMe Store"
