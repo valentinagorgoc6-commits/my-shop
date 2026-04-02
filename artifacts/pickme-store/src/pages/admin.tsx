@@ -18,6 +18,8 @@ interface Product {
   badge: Badge;
   telegramUrl: string;
   featured: boolean;
+  sku?: string | null;
+  purchasePrice?: number | null;
   createdAt: string;
 }
 
@@ -40,6 +42,8 @@ const EMPTY_FORM = {
   badge: "" as "" | "new" | "sold",
   telegramUrl: "https://t.me/V_Limerence",
   featured: false,
+  sku: "",
+  purchasePrice: "",
 };
 
 function useAdminToken() {
@@ -169,6 +173,8 @@ function ProductForm({
           badge: (initial.badge ?? "") as "" | "new" | "sold",
           telegramUrl: initial.telegramUrl,
           featured: initial.featured ?? false,
+          sku: initial.sku ?? "",
+          purchasePrice: initial.purchasePrice != null ? String(initial.purchasePrice) : "",
         }
       : {
           brand: EMPTY_FORM.brand,
@@ -180,6 +186,8 @@ function ProductForm({
           badge: EMPTY_FORM.badge,
           telegramUrl: EMPTY_FORM.telegramUrl,
           featured: EMPTY_FORM.featured,
+          sku: EMPTY_FORM.sku,
+          purchasePrice: EMPTY_FORM.purchasePrice,
         }
   );
 
@@ -240,6 +248,8 @@ function ProductForm({
       badge: form.badge || null,
       telegramUrl: form.telegramUrl,
       featured: form.featured,
+      sku: form.sku.trim() || null,
+      purchasePrice: form.purchasePrice !== "" ? Number(form.purchasePrice) : null,
     };
     try {
       const url = initial ? `${API}/products/${initial.id}` : `${API}/products`;
@@ -297,6 +307,17 @@ function ProductForm({
                 <option value="accessories">Аксессуары</option>
                 <option value="supplements">БАД</option>
               </select>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div>
+              <label style={labelStyle}>Артикул</label>
+              <input value={form.sku} onChange={set("sku")} style={inputStyle} placeholder="SKU-001" />
+            </div>
+            <div>
+              <label style={labelStyle}>Цена закупки (₽)</label>
+              <input value={form.purchasePrice} onChange={set("purchasePrice")} style={inputStyle} type="number" min={0} placeholder="2000" />
             </div>
           </div>
 
@@ -502,7 +523,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e5e7eb", background: "#f9fafb" }}>
-                  {["Фото", "Товар", "Категория", "Размер", "Цена", "Статус", "Действия"].map(h => (
+                  {["Фото", "Товар", "Категория", "Размер", "Артикул", "Цена / Закупка", "Статус", "Действия"].map(h => (
                     <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       {h}
                     </th>
@@ -533,8 +554,21 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                       {CATEGORY_LABELS[product.category]}
                     </td>
                     <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>{product.size}</td>
-                    <td style={{ padding: "12px 16px", fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>
-                      {product.price.toLocaleString("ru-RU")} ₽
+                    <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>
+                      {product.sku ? <span style={{ fontFamily: "monospace", background: "#f3f4f6", padding: "2px 6px", borderRadius: 4 }}>{product.sku}</span> : <span style={{ color: "#d1d5db" }}>—</span>}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>{product.price.toLocaleString("ru-RU")} ₽</div>
+                      {product.purchasePrice != null && product.purchasePrice > 0 && (
+                        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
+                          закупка: {product.purchasePrice.toLocaleString("ru-RU")} ₽
+                        </div>
+                      )}
+                      {product.purchasePrice != null && product.purchasePrice > 0 && (
+                        <div style={{ fontSize: 12, fontWeight: 600, marginTop: 1, color: product.price - product.purchasePrice >= 0 ? "#16a34a" : "#dc2626" }}>
+                          прибыль: {(product.price - product.purchasePrice).toLocaleString("ru-RU")} ₽
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: "12px 16px" }}>
                       <span style={{

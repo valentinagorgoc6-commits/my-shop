@@ -18,6 +18,8 @@ export const productsTable = pgTable("products", {
   badge: badgeEnum("badge"),
   telegramUrl: text("telegram_url").notNull(),
   featured: boolean("featured").notNull().default(false),
+  sku: text("sku"),
+  purchasePrice: integer("purchase_price"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
