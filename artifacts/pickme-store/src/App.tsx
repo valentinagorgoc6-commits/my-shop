@@ -49,7 +49,7 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: stri
       <h2 className="font-serif text-[32px] md:text-[44px] font-bold text-foreground mb-2">
         {titleNode ?? title}
       </h2>
-      <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#e8609a]">{sub}</p>
+      <p className="font-script text-[20px] md:text-[24px] font-medium text-[#e8609a]">{sub}</p>
     </motion.div>
   );
 }
@@ -119,10 +119,10 @@ function Header() {
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm font-semibold text-[#00aaee] hover:text-[#0088cc] transition-colors tracking-wide flex items-center gap-1"
+                className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
                 data-testid="link-nav-avito"
               >
-                <span className="inline-block w-4 h-4 rounded bg-[#00aaee] text-white text-[9px] font-black flex items-center justify-center leading-none">A</span>
+                <span className="inline-block w-4 h-4 rounded-full bg-primary/15 text-primary text-[9px] font-black flex items-center justify-center leading-none">A</span>
                 Авито
               </a>
             </li>
@@ -215,9 +215,9 @@ function Header() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.05 + navLinks.length * 0.07 }}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-[#00aaee] hover:bg-white/50 transition-all"
+                  className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
                 >
-                  <span className="inline-flex w-5 h-5 rounded bg-[#00aaee] text-white text-[10px] font-black items-center justify-center">A</span>
+                  <span className="inline-flex w-5 h-5 rounded-full bg-primary/15 text-primary text-[10px] font-black items-center justify-center">A</span>
                   Авито
                 </motion.a>
               </div>
@@ -233,7 +233,7 @@ function Header() {
                 >
                   Написать мне ✈️
                 </a>
-                <p className="font-script text-[18px] text-[#f76da5] text-center mt-3">на связи 24/7 💕</p>
+                <p className="font-script text-[14px] text-[#f76da5] text-center mt-3">на связи 24/7 💕</p>
               </div>
             </motion.div>
           </>
@@ -269,13 +269,13 @@ function Hero() {
           variants={fadeInUp}
           className="text-center md:text-left"
         >
-          <div className="inline-block font-script text-[22px] font-semibold text-[#f76da5] mb-4 -rotate-2">
+          <div className="inline-block font-script text-[18px] font-medium text-[#f76da5] mb-4 -rotate-2">
             ✨ подберём лук и для пикми, и для её масика
           </div>
           <h1 className="font-serif text-[40px] md:text-[64px] font-bold leading-[1.1] text-foreground mb-2">
             Здесь твой <em className="italic text-primary">total slay</em> образ
           </h1>
-          <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#6b4a5a] mb-6">
+          <p className="font-script text-[20px] md:text-[24px] font-medium text-[#6b4a5a] mb-6">
             по цене даже ниже, чем пал твой бывший
           </p>
           <p className="text-lg leading-relaxed text-muted-foreground mb-10 max-w-md mx-auto md:mx-0">
@@ -347,7 +347,7 @@ function WhyPickMe() {
   const whyTitle = (
     <>
       Почему{" "}
-      <span className="text-[#e02163]">Pick</span><span className="font-script text-[38px] md:text-[52px] font-semibold text-[#f76da5]">Me</span>?
+      <span className="text-[#e02163]">Pick</span><span className="font-script text-[28px] md:text-[40px] font-medium text-[#f76da5]">Me</span>?
     </>
   );
 
@@ -371,7 +371,7 @@ function WhyPickMe() {
                 {f.icon}
               </div>
               <h3 className="font-serif text-xl font-bold text-foreground mb-2">{f.title}</h3>
-              <p className="font-script text-[22px] font-semibold text-[#e8609a] leading-snug">{f.desc}</p>
+              <p className="font-script text-[18px] font-medium text-[#e8609a] leading-snug">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -475,7 +475,7 @@ function Catalog() {
                       <ArrowRight size={18} />
                     </a>
                   </div>
-                  <p className="font-script text-[20px] font-semibold text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
+                  <p className="font-script text-[16px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
                 </div>
               </motion.div>
             ))}
@@ -518,7 +518,7 @@ function About() {
           <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
             Привет, я — <em className="italic text-primary">Валентинка</em>
           </h2>
-          <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#e8609a] mb-6">та самая пикми-подружка, которая не бесит 💕</p>
+          <p className="font-script text-[20px] md:text-[24px] font-medium text-[#e8609a] mb-6">та самая пикми-подружка, которая не бесит 💕</p>
 
           <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground">
             <p>Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и кошелёк твоего масика.</p>
@@ -662,7 +662,7 @@ function FinalCTA() {
         <h2 className="font-serif text-[32px] md:text-[48px] font-bold text-foreground mb-4">
           Напиши мне — <em className="italic text-primary">подберу вещь под тебя</em>
         </h2>
-        <p className="font-script text-[26px] md:text-[30px] font-semibold text-[#e8609a] mb-10">
+        <p className="font-script text-[20px] md:text-[24px] font-medium text-[#e8609a] mb-10">
           отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️
         </p>
 
@@ -704,7 +704,7 @@ function Footer() {
           rel="noreferrer"
           className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
         >
-          <span className="inline-flex w-4 h-4 rounded bg-[#00aaee] text-white text-[9px] font-black items-center justify-center">A</span>
+          <span className="inline-flex w-4 h-4 rounded-full bg-[#fba2c8]/20 text-[#fba2c8] text-[9px] font-black items-center justify-center">A</span>
           Авито
         </a>
       </div>
