@@ -216,18 +216,9 @@
   box-shadow: 0 28px 64px rgba(240,69,134,0.25), 0 8px 24px rgba(61,32,48,0.12);
 }
 
-/* ═══ SEAMLESS SECTION GRADIENTS ═══
-   Each section end-color matches the next section start-color so they flow invisibly.
-   Flow: cream (#fffaf5) → light-pink (#fef1f6) → medium-pink (#fde4ef) → repeat
-   A: starts cream,    ends medium-pink
-   B: starts medium-pink, ends cream
-═══ */
-.section-a {
-  background: linear-gradient(180deg, #fffaf5 0%, #fef5f9 50%, #fde4ef 100%);
-}
-
-.section-b {
-  background: linear-gradient(180deg, #fde4ef 0%, #fef5f9 50%, #fffaf5 100%);
+/* ═══ PAGE GRADIENT ═══ */
+.page-gradient {
+  background: linear-gradient(180deg, #fffaf5 0%, #fef5f9 15%, #fde4ef 35%, #fef5f9 55%, #fde4ef 75%, #f9d4e5 90%, #f2b0cc 100%);
 }
 
 .section-cta {

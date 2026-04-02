@@ -251,7 +251,7 @@ function Hero() {
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
   return (
-    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-32 pb-20 relative overflow-hidden section-a">
+    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-32 pb-20 relative overflow-hidden">
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)] pointer-events-none"
@@ -352,7 +352,7 @@ function WhyPickMe() {
   );
 
   return (
-    <section className="py-24 px-6 section-b">
+    <section className="py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <SectionTitle titleNode={whyTitle} sub="мы не такие, мы особенные 💅" />
 
@@ -395,7 +395,7 @@ function Catalog() {
   ];
 
   return (
-    <section id="catalog" className="py-24 px-6 section-a">
+    <section id="catalog" className="py-24 px-6">
       <div className="max-w-[1100px] mx-auto">
         <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
 
@@ -493,7 +493,7 @@ function Catalog() {
 // -- About Section --
 function About() {
   return (
-    <section id="about" className="py-24 px-6 section-b">
+    <section id="about" className="py-24 px-6">
       <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-12 md:gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -541,7 +541,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="py-24 px-6 section-a">
+    <section className="py-24 px-6">
       <div className="max-w-[1000px] mx-auto text-center">
         <SectionTitle title="Как это работает" sub="даже проще, чем пустить стрелку на новых колготках" />
 
@@ -580,7 +580,7 @@ function Reviews() {
   ];
 
   return (
-    <section id="reviews" className="py-24 px-6 section-b">
+    <section id="reviews" className="py-24 px-6">
       <div className="max-w-[900px] mx-auto text-center">
         <SectionTitle title="Отзывы" sub="нас уже выбрали 💕" />
 
@@ -620,7 +620,7 @@ function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-24 px-6 section-a">
+    <section id="faq" className="py-24 px-6">
       <div className="max-w-[700px] mx-auto">
         <SectionTitle title="Частые вопросы" sub="отвечаю, пока ты не спросила 🤓" />
 
@@ -721,7 +721,7 @@ function Home() {
     <>
       <div className="noise-overlay" aria-hidden="true" />
       <Header />
-      <main>
+      <main className="page-gradient">
         <Hero />
         <WhyPickMe />
         <Catalog />
