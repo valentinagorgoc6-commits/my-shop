@@ -444,6 +444,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
     ? product.imageUrls
     : product.imageUrl ? [product.imageUrl] : [];
   const [imgIdx, setImgIdx] = useState(0);
+  const touchStartX = useRef<number | null>(null);
 
   const prevImg = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -454,11 +455,30 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
     setImgIdx(i => (i + 1) % images.length);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || images.length <= 1) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) >= 50) {
+      setImgIdx(i => delta < 0
+        ? (i + 1) % images.length
+        : (i - 1 + images.length) % images.length
+      );
+    }
+    touchStartX.current = null;
+  };
+
   const currentImg = images[imgIdx] ?? null;
 
   return (
     <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full">
-      <div className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden group flex-shrink-0">
+      <div
+        className="relative w-full aspect-[3/4] bg-gradient-to-br from-[#fef1f6] to-secondary flex flex-col items-center justify-center overflow-hidden group flex-shrink-0 touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {currentImg ? (
           <img src={currentImg} alt={product.name} className="product-img-zoom" />
         ) : (
