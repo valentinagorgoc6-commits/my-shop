@@ -126,6 +126,17 @@ function Header() {
                 Авито
               </a>
             </li>
+            <li>
+              <a
+                href="https://tinyurl.com/5h4bbmkr"
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
+              >
+                <img src="https://max.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
+                MAX
+              </a>
+            </li>
           </ul>
           <a
             href="https://t.me/V_Limerence"
@@ -219,6 +230,19 @@ function Header() {
                 >
                   <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
                   Авито
+                </motion.a>
+                <motion.a
+                  href="https://tinyurl.com/5h4bbmkr"
+                  target="_blank"
+                  rel="noreferrer"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 + navLinks.length * 0.07 + 0.07 }}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
+                >
+                  <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
+                  MAX
                 </motion.a>
               </div>
 
@@ -719,6 +743,16 @@ function FinalCTA() {
             <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
             Профиль на Авито
           </a>
+          <a
+            href="https://tinyurl.com/5h4bbmkr"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
+            data-testid="button-final-max"
+          >
+            <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
+            Написать в MAX
+          </a>
         </div>
       </motion.div>
     </section>
@@ -751,6 +785,16 @@ function Footer() {
         >
           <span className="inline-flex w-4 h-4 rounded-full bg-[#fba2c8]/20 text-[#fba2c8] text-[9px] font-black items-center justify-center">A</span>
           Авито
+        </a>
+        <span className="text-[#fba2c8]/30">·</span>
+        <a
+          href="https://tinyurl.com/5h4bbmkr"
+          target="_blank"
+          rel="noreferrer"
+          className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
+        >
+          <img src="https://max.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
+          MAX
         </a>
       </div>
       <p className="text-[13px] text-muted-foreground/40">
