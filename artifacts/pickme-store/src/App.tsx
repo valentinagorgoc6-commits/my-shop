@@ -24,8 +24,8 @@ const staggerContainer = {
 };
 
 // -- Shared Decorator Bar (bigger on desktop) --
-function DecorBar({ align = "center" }: { align?: "center" | "left" }) {
-  const justifyClass = align === "left" ? "justify-start" : "justify-center";
+function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsive" }) {
+  const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
   return (
     <div className={`flex items-center ${justifyClass} gap-3 mb-3`}>
       <span className="text-[#f76da5] text-base md:text-xl">✦</span>
@@ -514,7 +514,7 @@ function About() {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <DecorBar />
+          <DecorBar align="responsive" />
           <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
             Привет, я — <em className="italic text-primary">Валентинка</em>
           </h2>
