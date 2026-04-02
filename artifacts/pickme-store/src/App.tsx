@@ -514,7 +514,7 @@ function About() {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <DecorBar align="left" />
+          <DecorBar />
           <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
             Привет, я — <em className="italic text-primary">Валентинка</em>
           </h2>
