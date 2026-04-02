@@ -665,15 +665,27 @@ function FinalCTA() {
           отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️
         </p>
 
-        <a
-          href="https://t.me/pickmestore"
-          target="_blank"
-          rel="noreferrer"
-          className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px]"
-          data-testid="button-final-cta"
-        >
-          Написать в Telegram ✈️
-        </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href="https://t.me/pickmestore"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px]"
+            data-testid="button-final-cta"
+          >
+            Написать в Telegram ✈️
+          </a>
+          <a
+            href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-transparent border-2 border-primary text-primary hover:bg-primary/10 px-10 py-5 rounded-full font-bold text-[17px] transition-colors"
+            data-testid="button-final-avito"
+          >
+            <span className="inline-flex w-5 h-5 rounded-full bg-primary/15 text-primary text-[10px] font-black items-center justify-center shrink-0">A</span>
+            Профиль на Авито
+          </a>
+        </div>
       </motion.div>
     </section>
   );
