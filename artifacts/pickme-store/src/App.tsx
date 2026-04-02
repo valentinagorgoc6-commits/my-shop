@@ -217,7 +217,7 @@ function Header() {
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
                 >
-                  <span className="inline-flex w-5 h-5 rounded-full bg-primary/15 text-primary text-[10px] font-black items-center justify-center">A</span>
+                  <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
                   Авито
                 </motion.a>
               </div>
