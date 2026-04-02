@@ -49,7 +49,7 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: stri
       <h2 className="font-serif text-[32px] md:text-[44px] font-bold text-foreground mb-2">
         {titleNode ?? title}
       </h2>
-      <p className="font-script text-[20px] md:text-[24px] font-medium text-[#e8609a]">{sub}</p>
+      <p className="font-script text-[22px] md:text-[24px] font-medium text-[#e8609a]">{sub}</p>
     </motion.div>
   );
 }
@@ -275,7 +275,7 @@ function Hero() {
           <h1 className="font-serif text-[40px] md:text-[64px] font-bold leading-[1.1] text-foreground mb-2">
             Здесь твой <em className="italic text-primary">total slay</em> образ
           </h1>
-          <p className="font-script text-[20px] md:text-[24px] font-medium text-[#6b4a5a] mb-6">
+          <p className="font-script text-[22px] md:text-[24px] font-medium text-[#6b4a5a] mb-6">
             по цене даже ниже, чем пал твой бывший
           </p>
           <p className="text-lg leading-relaxed text-muted-foreground mb-10 max-w-md mx-auto md:mx-0">
@@ -475,7 +475,7 @@ function Catalog() {
                       <ArrowRight size={18} />
                     </a>
                   </div>
-                  <p className="font-script text-[16px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
+                  <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight">{product.caption}</p>
                 </div>
               </motion.div>
             ))}
@@ -518,7 +518,7 @@ function About() {
           <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
             Привет, я — <em className="italic text-primary">Валентинка</em>
           </h2>
-          <p className="font-script text-[20px] md:text-[24px] font-medium text-[#e8609a] mb-6">та самая пикми-подружка, которая не бесит 💕</p>
+          <p className="font-script text-[22px] md:text-[24px] font-medium text-[#e8609a] mb-6">та самая пикми-подружка, которая не бесит 💕</p>
 
           <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground">
             <p>Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и кошелёк твоего масика.</p>
@@ -662,7 +662,7 @@ function FinalCTA() {
         <h2 className="font-serif text-[32px] md:text-[48px] font-bold text-foreground mb-4">
           Напиши мне — <em className="italic text-primary">подберу вещь под тебя</em>
         </h2>
-        <p className="font-script text-[20px] md:text-[24px] font-medium text-[#e8609a] mb-10">
+        <p className="font-script text-[22px] md:text-[24px] font-medium text-[#e8609a] mb-10">
           отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️
         </p>
 
