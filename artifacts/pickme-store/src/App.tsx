@@ -502,9 +502,12 @@ function About() {
           transition={{ duration: 0.7 }}
           className="w-full max-w-[280px] mx-auto md:max-w-none"
         >
-          <div className="about-photo-frame w-full aspect-square rounded-[24px] bg-gradient-to-br from-secondary to-[#fef1f6] flex flex-col items-center justify-center gap-2">
-            <span className="text-5xl mb-2">🙋‍♀️</span>
-            <span className="text-[13px] text-muted-foreground font-semibold">Фото Валентинки</span>
+          <div className="about-photo-frame w-full aspect-square rounded-[24px] overflow-hidden">
+            <img
+              src="/about-photo.jpg"
+              alt="Валентинка — основательница PickMe Store"
+              className="w-full h-full object-cover object-top"
+            />
           </div>
         </motion.div>
 
