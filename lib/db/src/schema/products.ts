@@ -20,6 +20,7 @@ export const productsTable = pgTable("products", {
   featured: boolean("featured").notNull().default(false),
   sku: text("sku"),
   purchasePrice: integer("purchase_price"),
+  avitoLink: text("avito_link"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

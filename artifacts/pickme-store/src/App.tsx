@@ -439,7 +439,7 @@ function WhyPickMe() {
 }
 
 // -- Shared Product Card --
-function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; telegramUrl: string; caption?: string | null } }) {
+function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; telegramUrl: string; avitoLink?: string | null; caption?: string | null } }) {
   const images = product.imageUrls && product.imageUrls.length > 0
     ? product.imageUrls
     : product.imageUrl ? [product.imageUrl] : [];
@@ -653,6 +653,17 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             </a>
           )}
         </div>
+        {product.avitoLink && (
+          <a
+            href={product.avitoLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-[#00a0ff]/10 text-[#0073cc] text-[13px] font-bold hover:bg-[#00a0ff]/20 transition-colors w-fit"
+          >
+            <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+            Купить на Авито
+          </a>
+        )}
         <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight min-h-[1.75rem]">
           {product.caption ?? ""}
         </p>

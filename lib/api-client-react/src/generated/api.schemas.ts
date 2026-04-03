@@ -41,6 +41,7 @@ export interface Product {
   imageUrls: string[];
   badge?: ProductBadge;
   telegramUrl: string;
+  avitoLink?: string | null;
   featured: boolean;
   createdAt: string;
 }
@@ -76,6 +77,7 @@ export interface CreateProduct {
   imageUrls?: string[];
   badge?: CreateProductBadge;
   telegramUrl: string;
+  avitoLink?: string | null;
   featured?: boolean;
 }
 

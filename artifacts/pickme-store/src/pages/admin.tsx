@@ -17,6 +17,7 @@ interface Product {
   imageUrls?: string[];
   badge: Badge;
   telegramUrl: string;
+  avitoLink?: string | null;
   featured: boolean;
   sku?: string | null;
   purchasePrice?: number | null;
@@ -41,6 +42,7 @@ const EMPTY_FORM = {
   imageUrl: "",
   badge: "" as "" | "new" | "sold",
   telegramUrl: "https://t.me/V_Limerence",
+  avitoLink: "",
   featured: false,
   sku: "",
   purchasePrice: "",
@@ -172,6 +174,7 @@ function ProductForm({
           caption: initial.caption,
           badge: (initial.badge ?? "") as "" | "new" | "sold",
           telegramUrl: initial.telegramUrl,
+          avitoLink: initial.avitoLink ?? "",
           featured: initial.featured ?? false,
           sku: initial.sku ?? "",
           purchasePrice: initial.purchasePrice != null ? String(initial.purchasePrice) : "",
@@ -185,6 +188,7 @@ function ProductForm({
           caption: EMPTY_FORM.caption,
           badge: EMPTY_FORM.badge,
           telegramUrl: EMPTY_FORM.telegramUrl,
+          avitoLink: EMPTY_FORM.avitoLink,
           featured: EMPTY_FORM.featured,
           sku: EMPTY_FORM.sku,
           purchasePrice: EMPTY_FORM.purchasePrice,
@@ -247,6 +251,7 @@ function ProductForm({
       imageUrls,
       badge: form.badge || null,
       telegramUrl: form.telegramUrl,
+      avitoLink: form.avitoLink.trim() || null,
       featured: form.featured,
       sku: form.sku.trim() || null,
       purchasePrice: form.purchasePrice !== "" ? Number(form.purchasePrice) : null,
@@ -329,8 +334,16 @@ function ProductForm({
             placeholder="идеально для похода к подружке и её бывшему"
           />
 
-          <label style={labelStyle}>Ссылка на Telegram *</label>
-          <input value={form.telegramUrl} onChange={set("telegramUrl")} style={inputStyle} required placeholder="https://t.me/V_Limerence" />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+            <div>
+              <label style={labelStyle}>Ссылка на Telegram *</label>
+              <input value={form.telegramUrl} onChange={set("telegramUrl")} style={inputStyle} required placeholder="https://t.me/V_Limerence" />
+            </div>
+            <div>
+              <label style={labelStyle}>Ссылка на Авито</label>
+              <input value={form.avitoLink} onChange={set("avitoLink")} style={inputStyle} placeholder="https://www.avito.ru/..." />
+            </div>
+          </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <div>
