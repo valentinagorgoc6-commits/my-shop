@@ -20,14 +20,16 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp"];
+
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) {
+    if (ALLOWED_MIMES.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only image files are allowed"));
+      cb(new Error("Допустимые форматы: jpg, png, webp"));
     }
   },
 });
@@ -63,6 +65,16 @@ router.post("/admin/upload", adminAuth, upload.single("image"), (req: Request, r
   }
   const imageUrl = `/api/uploads/${req.file.filename}`;
   res.json({ imageUrl });
+});
+
+router.post("/admin/upload-multiple", adminAuth, upload.array("images", 3), (req: Request, res: Response): void => {
+  const files = req.files as Express.Multer.File[] | undefined;
+  if (!files || files.length === 0) {
+    res.status(400).json({ error: "No files uploaded" });
+    return;
+  }
+  const imageUrls = files.map(f => `/api/uploads/${f.filename}`);
+  res.json({ imageUrls });
 });
 
 export default router;

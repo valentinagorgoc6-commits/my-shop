@@ -209,25 +209,55 @@ function ProductForm({
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
 
+  const draggedIdx = useRef<number | null>(null);
+
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (imageUrls.length >= 3) { setError("Максимум 3 фото"); return; }
-    setUploading(true);
+    const selected = Array.from(e.target.files ?? []);
+    if (!selected.length) return;
+
+    const available = 3 - imageUrls.length;
+    if (available <= 0) { setError("Уже загружено 3 фото"); return; }
+
+    const toUpload = selected.slice(0, available);
     setError("");
+
+    for (const f of toUpload) {
+      if (!ALLOWED_TYPES.includes(f.type)) {
+        setError(`«${f.name}»: допустимые форматы jpg, png, webp`);
+        if (fileRef.current) fileRef.current.value = "";
+        return;
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        setError(`«${f.name}»: файл превышает 5 МБ`);
+        if (fileRef.current) fileRef.current.value = "";
+        return;
+      }
+    }
+
+    if (selected.length > available) {
+      setError(`Выбрано ${selected.length} файлов — добавляем первые ${available}`);
+    }
+
+    setUploading(true);
     try {
       const fd = new FormData();
-      fd.append("image", file);
-      const res = await fetch(`${API}/admin/upload`, {
+      toUpload.forEach(f => fd.append("images", f));
+      const res = await fetch(`${API}/admin/upload-multiple`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
-      if (!res.ok) throw new Error("Upload failed");
-      const data = await res.json() as { imageUrl: string };
-      setImageUrls(prev => [...prev, data.imageUrl]);
-    } catch {
-      setError("Ошибка загрузки изображения");
+      if (!res.ok) {
+        const d = await res.json() as { error?: string };
+        throw new Error(d.error ?? "Ошибка загрузки");
+      }
+      const data = await res.json() as { imageUrls: string[] };
+      setImageUrls(prev => [...prev, ...data.imageUrls]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Ошибка загрузки");
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -235,6 +265,19 @@ function ProductForm({
   };
 
   const removeImage = (idx: number) => setImageUrls(prev => prev.filter((_, i) => i !== idx));
+
+  const handleDragStart = (idx: number) => { draggedIdx.current = idx; };
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); };
+  const handleDrop = (toIdx: number) => {
+    if (draggedIdx.current === null || draggedIdx.current === toIdx) return;
+    setImageUrls(prev => {
+      const arr = [...prev];
+      const [item] = arr.splice(draggedIdx.current!, 1);
+      arr.splice(toIdx, 0, item);
+      return arr;
+    });
+    draggedIdx.current = null;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -355,59 +398,64 @@ function ProductForm({
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Фото (до 3)</label>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileRef}
-                onChange={handleUpload}
-                style={{ display: "none" }}
-              />
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                style={{ ...btnSecondary, width: "100%", marginTop: 0, opacity: imageUrls.length >= 3 ? 0.5 : 1 }}
-                disabled={uploading || imageUrls.length >= 3}
-              >
-                {uploading ? "Загрузка..." : `Добавить фото ${imageUrls.length}/3`}
-              </button>
+              <label style={labelStyle}>Показывать на главной</label>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, cursor: "pointer" }}>
+                <input type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} style={{ width: 16, height: 16, accentColor: "#f7147a" }} />
+                <span style={{ fontSize: 14 }}>Показывать в разделе «Новинки»</span>
+              </label>
             </div>
           </div>
 
-          {imageUrls.length > 0 && (
-            <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
-              {imageUrls.map((url, idx) => (
-                <div key={idx} style={{ position: "relative" }}>
-                  <img
-                    src={url}
-                    alt={`фото ${idx + 1}`}
-                    style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8, border: idx === 0 ? "2px solid #f7147a" : "1px solid #e5e7eb", display: "block" }}
-                  />
-                  {idx === 0 && (
-                    <span style={{ position: "absolute", bottom: 2, left: 2, fontSize: 9, background: "#f7147a", color: "#fff", borderRadius: 3, padding: "1px 4px", fontWeight: 700 }}>главное</span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => removeImage(idx)}
-                    style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, cursor: "pointer" }}>
+          {/* Photo upload — full width */}
+          <div style={{ marginTop: 4 }}>
+            <label style={labelStyle}>Фото (до 3) — jpg, png, webp, макс. 5 МБ каждое</label>
             <input
-              type="checkbox"
-              checked={form.featured}
-              onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))}
-              style={{ width: 18, height: 18, accentColor: "#f7147a", cursor: "pointer" }}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              ref={fileRef}
+              onChange={handleUpload}
+              style={{ display: "none" }}
             />
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>Показать на главной</span>
-            <span style={{ fontSize: 12, color: "#9ca3af" }}>(отображается в каталоге на главной странице)</span>
-          </label>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              style={{ ...btnSecondary, marginTop: 0, opacity: imageUrls.length >= 3 ? 0.5 : 1 }}
+              disabled={uploading || imageUrls.length >= 3}
+            >
+              {uploading ? "Загрузка..." : imageUrls.length >= 3 ? "Максимум 3 фото" : `Выбрать фото (${imageUrls.length}/3)`}
+            </button>
+
+            {imageUrls.length > 0 && (
+              <div style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {imageUrls.map((url, idx) => (
+                  <div
+                    key={url}
+                    draggable
+                    onDragStart={() => handleDragStart(idx)}
+                    onDragOver={handleDragOver}
+                    onDrop={() => handleDrop(idx)}
+                    style={{ position: "relative", cursor: "grab" }}
+                    title="Перетащите для изменения порядка"
+                  >
+                    <img
+                      src={url}
+                      alt={`фото ${idx + 1}`}
+                      style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: idx === 0 ? "2px solid #f7147a" : "1px solid #e5e7eb", display: "block", pointerEvents: "none" }}
+                    />
+                    <span style={{ position: "absolute", bottom: 3, left: 3, fontSize: 9, background: idx === 0 ? "#f7147a" : "rgba(0,0,0,0.55)", color: "#fff", borderRadius: 3, padding: "1px 5px", fontWeight: 700 }}>
+                      {idx === 0 ? "главное" : idx + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      style={{ position: "absolute", top: -6, right: -6, width: 20, height: 20, borderRadius: "50%", background: "#ef4444", color: "#fff", border: "none", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
+                    >×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {error && <p style={{ color: "#ef4444", fontSize: 13, margin: "12px 0 0" }}>{error}</p>}
 
