@@ -658,7 +658,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             href={product.avitoLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-[#00a0ff]/10 text-[#0073cc] text-[13px] font-bold hover:bg-[#00a0ff]/20 transition-colors mx-auto"
+            className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors mx-auto"
           >
             <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
             Купить на Авито
