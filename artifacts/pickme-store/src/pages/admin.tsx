@@ -24,6 +24,7 @@ interface Product {
   sku?: string | null;
   purchasePrice?: number | null;
   gender: Gender;
+  sortOrder?: number | null;
   createdAt: string;
 }
 
@@ -50,6 +51,7 @@ const EMPTY_FORM = {
   sku: "",
   purchasePrice: "",
   gender: "women" as Gender,
+  sortOrder: "",
 };
 
 function useAdminToken() {
@@ -192,6 +194,7 @@ function ProductForm({
           sku: initial.sku ?? "",
           purchasePrice: initial.purchasePrice != null ? String(initial.purchasePrice) : "",
           gender: (initial.gender ?? "women") as Gender,
+          sortOrder: initial.sortOrder != null ? String(initial.sortOrder) : "",
         }
       : {
           brand: EMPTY_FORM.brand,
@@ -207,6 +210,7 @@ function ProductForm({
           sku: EMPTY_FORM.sku,
           purchasePrice: EMPTY_FORM.purchasePrice,
           gender: EMPTY_FORM.gender,
+          sortOrder: EMPTY_FORM.sortOrder,
         }
   );
 
@@ -314,6 +318,7 @@ function ProductForm({
       sku: form.sku.trim() || null,
       purchasePrice: form.purchasePrice !== "" ? Number(form.purchasePrice) : null,
       gender: form.gender,
+      sortOrder: form.sortOrder !== "" ? Number(form.sortOrder) : null,
     };
     try {
       const url = initial ? `${API}/products/${initial.id}` : `${API}/products`;
@@ -382,7 +387,7 @@ function ProductForm({
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Артикул</label>
               <input value={form.sku} onChange={set("sku")} style={inputStyle} placeholder="SKU-001" />
@@ -390,6 +395,10 @@ function ProductForm({
             <div>
               <label style={labelStyle}>Цена закупки (₽)</label>
               <input value={form.purchasePrice} onChange={set("purchasePrice")} style={inputStyle} type="number" min={0} placeholder="2000" />
+            </div>
+            <div>
+              <label style={labelStyle}>Порядок отображения</label>
+              <input value={form.sortOrder} onChange={set("sortOrder")} style={inputStyle} type="number" min={0} placeholder="1, 2, 3…" />
             </div>
           </div>
 

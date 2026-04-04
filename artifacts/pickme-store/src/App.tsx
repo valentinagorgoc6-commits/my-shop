@@ -760,7 +760,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           )}
         </div>
         <div className="mt-3 flex justify-center min-h-[36px]">
-          {product.avitoLink && (
+          {product.avitoLink ? (
             product.badge === "sold" ? (
               <div
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
@@ -778,6 +778,30 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               >
                 <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
                 Купить на Авито
+              </a>
+            )
+          ) : (
+            product.badge === "sold" ? (
+              <div
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
+                style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+                </svg>
+                Написать в Telegram
+              </div>
+            ) : (
+              <a
+                href={product.telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+                </svg>
+                Написать в Telegram
               </a>
             )
           )}
@@ -849,12 +873,40 @@ function Catalog() {
 
 const PAGE_SIZE = 15;
 
+const INTERLEAVE_ORDER = ["shoes", "tops", "bottoms", "accessories"] as const;
+
+function interleaveSection(items: { category: string; [key: string]: unknown }[]) {
+  const supplements = items.filter(p => p.category === "supplements");
+  const main = items.filter(p => p.category !== "supplements");
+  const queues: Record<string, typeof main> = {};
+  for (const cat of INTERLEAVE_ORDER) queues[cat] = main.filter(p => p.category === cat);
+  const result: typeof main = [];
+  while (INTERLEAVE_ORDER.some(cat => queues[cat].length > 0)) {
+    for (const cat of INTERLEAVE_ORDER) {
+      if (queues[cat].length > 0) result.push(queues[cat].shift()!);
+    }
+  }
+  return [...result, ...supplements];
+}
+
+function applyDefaultSort<T extends { badge?: string | null; sortOrder?: number | null; category: string }>(list: T[]): T[] {
+  const withOrder = list.filter(p => p.sortOrder != null).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+  const withoutOrder = list.filter(p => p.sortOrder == null);
+  const available = withoutOrder.filter(p => p.badge !== "sold");
+  const sold = withoutOrder.filter(p => p.badge === "sold");
+  return [
+    ...withOrder,
+    ...interleaveSection(available),
+    ...interleaveSection(sold),
+  ] as T[];
+}
+
 // -- Full Catalog Page --
 function CatalogPage() {
   const [filter, setFilter] = useState<string>("all");
   const [genderFilter, setGenderFilter] = useState<"all" | "women" | "men">("all");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">("newest");
+  const [sort, setSort] = useState<"default" | "newest" | "price_asc" | "price_desc">("default");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [hideSold, setHideSold] = useState(false);
 
@@ -886,7 +938,8 @@ function CatalogPage() {
     }
     if (sort === "price_asc") list.sort((a, b) => a.price - b.price);
     else if (sort === "price_desc") list.sort((a, b) => b.price - a.price);
-    else list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    else if (sort === "newest") list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    else list = applyDefaultSort(list);
     return list;
   }, [allProducts, genderFilter, search, sort, hideSold]);
 
@@ -928,6 +981,7 @@ function CatalogPage() {
                 onChange={e => setSort(e.target.value as typeof sort)}
                 className="px-5 py-3 rounded-full border-2 border-secondary focus:border-primary focus:outline-none font-sans text-sm bg-white/80 cursor-pointer"
               >
+                <option value="default">По умолчанию</option>
                 <option value="newest">Новинки</option>
                 <option value="price_asc">Цена ↑</option>
                 <option value="price_desc">Цена ↓</option>
@@ -1020,6 +1074,22 @@ function CatalogPage() {
                   </div>
                 )}
               </>
+            ) : filter === "supplements" ? (
+              <div className="flex justify-center py-16">
+                <div className="relative max-w-md w-full rounded-[28px] overflow-hidden p-8 text-center"
+                  style={{ background: "linear-gradient(135deg, rgba(255,230,241,0.85) 0%, rgba(255,245,250,0.9) 60%, rgba(255,255,255,0.7) 100%)", boxShadow: "0 8px 40px rgba(247,109,165,0.18), 0 2px 8px rgba(247,109,165,0.10)", backdropFilter: "blur(12px)", border: "1.5px solid rgba(247,109,165,0.25)" }}>
+                  <div className="absolute top-0 right-0 w-48 h-48 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.18) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
+                  <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.12) 0%, transparent 70%)", transform: "translate(-20%, 20%)" }} />
+                  <div className="relative z-10">
+                    <div className="text-6xl mb-4" style={{ animation: "wobble 2s ease-in-out infinite" }}>💊</div>
+                    <h3 className="font-display text-2xl font-bold text-primary mb-2">БАД-ов пока нет</h3>
+                    <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">Эта категория ещё пополняется.<br />Загляни позже — скоро будет что-то интересное!</p>
+                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold font-sans text-primary" style={{ background: "rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)" }}>
+                      🔍 Следи за обновлениями
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="text-center py-24 text-muted-foreground font-medium">
                 <p className="text-lg">Ничего не найдено. Попробуй другой запрос!</p>
