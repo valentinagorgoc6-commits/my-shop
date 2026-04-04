@@ -653,27 +653,29 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             </a>
           )}
         </div>
-        {product.avitoLink && (
-          product.badge === "sold" ? (
-            <div
-              className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold mx-auto w-fit"
-              style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
-            >
-              <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
-              Купить на Авито
-            </div>
-          ) : (
-            <a
-              href={product.avitoLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors mx-auto"
-            >
-              <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
-              Купить на Авито
-            </a>
-          )
-        )}
+        <div className="mt-3 flex justify-center min-h-[36px]">
+          {product.avitoLink && (
+            product.badge === "sold" ? (
+              <div
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
+                style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
+              >
+                <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                Купить на Авито
+              </div>
+            ) : (
+              <a
+                href={product.avitoLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              >
+                <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                Купить на Авито
+              </a>
+            )
+          )}
+        </div>
         <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight min-h-[1.75rem]">
           {product.caption ?? ""}
         </p>
