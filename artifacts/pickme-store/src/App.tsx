@@ -944,7 +944,28 @@ function CatalogPage() {
   }, [allProducts, genderFilter, search, sort, hideSold]);
 
   const visible = filtered.slice(0, visibleCount);
-  const remaining = filtered.length - visibleCount;
+  const hasMore = visibleCount < filtered.length;
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount(v => v + PAGE_SIZE);
+            setIsLoadingMore(false);
+          }, 400);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore]);
 
   return (
     <>
@@ -1063,29 +1084,37 @@ function CatalogPage() {
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-                {remaining > 0 && (
-                  <div className="flex justify-center mt-10">
-                    <button
-                      onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
-                      className="px-8 py-3.5 rounded-full bg-white border-2 border-primary text-primary font-bold font-sans text-sm hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-md"
-                    >
-                      Показать ещё (осталось {remaining})
-                    </button>
+                <div ref={sentinelRef} className="h-1" />
+                {isLoadingMore && (
+                  <div className="flex justify-center items-center gap-2 mt-8">
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 )}
               </>
             ) : filter === "supplements" ? (
-              <div className="flex justify-center py-16">
-                <div className="relative max-w-md w-full rounded-[28px] overflow-hidden p-8 text-center"
-                  style={{ background: "linear-gradient(135deg, rgba(255,230,241,0.85) 0%, rgba(255,245,250,0.9) 60%, rgba(255,255,255,0.7) 100%)", boxShadow: "0 8px 40px rgba(247,109,165,0.18), 0 2px 8px rgba(247,109,165,0.10)", backdropFilter: "blur(12px)", border: "1.5px solid rgba(247,109,165,0.25)" }}>
-                  <div className="absolute top-0 right-0 w-48 h-48 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.18) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
-                  <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.12) 0%, transparent 70%)", transform: "translate(-20%, 20%)" }} />
-                  <div className="relative z-10">
-                    <div className="text-6xl mb-4" style={{ animation: "wobble 2s ease-in-out infinite" }}>💊</div>
-                    <h3 className="font-display text-2xl font-bold text-primary mb-2">БАД-ов пока нет</h3>
-                    <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">Эта категория ещё пополняется.<br />Загляни позже — скоро будет что-то интересное!</p>
-                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold font-sans text-primary" style={{ background: "rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)" }}>
-                      🔍 Следи за обновлениями
+              <div className="w-full py-6" style={{ animation: "fadeIn 0.5s ease-out" }}>
+                <div className="w-full rounded-[24px] overflow-hidden flex flex-col md:flex-row"
+                  style={{ boxShadow: "0 8px 40px rgba(247,109,165,0.2), 0 2px 12px rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)", minHeight: 280 }}>
+                  {/* Image */}
+                  <div className="md:w-1/2 w-full flex-shrink-0" style={{ minHeight: 240 }}>
+                    <img
+                      src="/bad-detective.png"
+                      alt="Детектив ищет БАДы"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", minHeight: 240 }}
+                    />
+                  </div>
+                  {/* Text */}
+                  <div className="md:w-1/2 w-full flex items-center justify-center p-8 md:p-10"
+                    style={{ background: "linear-gradient(135deg, rgba(255,230,241,0.92) 0%, rgba(255,248,252,0.95) 100%)", backdropFilter: "blur(12px)" }}>
+                    <div className="text-center md:text-left">
+                      <h3 className="font-display font-bold text-primary mb-4" style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)", lineHeight: 1.15 }}>
+                        Кто-то похитил все БАДы!
+                      </h3>
+                      <p className="font-sans text-muted-foreground leading-relaxed" style={{ fontSize: "0.95rem" }}>
+                        Но я делаю всё возможное,<br className="hidden md:block" /> чтобы скорее их вернуть 💪
+                      </p>
                     </div>
                   </div>
                 </div>
