@@ -442,18 +442,22 @@ function WhyPickMe() {
 const SHOE_SIZE_CHART: { cm: number; ru: string }[] = [
   { cm: 22.5, ru: "35" },
   { cm: 23,   ru: "36" },
-  { cm: 23.5, ru: "37" },
-  { cm: 24,   ru: "37.5" },
+  { cm: 23.5, ru: "36.5" },
+  { cm: 24,   ru: "37" },
   { cm: 24.5, ru: "38" },
   { cm: 25,   ru: "39" },
-  { cm: 25.5, ru: "40" },
-  { cm: 26,   ru: "40.5" },
+  { cm: 25.5, ru: "39.5" },
+  { cm: 26,   ru: "40" },
   { cm: 26.5, ru: "41" },
   { cm: 27,   ru: "42" },
-  { cm: 27.5, ru: "43" },
-  { cm: 28,   ru: "43.5" },
+  { cm: 27.5, ru: "42.5" },
+  { cm: 28,   ru: "43" },
   { cm: 28.5, ru: "44" },
   { cm: 29,   ru: "45" },
+  { cm: 29.5, ru: "45.5" },
+  { cm: 30,   ru: "46" },
+  { cm: 30.5, ru: "47" },
+  { cm: 31,   ru: "48" },
 ];
 
 function matchShoeSizeRow(size: string): number | null {
@@ -670,7 +674,11 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
         <div>
           <div className="text-[11px] font-bold tracking-[1.5px] uppercase text-primary mb-1">{product.brand}</div>
           <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{product.name}</h3>
-          <div className="text-[13px] text-muted-foreground mb-2">Размер: {product.size}</div>
+          <div className="text-[13px] text-muted-foreground mb-2">
+            {product.category === "shoes"
+              ? <>Длина стельки: {product.size} см</>
+              : <>Размер: {product.size}</>}
+          </div>
 
           {/* Size chart accordion — shoes only */}
           {product.category === "shoes" && (
@@ -698,7 +706,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
                     <thead>
                       <tr style={{ background: "#fde8f2" }}>
-                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>см</th>
+                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>Стелька (см)</th>
                         <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>RU</th>
                       </tr>
                     </thead>
