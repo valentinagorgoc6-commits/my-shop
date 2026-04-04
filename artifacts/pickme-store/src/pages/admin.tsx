@@ -69,6 +69,15 @@ function authHeaders(token: string) {
   return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 }
 
+async function safeJson<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(`Сервер вернул неожиданный ответ (${res.status}). Попробуйте ещё раз.`);
+  }
+}
+
 // ─── Login Page ───────────────────────────────────────────────────
 function LoginPage({ onLogin }: { onLogin: (token: string) => void }) {
   const [password, setPassword] = useState("");
@@ -89,7 +98,7 @@ function LoginPage({ onLogin }: { onLogin: (token: string) => void }) {
         setError("Неверный пароль");
         return;
       }
-      const data = await res.json() as { token: string };
+      const data = await safeJson<{ token: string }>(res);
       onLogin(data.token);
     } catch {
       setError("Ошибка соединения");
@@ -257,10 +266,10 @@ function ProductForm({
         body: fd,
       });
       if (!res.ok) {
-        const d = await res.json() as { error?: string };
+        const d = await safeJson<{ error?: string }>(res);
         throw new Error(d.error ?? "Ошибка загрузки");
       }
-      const data = await res.json() as { imageUrls: string[] };
+      const data = await safeJson<{ imageUrls: string[] }>(res);
       setImageUrls(prev => [...prev, ...data.imageUrls]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ошибка загрузки");
@@ -315,10 +324,10 @@ function ProductForm({
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        const d = await res.json() as { error?: string };
+        const d = await safeJson<{ error?: string }>(res);
         throw new Error(d.error ?? "Ошибка сохранения");
       }
-      const saved = await res.json() as Product;
+      const saved = await safeJson<Product>(res);
       onSave(saved);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ошибка");
@@ -506,7 +515,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     try {
       const res = await fetch(`${API}/products`);
       if (!res.ok) throw new Error("Ошибка загрузки");
-      const data = await res.json() as Product[];
+      const data = await safeJson<Product[]>(res);
       setProducts(data);
     } catch {
       setError("Не удалось загрузить товары");
