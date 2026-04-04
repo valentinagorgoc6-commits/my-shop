@@ -24,6 +24,7 @@ function formatProduct(p: { imageUrl: string; imageUrls: string | null; telegram
   };
 }
 
+// Public product list — only published=true
 router.get("/products", async (req, res) => {
   const { category, featured, limit: limitRaw, offset: offsetRaw } = req.query as {
     category?: string; featured?: string; limit?: string; offset?: string;
@@ -31,7 +32,7 @@ router.get("/products", async (req, res) => {
   const limit = limitRaw !== undefined ? parseInt(limitRaw, 10) : undefined;
   const offset = offsetRaw !== undefined ? parseInt(offsetRaw, 10) : undefined;
   try {
-    const conditions = [];
+    const conditions = [eq(productsTable.published, true)];
     if (category && (VALID_CATEGORIES as readonly string[]).includes(category)) {
       conditions.push(eq(productsTable.category, category as ValidCategory));
     }
@@ -41,7 +42,7 @@ router.get("/products", async (req, res) => {
     let query = db
       .select()
       .from(productsTable)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .where(and(...conditions))
       .orderBy(productsTable.createdAt)
       .$dynamic();
     if (limit !== undefined && !isNaN(limit)) query = query.limit(limit);
@@ -61,6 +62,7 @@ router.post("/products", async (req, res) => {
     ...rest,
     imageUrl: imageUrls[0] ?? (typeof rest.imageUrl === "string" ? rest.imageUrl : ""),
     imageUrls: imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
+    published: false,
   };
   const parsed = insertProductSchema.safeParse(body);
   if (!parsed.success) {
