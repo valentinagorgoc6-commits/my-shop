@@ -944,7 +944,28 @@ function CatalogPage() {
   }, [allProducts, genderFilter, search, sort, hideSold]);
 
   const visible = filtered.slice(0, visibleCount);
-  const remaining = filtered.length - visibleCount;
+  const hasMore = visibleCount < filtered.length;
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          setIsLoadingMore(true);
+          setTimeout(() => {
+            setVisibleCount(v => v + PAGE_SIZE);
+            setIsLoadingMore(false);
+          }, 400);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore]);
 
   return (
     <>
@@ -1063,14 +1084,12 @@ function CatalogPage() {
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
-                {remaining > 0 && (
-                  <div className="flex justify-center mt-10">
-                    <button
-                      onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
-                      className="px-8 py-3.5 rounded-full bg-white border-2 border-primary text-primary font-bold font-sans text-sm hover:bg-primary hover:text-white transition-all shadow-sm hover:shadow-md"
-                    >
-                      Показать ещё (осталось {remaining})
-                    </button>
+                <div ref={sentinelRef} className="h-1" />
+                {isLoadingMore && (
+                  <div className="flex justify-center items-center gap-2 mt-8">
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
                   </div>
                 )}
               </>
