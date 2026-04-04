@@ -25,6 +25,7 @@ interface Product {
   purchasePrice?: number | null;
   gender: Gender;
   sortOrder?: number | null;
+  published: boolean;
   createdAt: string;
 }
 
@@ -517,12 +518,18 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const [mode, setMode] = useState<"list" | "calc">("list");
   const [calcSelected, setCalcSelected] = useState<Set<number>>(new Set());
   const [calcSkuSearch, setCalcSkuSearch] = useState("");
+  // Tabs: published vs pending approval
+  const [adminTab, setAdminTab] = useState<"published" | "pending">("published");
+  const [pendingSelected, setPendingSelected] = useState<Set<number>>(new Set());
+  const [publishing, setPublishing] = useState<Set<number>>(new Set());
 
   const fetchProducts = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API}/products`);
+      const res = await fetch(`${API}/admin/products`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) throw new Error("Ошибка загрузки");
       const data = await safeJson<Product[]>(res);
       setProducts(data);
@@ -566,24 +573,79 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     }
   };
 
+  const handlePublish = async (id: number) => {
+    setPublishing(prev => new Set(prev).add(id));
+    try {
+      const res = await fetch(`${API}/admin/products/${id}/publish`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error("Ошибка публикации");
+      const updated = await safeJson<Product>(res);
+      setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
+    } catch {
+      setError("Не удалось опубликовать товар");
+    } finally {
+      setPublishing(prev => { const next = new Set(prev); next.delete(id); return next; });
+    }
+  };
+
+  const handleBulkPublish = async () => {
+    const ids = Array.from(pendingSelected);
+    if (!ids.length) return;
+    setPublishing(new Set(ids));
+    try {
+      const res = await fetch(`${API}/admin/products/bulk-publish`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (!res.ok) throw new Error();
+      const updated = await safeJson<Product[]>(res);
+      setProducts(prev => {
+        const map = new Map(updated.map(p => [p.id, p]));
+        return prev.map(p => map.get(p.id) ?? p);
+      });
+      setPendingSelected(new Set());
+    } catch {
+      setError("Ошибка массовой публикации");
+    } finally {
+      setPublishing(new Set());
+    }
+  };
+
+  const tabProducts = products.filter(p => adminTab === "published" ? p.published : !p.published);
+  const pendingCount = products.filter(p => !p.published).length;
+
   const activeSearch = mode === "calc" ? calcSkuSearch : skuSearch;
   const displayedProducts = activeSearch.trim()
-    ? products.filter(p => p.sku?.toLowerCase().includes(activeSearch.trim().toLowerCase()))
-    : products;
-  const selectedProducts = products.filter(p => calcSelected.has(p.id));
+    ? tabProducts.filter(p => p.sku?.toLowerCase().includes(activeSearch.trim().toLowerCase()))
+    : tabProducts;
+  const selectedProducts = tabProducts.filter(p => calcSelected.has(p.id));
   const totalPurchase = selectedProducts.reduce((sum, p) => sum + (p.purchasePrice ?? 0), 0);
 
   const toggleCalcProduct = (id: number) => {
     setCalcSelected(prev => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-        setCalcSkuSearch("");
-      }
+      if (next.has(id)) { next.delete(id); } else { next.add(id); setCalcSkuSearch(""); }
       return next;
     });
+  };
+
+  const togglePendingSelect = (id: number) => {
+    setPendingSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      return next;
+    });
+  };
+
+  const toggleSelectAllPending = () => {
+    if (pendingSelected.size === displayedProducts.length) {
+      setPendingSelected(new Set());
+    } else {
+      setPendingSelected(new Set(displayedProducts.map(p => p.id)));
+    }
   };
 
   return (
@@ -605,13 +667,33 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
         <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
           {[
             { label: "Всего товаров", value: products.length },
-            { label: "В наличии", value: products.filter(p => p.badge !== "sold").length },
+            { label: "Опубликовано", value: products.filter(p => p.published).length },
+            { label: "На согласовании", value: pendingCount },
             { label: "Продано", value: products.filter(p => p.badge === "sold").length },
           ].map(stat => (
-            <div key={stat.label} style={{ background: "#fff", borderRadius: 10, padding: "16px 24px", border: "1px solid #e5e7eb", flex: 1 }}>
-              <div style={{ fontSize: 26, fontWeight: 700, color: "#1a1a2e" }}>{stat.value}</div>
-              <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>{stat.label}</div>
+            <div key={stat.label} style={{ background: "#fff", borderRadius: 10, padding: "14px 20px", border: "1px solid #e5e7eb", flex: 1 }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#1a1a2e" }}>{stat.value}</div>
+              <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{stat.label}</div>
             </div>
+          ))}
+        </div>
+
+        {/* Admin tabs: Опубликованные / Согласование */}
+        <div style={{ display: "flex", gap: 0, marginBottom: 20, borderBottom: "2px solid #e5e7eb" }}>
+          {([
+            { key: "published" as const, label: "Опубликованные" },
+            { key: "pending" as const, label: `Согласование${pendingCount > 0 ? ` (${pendingCount})` : ""}` },
+          ]).map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => { setAdminTab(tab.key); setPendingSelected(new Set()); setSkuSearch(""); setCalcSkuSearch(""); }}
+              style={{ padding: "10px 24px", border: "none", background: "transparent", cursor: "pointer", fontSize: 14, fontWeight: 600, color: adminTab === tab.key ? "#e8609a" : "#6b7280", borderBottom: adminTab === tab.key ? "2px solid #e8609a" : "2px solid transparent", marginBottom: -2, transition: "color 0.15s" }}
+            >
+              {tab.label}
+              {tab.key === "pending" && pendingCount > 0 && (
+                <span style={{ marginLeft: 6, background: "#fde8f1", color: "#e8609a", borderRadius: 10, padding: "1px 7px", fontSize: 12, fontWeight: 700 }}>{pendingCount}</span>
+              )}
+            </button>
           ))}
         </div>
 
@@ -639,11 +721,23 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
               />
             )}
           </div>
-          {mode === "list" && (
-            <button onClick={() => { setEditProduct(null); setShowForm(true); }} style={btnPrimary}>
-              + Добавить товар
-            </button>
-          )}
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Bulk publish button (pending tab) */}
+            {adminTab === "pending" && pendingSelected.size > 0 && mode === "list" && (
+              <button
+                onClick={handleBulkPublish}
+                disabled={publishing.size > 0}
+                style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+              >
+                ✓ Опубликовать выбранные ({pendingSelected.size})
+              </button>
+            )}
+            {mode === "list" && (
+              <button onClick={() => { setEditProduct(null); setShowForm(true); }} style={btnPrimary}>
+                + Добавить товар
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Calc mode: SKU search */}
@@ -673,10 +767,16 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
         {loading ? (
           <div style={{ textAlign: "center", padding: 60, color: "#6b7280" }}>Загрузка...</div>
-        ) : products.length === 0 ? (
+        ) : tabProducts.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60, color: "#6b7280" }}>
-            <p style={{ fontSize: 16 }}>Товаров пока нет</p>
-            <button onClick={() => setShowForm(true)} style={{ ...btnPrimary, marginTop: 16 }}>Добавить первый товар</button>
+            {adminTab === "pending" ? (
+              <p style={{ fontSize: 16 }}>✅ Нет товаров на согласовании</p>
+            ) : (
+              <>
+                <p style={{ fontSize: 16 }}>Товаров пока нет</p>
+                <button onClick={() => setShowForm(true)} style={{ ...btnPrimary, marginTop: 16 }}>Добавить первый товар</button>
+              </>
+            )}
           </div>
         ) : displayedProducts.length === 0 ? (
           <div style={{ textAlign: "center", padding: 40, color: "#6b7280" }}>
@@ -687,9 +787,18 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e5e7eb", background: "#f9fafb" }}>
-                  {mode === "calc" && (
-                    <th style={{ padding: "12px 16px", width: 40 }}></th>
+                  {/* Pending: select-all checkbox */}
+                  {adminTab === "pending" && mode === "list" && (
+                    <th style={{ padding: "12px 16px", width: 40 }}>
+                      <input
+                        type="checkbox"
+                        checked={pendingSelected.size === displayedProducts.length && displayedProducts.length > 0}
+                        onChange={toggleSelectAllPending}
+                        style={{ width: 16, height: 16, accentColor: "#16a34a", cursor: "pointer" }}
+                      />
+                    </th>
                   )}
+                  {mode === "calc" && <th style={{ padding: "12px 16px", width: 40 }}></th>}
                   {["Фото", "Товар", "Артикул", "Закупочная цена", "Статус", ...(mode === "list" ? ["Категория", "Размер", "Цена / Прибыль", "Действия"] : [])].map(h => (
                     <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       {h}
@@ -699,18 +808,31 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
               </thead>
               <tbody>
                 {displayedProducts.map((product, idx) => {
-                  const isSelected = calcSelected.has(product.id);
+                  const isCalcSelected = calcSelected.has(product.id);
+                  const isPendingSelected = pendingSelected.has(product.id);
+                  const isPublishing = publishing.has(product.id);
                   return (
                     <tr
                       key={product.id}
-                      style={{ borderBottom: idx < displayedProducts.length - 1 ? "1px solid #f3f4f6" : "none", background: isSelected && mode === "calc" ? "#fdf4f8" : undefined, cursor: mode === "calc" ? "pointer" : undefined }}
+                      style={{ borderBottom: idx < displayedProducts.length - 1 ? "1px solid #f3f4f6" : "none", background: isCalcSelected && mode === "calc" ? "#fdf4f8" : isPendingSelected && adminTab === "pending" ? "#f0fdf4" : undefined, cursor: mode === "calc" ? "pointer" : undefined }}
                       onClick={mode === "calc" ? () => toggleCalcProduct(product.id) : undefined}
                     >
+                      {/* Pending checkbox */}
+                      {adminTab === "pending" && mode === "list" && (
+                        <td style={{ padding: "12px 16px" }}>
+                          <input
+                            type="checkbox"
+                            checked={isPendingSelected}
+                            onChange={() => togglePendingSelect(product.id)}
+                            style={{ width: 16, height: 16, accentColor: "#16a34a", cursor: "pointer" }}
+                          />
+                        </td>
+                      )}
                       {mode === "calc" && (
                         <td style={{ padding: "12px 16px" }}>
                           <input
                             type="checkbox"
-                            checked={isSelected}
+                            checked={isCalcSelected}
                             onChange={() => toggleCalcProduct(product.id)}
                             onClick={e => e.stopPropagation()}
                             style={{ width: 18, height: 18, accentColor: "#f7147a", cursor: "pointer" }}
@@ -757,7 +879,16 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                           )}
                         </td>
                         <td style={{ padding: "12px 16px" }}>
-                          <div style={{ display: "flex", gap: 8 }}>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            {adminTab === "pending" && (
+                              <button
+                                onClick={() => handlePublish(product.id)}
+                                disabled={isPublishing}
+                                style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 13, cursor: "pointer", fontWeight: 600 }}
+                              >
+                                {isPublishing ? "..." : "✓ Опубликовать"}
+                              </button>
+                            )}
                             <button onClick={() => { setEditProduct(product); setShowForm(true); }} style={{ ...btnSecondary, padding: "6px 14px", fontSize: 13 }}>Изменить</button>
                             <button onClick={() => setDeleteProduct(product)} style={{ background: "transparent", border: "1px solid #fca5a5", color: "#ef4444", borderRadius: 8, padding: "6px 14px", fontSize: 13, cursor: "pointer", fontWeight: 500 }}>Удалить</button>
                           </div>
@@ -811,7 +942,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
       </div>
 
       {/* Modals */}
-      {(showForm) && (
+      {showForm && (
         <ProductForm
           key={editProduct?.id ?? "new"}
           initial={editProduct ?? undefined}

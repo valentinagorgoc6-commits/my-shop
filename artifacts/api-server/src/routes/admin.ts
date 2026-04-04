@@ -2,6 +2,8 @@ import { Router, type IRouter, type Request, type Response, type NextFunction } 
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { db, productsTable } from "@workspace/db";
+import { eq, inArray } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -44,6 +46,21 @@ export function adminAuth(req: Request, res: Response, next: NextFunction): void
   next();
 }
 
+function parseImageUrls(raw: string | null | undefined, fallback: string): string[] {
+  if (raw) {
+    try { return JSON.parse(raw) as string[]; } catch { /* ignore */ }
+  }
+  return fallback ? [fallback] : [];
+}
+
+function formatProduct(p: { imageUrl: string; imageUrls: string | null; telegramUrl: string; createdAt: Date; [key: string]: unknown }) {
+  return {
+    ...p,
+    imageUrls: parseImageUrls(p.imageUrls, p.imageUrl),
+    createdAt: p.createdAt.toISOString(),
+  };
+}
+
 router.post("/admin/login", (req: Request, res: Response): void => {
   const { password } = req.body as { password?: string };
   const adminPassword = process.env.ADMIN_PASSWORD;
@@ -75,6 +92,47 @@ router.post("/admin/upload-multiple", adminAuth, upload.array("images", 3), (req
   }
   const imageUrls = files.map(f => `/api/uploads/${f.filename}`);
   res.json({ imageUrls });
+});
+
+// Admin: get ALL products (published and pending)
+router.get("/admin/products", adminAuth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const products = await db.select().from(productsTable).orderBy(productsTable.createdAt);
+    res.json(products.map(formatProduct));
+  } catch (err) {
+    req.log.error({ err }, "Failed to fetch admin products");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Admin: publish a single product
+router.patch("/admin/products/:id/publish", adminAuth, async (req: Request, res: Response): Promise<void> => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
+  try {
+    const [product] = await db.update(productsTable).set({ published: true }).where(eq(productsTable.id, id)).returning();
+    if (!product) { res.status(404).json({ error: "Not found" }); return; }
+    res.json(formatProduct(product));
+  } catch (err) {
+    req.log.error({ err }, "Failed to publish product");
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Admin: bulk publish products
+router.post("/admin/products/bulk-publish", adminAuth, async (req: Request, res: Response): Promise<void> => {
+  const { ids } = req.body as { ids?: number[] };
+  if (!Array.isArray(ids) || ids.length === 0) {
+    res.status(400).json({ error: "ids array required" });
+    return;
+  }
+  try {
+    const updated = await db.update(productsTable).set({ published: true }).where(inArray(productsTable.id, ids)).returning();
+    res.json(updated.map(formatProduct));
+  } catch (err) {
+    req.log.error({ err }, "Failed to bulk publish products");
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 export default router;
