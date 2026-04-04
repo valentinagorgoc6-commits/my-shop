@@ -459,12 +459,25 @@ const SHOE_SIZE_CHART: { cm: number; ru: string }[] = [
 function matchShoeSizeRow(size: string): number | null {
   const num = parseFloat(size.replace(/[^\d.]/g, ""));
   if (isNaN(num)) return null;
-  // Try matching as cm first, then as RU
   const byCm = SHOE_SIZE_CHART.findIndex(r => r.cm === num);
   if (byCm >= 0) return byCm;
   const byRu = SHOE_SIZE_CHART.findIndex(r => parseFloat(r.ru) === num);
   if (byRu >= 0) return byRu;
   return null;
+}
+
+function getVisibleSizeRows(matchedIdx: number | null): { row: typeof SHOE_SIZE_CHART[0]; globalIdx: number }[] {
+  const total = SHOE_SIZE_CHART.length;
+  const WINDOW = 7;
+  let start: number;
+  if (matchedIdx === null) {
+    start = 0;
+  } else {
+    start = matchedIdx - 3;
+    if (start < 0) start = 0;
+    if (start + WINDOW > total) start = total - WINDOW;
+  }
+  return SHOE_SIZE_CHART.slice(start, start + WINDOW).map((row, i) => ({ row, globalIdx: start + i }));
 }
 
 function ProductCard({ product }: { product: { id: number; brand: string; name: string; size: string; price: number; category?: string; badge?: string | null; imageUrl: string; imageUrls?: string[]; telegramUrl: string; avitoLink?: string | null; caption?: string | null } }) {
@@ -679,7 +692,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
 
               <div
                 style={{
-                  maxHeight: sizeChartOpen ? "320px" : "0",
+                  maxHeight: sizeChartOpen ? "180px" : "0",
                   overflow: "hidden",
                   transition: "max-height 260ms ease",
                 }}
@@ -688,25 +701,25 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
                     <thead>
                       <tr style={{ background: "#fde8f2" }}>
-                        <th style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>см</th>
-                        <th style={{ padding: "5px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>RU</th>
+                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>см</th>
+                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>RU</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {SHOE_SIZE_CHART.map((row, i) => (
+                      {getVisibleSizeRows(matchedRow).map(({ row, globalIdx }, i, arr) => (
                         <tr
                           key={row.cm}
                           style={{
-                            background: i === matchedRow ? "#fde8f2" : i % 2 === 0 ? "#fff" : "#fff9fc",
-                            borderBottom: i < SHOE_SIZE_CHART.length - 1 ? "1px solid #fce4ef" : "none",
+                            background: globalIdx === matchedRow ? "#fde8f2" : i % 2 === 0 ? "#fff" : "#fff9fc",
+                            borderBottom: i < arr.length - 1 ? "1px solid #fce4ef" : "none",
                           }}
                         >
-                          <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: i === matchedRow ? 700 : 400, color: i === matchedRow ? "#c0357a" : "#374151" }}>
+                          <td style={{ padding: "3px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
                             {row.cm}
                           </td>
-                          <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: i === matchedRow ? 700 : 400, color: i === matchedRow ? "#c0357a" : "#374151" }}>
+                          <td style={{ padding: "3px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
                             {row.ru}
-                            {i === matchedRow && <span style={{ marginLeft: 4, fontSize: 9 }}>◀</span>}
+                            {globalIdx === matchedRow && <span style={{ marginLeft: 4, fontSize: 9 }}>◀</span>}
                           </td>
                         </tr>
                       ))}
