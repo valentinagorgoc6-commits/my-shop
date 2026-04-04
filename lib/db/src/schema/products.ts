@@ -22,6 +22,7 @@ export const productsTable = pgTable("products", {
   purchasePrice: integer("purchase_price"),
   avitoLink: text("avito_link"),
   gender: text("gender").notNull().default("women"),
+  sortOrder: integer("sort_order"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
