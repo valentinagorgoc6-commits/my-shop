@@ -1081,12 +1081,9 @@ function CatalogPage() {
                   <div className="absolute top-0 right-0 w-48 h-48 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.18) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
                   <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.12) 0%, transparent 70%)", transform: "translate(-20%, 20%)" }} />
                   <div className="relative z-10">
-                    <div className="text-6xl mb-4" style={{ animation: "wobble 2s ease-in-out infinite" }}>💊</div>
-                    <h3 className="font-display text-2xl font-bold text-primary mb-2">БАД-ов пока нет</h3>
-                    <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-4">Эта категория ещё пополняется.<br />Загляни позже — скоро будет что-то интересное!</p>
-                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold font-sans text-primary" style={{ background: "rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)" }}>
-                      🔍 Следи за обновлениями
-                    </div>
+                    <div className="text-6xl mb-4" style={{ animation: "wobble 2s ease-in-out infinite" }}>🕵️‍♀️</div>
+                    <h3 className="font-display text-3xl font-bold text-primary mb-3">Кто-то похитил все БАДы!</h3>
+                    <p className="font-sans text-sm text-muted-foreground leading-relaxed">Но я делаю всё возможное, чтобы скорее их вернуть 💪</p>
                   </div>
                 </div>
               </div>
