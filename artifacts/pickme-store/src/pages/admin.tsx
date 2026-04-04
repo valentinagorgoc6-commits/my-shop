@@ -480,6 +480,10 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [deleteProduct, setDeleteProduct] = useState<Product | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [skuSearch, setSkuSearch] = useState("");
+  const [mode, setMode] = useState<"list" | "calc">("list");
+  const [calcSelected, setCalcSelected] = useState<Set<number>>(new Set());
+  const [calcSkuSearch, setCalcSkuSearch] = useState("");
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -529,6 +533,26 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     }
   };
 
+  const activeSearch = mode === "calc" ? calcSkuSearch : skuSearch;
+  const displayedProducts = activeSearch.trim()
+    ? products.filter(p => p.sku?.toLowerCase().includes(activeSearch.trim().toLowerCase()))
+    : products;
+  const selectedProducts = products.filter(p => calcSelected.has(p.id));
+  const totalPurchase = selectedProducts.reduce((sum, p) => sum + (p.purchasePrice ?? 0), 0);
+
+  const toggleCalcProduct = (id: number) => {
+    setCalcSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        setCalcSkuSearch("");
+      }
+      return next;
+    });
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
       {/* Header */}
@@ -558,13 +582,55 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           ))}
         </div>
 
-        {/* Actions */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "#1a1a2e" }}>Товары</h2>
-          <button onClick={() => { setEditProduct(null); setShowForm(true); }} style={btnPrimary}>
-            + Добавить товар
-          </button>
+        {/* Mode tabs + Actions */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Mode toggle */}
+            <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 8, padding: 3, gap: 3 }}>
+              <button
+                onClick={() => setMode("list")}
+                style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: mode === "list" ? "#fff" : "transparent", color: mode === "list" ? "#1a1a2e" : "#6b7280", boxShadow: mode === "list" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}
+              >Список</button>
+              <button
+                onClick={() => setMode("calc")}
+                style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: mode === "calc" ? "#fff" : "transparent", color: mode === "calc" ? "#1a1a2e" : "#6b7280", boxShadow: mode === "calc" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}
+              >🧮 Калькулятор</button>
+            </div>
+            {/* SKU search (list mode) */}
+            {mode === "list" && (
+              <input
+                value={skuSearch}
+                onChange={e => setSkuSearch(e.target.value)}
+                placeholder="Поиск по артикулу..."
+                style={{ ...inputStyle, width: 220, marginBottom: 0 }}
+              />
+            )}
+          </div>
+          {mode === "list" && (
+            <button onClick={() => { setEditProduct(null); setShowForm(true); }} style={btnPrimary}>
+              + Добавить товар
+            </button>
+          )}
         </div>
+
+        {/* Calc mode: SKU search */}
+        {mode === "calc" && (
+          <div style={{ marginBottom: 12, display: "flex", alignItems: "center", gap: 10 }}>
+            <input
+              value={calcSkuSearch}
+              onChange={e => setCalcSkuSearch(e.target.value)}
+              placeholder="Поиск по артикулу..."
+              style={{ ...inputStyle, width: 280, marginBottom: 0 }}
+              autoFocus
+            />
+            {calcSkuSearch && (
+              <button onClick={() => setCalcSkuSearch("")} style={{ ...btnSecondary, padding: "6px 12px", fontSize: 13 }}>✕</button>
+            )}
+            <span style={{ fontSize: 13, color: "#6b7280" }}>
+              Нашли: {displayedProducts.length} товара
+            </span>
+          </div>
+        )}
 
         {error && (
           <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 8, padding: "12px 16px", color: "#b91c1c", marginBottom: 16, fontSize: 14 }}>
@@ -579,12 +645,19 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             <p style={{ fontSize: 16 }}>Товаров пока нет</p>
             <button onClick={() => setShowForm(true)} style={{ ...btnPrimary, marginTop: 16 }}>Добавить первый товар</button>
           </div>
+        ) : displayedProducts.length === 0 ? (
+          <div style={{ textAlign: "center", padding: 40, color: "#6b7280" }}>
+            По запросу «{activeSearch}» ничего не найдено
+          </div>
         ) : (
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "hidden" }}>
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "hidden", paddingBottom: mode === "calc" ? 160 : 0 }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e5e7eb", background: "#f9fafb" }}>
-                  {["Фото", "Товар", "Категория", "Размер", "Артикул", "Цена / Закупка", "Статус", "Действия"].map(h => (
+                  {mode === "calc" && (
+                    <th style={{ padding: "12px 16px", width: 40 }}></th>
+                  )}
+                  {["Фото", "Товар", "Артикул", "Закупочная цена", "Статус", ...(mode === "list" ? ["Категория", "Размер", "Цена / Прибыль", "Действия"] : [])].map(h => (
                     <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 12, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       {h}
                     </th>
@@ -592,78 +665,114 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                 </tr>
               </thead>
               <tbody>
-                {products.map((product, idx) => (
-                  <tr key={product.id} style={{ borderBottom: idx < products.length - 1 ? "1px solid #f3f4f6" : "none" }}>
-                    <td style={{ padding: "12px 16px", width: 60 }}>
-                      {product.imageUrl ? (
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb" }}
-                        />
-                      ) : (
-                        <div style={{ width: 48, height: 48, background: "#f3f4f6", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
-                          👗
-                        </div>
+                {displayedProducts.map((product, idx) => {
+                  const isSelected = calcSelected.has(product.id);
+                  return (
+                    <tr
+                      key={product.id}
+                      style={{ borderBottom: idx < displayedProducts.length - 1 ? "1px solid #f3f4f6" : "none", background: isSelected && mode === "calc" ? "#fdf4f8" : undefined, cursor: mode === "calc" ? "pointer" : undefined }}
+                      onClick={mode === "calc" ? () => toggleCalcProduct(product.id) : undefined}
+                    >
+                      {mode === "calc" && (
+                        <td style={{ padding: "12px 16px" }}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleCalcProduct(product.id)}
+                            onClick={e => e.stopPropagation()}
+                            style={{ width: 18, height: 18, accentColor: "#f7147a", cursor: "pointer" }}
+                          />
+                        </td>
                       )}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      <div style={{ fontWeight: 600, color: "#1a1a2e", fontSize: 14 }}>{product.name}</div>
-                      <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{product.brand}</div>
-                    </td>
-                    <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>
-                      {CATEGORY_LABELS[product.category]}
-                    </td>
-                    <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>{product.size}</td>
-                    <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>
-                      {product.sku ? <span style={{ fontFamily: "monospace", background: "#f3f4f6", padding: "2px 6px", borderRadius: 4 }}>{product.sku}</span> : <span style={{ color: "#d1d5db" }}>—</span>}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>{product.price.toLocaleString("ru-RU")} ₽</div>
-                      {product.purchasePrice != null && product.purchasePrice > 0 && (
-                        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>
-                          закупка: {product.purchasePrice.toLocaleString("ru-RU")} ₽
-                        </div>
-                      )}
-                      {product.purchasePrice != null && product.purchasePrice > 0 && (
-                        <div style={{ fontSize: 12, fontWeight: 600, marginTop: 1, color: product.price - product.purchasePrice >= 0 ? "#16a34a" : "#dc2626" }}>
-                          прибыль: {(product.price - product.purchasePrice).toLocaleString("ru-RU")} ₽
-                        </div>
-                      )}
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      <span style={{
-                        display: "inline-block",
-                        padding: "3px 10px",
-                        borderRadius: 20,
-                        fontSize: 12,
-                        fontWeight: 600,
-                        background: product.badge === "sold" ? "#fee2e2" : product.badge === "new" ? "#dcfce7" : "#f3f4f6",
-                        color: product.badge === "sold" ? "#b91c1c" : product.badge === "new" ? "#166534" : "#374151",
-                      }}>
-                        {product.badge === "sold" ? "Продано" : product.badge === "new" ? "New" : "В наличии"}
-                      </span>
-                    </td>
-                    <td style={{ padding: "12px 16px" }}>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                          onClick={() => { setEditProduct(product); setShowForm(true); }}
-                          style={{ ...btnSecondary, padding: "6px 14px", fontSize: 13 }}
-                        >
-                          Изменить
-                        </button>
-                        <button
-                          onClick={() => setDeleteProduct(product)}
-                          style={{ background: "transparent", border: "1px solid #fca5a5", color: "#ef4444", borderRadius: 8, padding: "6px 14px", fontSize: 13, cursor: "pointer", fontWeight: 500 }}
-                        >
-                          Удалить
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      <td style={{ padding: "12px 16px", width: 60 }}>
+                        {product.imageUrl ? (
+                          <img src={product.imageUrl} alt={product.name} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb" }} />
+                        ) : (
+                          <div style={{ width: 48, height: 48, background: "#f3f4f6", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>👗</div>
+                        )}
+                      </td>
+                      <td style={{ padding: "12px 16px" }}>
+                        <div style={{ fontWeight: 600, color: "#1a1a2e", fontSize: 14 }}>{product.name}</div>
+                        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{product.brand}</div>
+                      </td>
+                      <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>
+                        {product.sku ? <span style={{ fontFamily: "monospace", background: "#f3f4f6", padding: "2px 6px", borderRadius: 4 }}>{product.sku}</span> : <span style={{ color: "#d1d5db" }}>—</span>}
+                      </td>
+                      <td style={{ padding: "12px 16px" }}>
+                        {product.purchasePrice != null && product.purchasePrice > 0
+                          ? <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>{product.purchasePrice.toLocaleString("ru-RU")} ₽</span>
+                          : <span style={{ fontSize: 13, color: "#d1d5db" }}>Нет цены</span>
+                        }
+                      </td>
+                      <td style={{ padding: "12px 16px" }}>
+                        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 600, background: product.badge === "sold" ? "#fee2e2" : product.badge === "new" ? "#dcfce7" : "#f3f4f6", color: product.badge === "sold" ? "#b91c1c" : product.badge === "new" ? "#166534" : "#374151" }}>
+                          {product.badge === "sold" ? "Продано" : product.badge === "new" ? "New" : "В наличии"}
+                        </span>
+                      </td>
+                      {mode === "list" && <>
+                        <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>{CATEGORY_LABELS[product.category]}</td>
+                        <td style={{ padding: "12px 16px", fontSize: 13, color: "#374151" }}>{product.size}</td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>{product.price.toLocaleString("ru-RU")} ₽</div>
+                          {product.purchasePrice != null && product.purchasePrice > 0 && (
+                            <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>закупка: {product.purchasePrice.toLocaleString("ru-RU")} ₽</div>
+                          )}
+                          {product.purchasePrice != null && product.purchasePrice > 0 && (
+                            <div style={{ fontSize: 12, fontWeight: 600, marginTop: 1, color: product.price - product.purchasePrice >= 0 ? "#16a34a" : "#dc2626" }}>
+                              прибыль: {(product.price - product.purchasePrice).toLocaleString("ru-RU")} ₽
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <button onClick={() => { setEditProduct(product); setShowForm(true); }} style={{ ...btnSecondary, padding: "6px 14px", fontSize: 13 }}>Изменить</button>
+                            <button onClick={() => setDeleteProduct(product)} style={{ background: "transparent", border: "1px solid #fca5a5", color: "#ef4444", borderRadius: 8, padding: "6px 14px", fontSize: 13, cursor: "pointer", fontWeight: 500 }}>Удалить</button>
+                          </div>
+                        </td>
+                      </>}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Sticky calculator panel */}
+        {mode === "calc" && (
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderTop: "2px solid #f7147a", boxShadow: "0 -4px 24px rgba(0,0,0,0.10)", padding: "16px 32px", zIndex: 100, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 6 }}>
+                Выбрано позиций: <strong style={{ color: "#1a1a2e" }}>{calcSelected.size}</strong>
+              </div>
+              {selectedProducts.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {selectedProducts.map(p => (
+                    <div key={p.id} style={{ background: "#fdf4f8", border: "1px solid #f7147a22", borderRadius: 6, padding: "3px 10px", fontSize: 12 }}>
+                      <span style={{ fontFamily: "monospace", color: "#f7147a", fontWeight: 700 }}>{p.sku ?? "—"}</span>
+                      <span style={{ color: "#374151", marginLeft: 6 }}>{p.name}</span>
+                      <span style={{ color: "#6b7280", marginLeft: 6 }}>
+                        {p.purchasePrice != null && p.purchasePrice > 0 ? `${p.purchasePrice.toLocaleString("ru-RU")} ₽` : "Нет цены"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div style={{ textAlign: "right", minWidth: 180 }}>
+              <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 4 }}>Итого закупочная стоимость:</div>
+              <div style={{ fontSize: 28, fontWeight: 800, color: "#f7147a", lineHeight: 1 }}>
+                {totalPurchase.toLocaleString("ru-RU")} ₽
+              </div>
+              {calcSelected.size > 0 && (
+                <button
+                  onClick={() => setCalcSelected(new Set())}
+                  style={{ ...btnSecondary, padding: "6px 16px", fontSize: 13, marginTop: 8 }}
+                >
+                  Очистить выбор
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
