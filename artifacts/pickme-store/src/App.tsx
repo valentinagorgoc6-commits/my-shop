@@ -1094,15 +1094,28 @@ function CatalogPage() {
                 )}
               </>
             ) : filter === "supplements" ? (
-              <div className="flex justify-center py-16">
-                <div className="relative max-w-md w-full rounded-[28px] overflow-hidden p-8 text-center"
-                  style={{ background: "linear-gradient(135deg, rgba(255,230,241,0.85) 0%, rgba(255,245,250,0.9) 60%, rgba(255,255,255,0.7) 100%)", boxShadow: "0 8px 40px rgba(247,109,165,0.18), 0 2px 8px rgba(247,109,165,0.10)", backdropFilter: "blur(12px)", border: "1.5px solid rgba(247,109,165,0.25)" }}>
-                  <div className="absolute top-0 right-0 w-48 h-48 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.18) 0%, transparent 70%)", transform: "translate(30%, -30%)" }} />
-                  <div className="absolute bottom-0 left-0 w-36 h-36 rounded-full" style={{ background: "radial-gradient(circle, rgba(247,109,165,0.12) 0%, transparent 70%)", transform: "translate(-20%, 20%)" }} />
-                  <div className="relative z-10">
-                    <div className="text-6xl mb-4" style={{ animation: "wobble 2s ease-in-out infinite" }}>🕵️‍♀️</div>
-                    <h3 className="font-display text-3xl font-bold text-primary mb-3">Кто-то похитил все БАДы!</h3>
-                    <p className="font-sans text-sm text-muted-foreground leading-relaxed">Но я делаю всё возможное, чтобы скорее их вернуть 💪</p>
+              <div className="w-full py-6" style={{ animation: "fadeIn 0.5s ease-out" }}>
+                <div className="w-full rounded-[24px] overflow-hidden flex flex-col md:flex-row"
+                  style={{ boxShadow: "0 8px 40px rgba(247,109,165,0.2), 0 2px 12px rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)", minHeight: 280 }}>
+                  {/* Image */}
+                  <div className="md:w-1/2 w-full flex-shrink-0" style={{ minHeight: 240 }}>
+                    <img
+                      src="/bad-detective.png"
+                      alt="Детектив ищет БАДы"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", minHeight: 240 }}
+                    />
+                  </div>
+                  {/* Text */}
+                  <div className="md:w-1/2 w-full flex items-center justify-center p-8 md:p-10"
+                    style={{ background: "linear-gradient(135deg, rgba(255,230,241,0.92) 0%, rgba(255,248,252,0.95) 100%)", backdropFilter: "blur(12px)" }}>
+                    <div className="text-center md:text-left">
+                      <h3 className="font-display font-bold text-primary mb-4" style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)", lineHeight: 1.15 }}>
+                        Кто-то похитил все БАДы!
+                      </h3>
+                      <p className="font-sans text-muted-foreground leading-relaxed" style={{ fontSize: "0.95rem" }}>
+                        Но я делаю всё возможное,<br className="hidden md:block" /> чтобы скорее их вернуть 💪
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
