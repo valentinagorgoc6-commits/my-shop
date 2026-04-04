@@ -230,3 +230,8 @@
   background: linear-gradient(160deg, #fff5f9 0%, #fde4ef 100%);
   border-left: 1px solid rgba(247,109,165,0.2);
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
