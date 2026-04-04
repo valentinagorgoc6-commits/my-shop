@@ -690,14 +690,11 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                 </svg>
               </button>
 
-              <div
-                style={{
-                  maxHeight: sizeChartOpen ? "180px" : "0",
-                  overflow: "hidden",
-                  transition: "max-height 260ms ease",
-                }}
-              >
-                <div className="mt-1 rounded-xl overflow-hidden border border-[#f7c6dc]">
+              {sizeChartOpen && (
+                <div
+                  className="mt-1 rounded-xl border border-[#f7c6dc] overflow-hidden"
+                  style={{ animation: "fadeIn 200ms ease" }}
+                >
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
                     <thead>
                       <tr style={{ background: "#fde8f2" }}>
@@ -714,10 +711,10 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                             borderBottom: i < arr.length - 1 ? "1px solid #fce4ef" : "none",
                           }}
                         >
-                          <td style={{ padding: "3px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
+                          <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
                             {row.cm}
                           </td>
-                          <td style={{ padding: "3px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
+                          <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
                             {row.ru}
                             {globalIdx === matchedRow && <span style={{ marginLeft: 4, fontSize: 9 }}>◀</span>}
                           </td>
@@ -726,7 +723,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                     </tbody>
                   </table>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
