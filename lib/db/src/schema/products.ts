@@ -21,6 +21,7 @@ export const productsTable = pgTable("products", {
   sku: text("sku"),
   purchasePrice: integer("purchase_price"),
   avitoLink: text("avito_link"),
+  gender: text("gender").notNull().default("women"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

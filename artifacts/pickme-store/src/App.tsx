@@ -746,6 +746,7 @@ const PAGE_SIZE = 15;
 // -- Full Catalog Page --
 function CatalogPage() {
   const [filter, setFilter] = useState<string>("all");
+  const [genderFilter, setGenderFilter] = useState<"all" | "women" | "men">("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">("newest");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -756,7 +757,7 @@ function CatalogPage() {
 
   React.useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter, search, sort, hideSold]);
+  }, [filter, genderFilter, search, sort, hideSold]);
 
   const categories = [
     { id: "all", label: "Все" },
@@ -771,6 +772,8 @@ function CatalogPage() {
     if (!allProducts) return [];
     let list = [...allProducts];
     if (hideSold) list = list.filter(p => p.badge !== "sold");
+    if (genderFilter === "women") list = list.filter(p => p.gender === "women" || p.gender === "unisex");
+    else if (genderFilter === "men") list = list.filter(p => p.gender === "men" || p.gender === "unisex");
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       list = list.filter(p => p.brand.toLowerCase().includes(q) || p.name.toLowerCase().includes(q));
@@ -779,7 +782,7 @@ function CatalogPage() {
     else if (sort === "price_desc") list.sort((a, b) => b.price - a.price);
     else list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return list;
-  }, [allProducts, search, sort, hideSold]);
+  }, [allProducts, genderFilter, search, sort, hideSold]);
 
   const visible = filtered.slice(0, visibleCount);
   const remaining = filtered.length - visibleCount;
@@ -825,6 +828,28 @@ function CatalogPage() {
               </select>
             </div>
 
+            {/* Gender filter */}
+            <div className="flex justify-center gap-2 mb-4">
+              {([
+                { id: "all", label: "Все" },
+                { id: "women", label: "♀ Женское" },
+                { id: "men", label: "♂ Мужское" },
+              ] as { id: "all" | "women" | "men"; label: string }[]).map((g) => (
+                <button
+                  key={g.id}
+                  onClick={() => setGenderFilter(g.id)}
+                  className={`px-5 py-2 rounded-full font-sans text-sm font-bold transition-all border-2 ${
+                    genderFilter === g.id
+                      ? "bg-primary border-primary text-white shadow-md"
+                      : "bg-transparent border-secondary text-muted-foreground hover:border-[#f76da5] hover:text-primary"
+                  }`}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Category filter + hide sold */}
             <div className="flex flex-wrap justify-center gap-3 mb-10">
               {categories.map((c) => (
                 <button

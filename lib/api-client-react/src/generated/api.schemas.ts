@@ -43,6 +43,7 @@ export interface Product {
   telegramUrl: string;
   avitoLink?: string | null;
   featured: boolean;
+  gender: string;
   createdAt: string;
 }
 
@@ -79,6 +80,7 @@ export interface CreateProduct {
   telegramUrl: string;
   avitoLink?: string | null;
   featured?: boolean;
+  gender?: string;
 }
 
 export type GetProductsParams = {

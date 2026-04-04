@@ -5,6 +5,8 @@ const API = "/api";
 type Category = "shoes" | "tops" | "bottoms" | "accessories" | "supplements";
 type Badge = "new" | "sold" | null;
 
+type Gender = "women" | "men" | "unisex";
+
 interface Product {
   id: number;
   brand: string;
@@ -21,6 +23,7 @@ interface Product {
   featured: boolean;
   sku?: string | null;
   purchasePrice?: number | null;
+  gender: Gender;
   createdAt: string;
 }
 
@@ -46,6 +49,7 @@ const EMPTY_FORM = {
   featured: false,
   sku: "",
   purchasePrice: "",
+  gender: "women" as Gender,
 };
 
 function useAdminToken() {
@@ -178,6 +182,7 @@ function ProductForm({
           featured: initial.featured ?? false,
           sku: initial.sku ?? "",
           purchasePrice: initial.purchasePrice != null ? String(initial.purchasePrice) : "",
+          gender: (initial.gender ?? "women") as Gender,
         }
       : {
           brand: EMPTY_FORM.brand,
@@ -192,6 +197,7 @@ function ProductForm({
           featured: EMPTY_FORM.featured,
           sku: EMPTY_FORM.sku,
           purchasePrice: EMPTY_FORM.purchasePrice,
+          gender: EMPTY_FORM.gender,
         }
   );
 
@@ -298,6 +304,7 @@ function ProductForm({
       featured: form.featured,
       sku: form.sku.trim() || null,
       purchasePrice: form.purchasePrice !== "" ? Number(form.purchasePrice) : null,
+      gender: form.gender,
     };
     try {
       const url = initial ? `${API}/products/${initial.id}` : `${API}/products`;
@@ -341,7 +348,7 @@ function ProductForm({
           <label style={labelStyle}>Название *</label>
           <input value={form.name} onChange={set("name")} style={inputStyle} required placeholder="Кроссовки Air Max 90" />
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Цена (₽) *</label>
               <input value={form.price} onChange={set("price")} style={inputStyle} required type="number" min={0} placeholder="4500" />
@@ -354,6 +361,14 @@ function ProductForm({
                 <option value="bottoms">Низ</option>
                 <option value="accessories">Аксессуары</option>
                 <option value="supplements">БАД</option>
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>Пол *</label>
+              <select value={form.gender} onChange={set("gender")} style={inputStyle} required>
+                <option value="women">Женское</option>
+                <option value="men">Мужское</option>
+                <option value="unisex">Унисекс</option>
               </select>
             </div>
           </div>
