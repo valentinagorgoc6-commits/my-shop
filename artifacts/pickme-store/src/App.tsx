@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -1413,19 +1413,32 @@ function Home() {
   );
 }
 
+function YmTracker() {
+  const [location] = useLocation();
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as { ym?: (id: number, action: string, path: string) => void }).ym) {
+      (window as { ym?: (id: number, action: string, path: string) => void }).ym!(108416864, "hit", window.location.pathname);
+    }
+  }, [location]);
+  return null;
+}
+
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/admin" component={AdminPage} />
-      <Route path="/catalog" component={CatalogPage} />
-      <Route>
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background">
-          <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Страница не найдена</h1>
-          <a href="/" className="text-primary font-bold hover:underline">Вернуться на главную</a>
-        </div>
-      </Route>
-    </Switch>
+    <>
+      <YmTracker />
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/admin" component={AdminPage} />
+        <Route path="/catalog" component={CatalogPage} />
+        <Route>
+          <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background">
+            <h1 className="font-serif text-3xl font-bold text-foreground mb-4">Страница не найдена</h1>
+            <a href="/" className="text-primary font-bold hover:underline">Вернуться на главную</a>
+          </div>
+        </Route>
+      </Switch>
+    </>
   );
 }
 
