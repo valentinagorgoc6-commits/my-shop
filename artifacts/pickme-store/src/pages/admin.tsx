@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const API = "/api";
 
@@ -518,8 +519,8 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const [mode, setMode] = useState<"list" | "calc">("list");
   const [calcSelected, setCalcSelected] = useState<Set<number>>(new Set());
   const [calcSkuSearch, setCalcSkuSearch] = useState("");
-  // Tabs: published vs pending approval
-  const [adminTab, setAdminTab] = useState<"published" | "pending">("published");
+  // Tabs: published vs pending approval vs analytics
+  const [adminTab, setAdminTab] = useState<"published" | "pending" | "analytics">("published");
   const [pendingSelected, setPendingSelected] = useState<Set<number>>(new Set());
   const [publishing, setPublishing] = useState<Set<number>>(new Set());
 
@@ -678,11 +679,12 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           ))}
         </div>
 
-        {/* Admin tabs: Опубликованные / Согласование */}
+        {/* Admin tabs: Опубликованные / Согласование / Аналитика */}
         <div style={{ display: "flex", gap: 0, marginBottom: 20, borderBottom: "2px solid #e5e7eb" }}>
           {([
             { key: "published" as const, label: "Опубликованные" },
-            { key: "pending" as const, label: `Согласование${pendingCount > 0 ? ` (${pendingCount})` : ""}` },
+            { key: "pending" as const, label: "Согласование" },
+            { key: "analytics" as const, label: "Аналитика" },
           ]).map(tab => (
             <button
               key={tab.key}
@@ -697,6 +699,11 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           ))}
         </div>
 
+        {/* Analytics tab content — replaces product table */}
+        {adminTab === "analytics" && <AnalyticsDashboard token={token} />}
+
+        {/* Products UI: only for non-analytics tabs */}
+        {adminTab !== "analytics" && <React.Fragment>
         {/* Mode tabs + Actions */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, gap: 12, flexWrap: "wrap" }}>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -939,6 +946,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             </div>
           </div>
         )}
+        </React.Fragment>}
       </div>
 
       {/* Modals */}
@@ -960,6 +968,221 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           loading={deleting}
         />
       )}
+    </div>
+  );
+}
+
+// ─── Analytics Dashboard ───────────────────────────────────────────
+type Period = "today" | "7d" | "30d";
+
+interface AnalyticsData {
+  overview: { visitorsToday: number; visitors7d: number; visitors30d: number; pageviewsToday: number };
+  chart: { date: string; visitors: number }[];
+  topProducts: { productId: number; name: string; brand: string; cardViews: number; avitoClicks: number; telegramClicks: number; total: number }[];
+  sources: { source: string; count: number; percent: number }[];
+  devices: { mobile: number; desktop: number; mobilePercent: number; desktopPercent: number };
+  topPages: { page: string; views: number }[];
+}
+
+function AnalyticsDashboard({ token }: { token: string }) {
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [period, setPeriod] = useState<Period>("7d");
+
+  useEffect(() => {
+    setLoading(true);
+    setError("");
+    fetch(`${API}/analytics/dashboard`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then((d: AnalyticsData) => { setData(d); setLoading(false); })
+      .catch(() => { setError("Не удалось загрузить аналитику"); setLoading(false); });
+  }, [token]);
+
+  const PERIOD_LABELS: Record<Period, string> = { today: "Сегодня", "7d": "7 дней", "30d": "30 дней" };
+
+  const overviewCards = data ? [
+    { label: "Посетители сегодня", value: data.overview.visitorsToday },
+    { label: "За 7 дней", value: data.overview.visitors7d },
+    { label: "За 30 дней", value: data.overview.visitors30d },
+    { label: "Просмотры сегодня", value: data.overview.pageviewsToday },
+  ] : [];
+
+  const chartData = data?.chart ?? [];
+  const filteredChart = period === "today"
+    ? chartData.slice(-1)
+    : period === "7d"
+    ? chartData.slice(-7)
+    : chartData;
+
+  const PAGE_LABELS: Record<string, string> = { "/": "Главная", "/catalog": "Каталог", "/admin": "Админ" };
+
+  const SOURCE_ICONS: Record<string, string> = {
+    "Telegram": "✈️", "Авито": "🏠", "Яндекс": "🔍", "Google": "🌐",
+    "ВКонтакте": "💙", "Прямой заход": "🔗", "Другое": "•",
+  };
+
+  const totalDevices = (data?.devices.mobile ?? 0) + (data?.devices.desktop ?? 0);
+
+  if (loading) return <div style={{ textAlign: "center", padding: 80, color: "#6b7280" }}>Загрузка аналитики...</div>;
+  if (error) return <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 8, padding: "12px 16px", color: "#b91c1c", fontSize: 14 }}>{error}</div>;
+  if (!data) return null;
+
+  return (
+    <div>
+      {/* Period selector */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 24, alignItems: "center" }}>
+        <span style={{ fontSize: 13, color: "#6b7280", fontWeight: 500 }}>Период:</span>
+        <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 8, padding: 3, gap: 3 }}>
+          {(["today", "7d", "30d"] as Period[]).map(p => (
+            <button key={p} onClick={() => setPeriod(p)}
+              style={{ padding: "6px 14px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, background: period === p ? "#fff" : "transparent", color: period === p ? "#1a1a2e" : "#6b7280", boxShadow: period === p ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>
+              {PERIOD_LABELS[p]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Блок 1: Обзор */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+        {overviewCards.map(c => (
+          <div key={c.label} style={{ background: "#fff", borderRadius: 12, padding: "20px 24px", border: "1px solid #e5e7eb" }}>
+            <div style={{ fontSize: 32, fontWeight: 800, color: "#1a1a2e", lineHeight: 1 }}>{c.value.toLocaleString("ru-RU")}</div>
+            <div style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>{c.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Блок 2: График посещаемости */}
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: "24px", marginBottom: 24 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 16 }}>Уникальные посетители по дням</div>
+        {filteredChart.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "40px 0", color: "#9ca3af", fontSize: 14 }}>Нет данных за период</div>
+        ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={filteredChart} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#9ca3af" }}
+                tickFormatter={v => v.slice(5)} />
+              <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} allowDecimals={false} />
+              <Tooltip
+                contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 13 }}
+                labelStyle={{ color: "#374151", fontWeight: 600 }}
+                formatter={(v: number) => [v, "Посетители"]}
+              />
+              <Line type="monotone" dataKey="visitors" stroke="#e8609a" strokeWidth={2.5} dot={{ r: 3, fill: "#e8609a" }} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Блок 3 + 4 + 5 в сетке */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
+        {/* Блок 4: Источники трафика */}
+        <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: "24px" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 16 }}>Источники трафика (30 дней)</div>
+          {data.sources.length === 0 ? (
+            <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center", paddingTop: 24 }}>Нет данных</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {data.sources.map(s => (
+                <div key={s.source} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ fontSize: 16, width: 24 }}>{SOURCE_ICONS[s.source] ?? "•"}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                      <span style={{ fontSize: 13, color: "#374151", fontWeight: 500 }}>{s.source}</span>
+                      <span style={{ fontSize: 13, color: "#6b7280" }}>{s.count} ({s.percent}%)</span>
+                    </div>
+                    <div style={{ background: "#f3f4f6", borderRadius: 4, height: 5 }}>
+                      <div style={{ background: "#e8609a", borderRadius: 4, height: 5, width: `${s.percent}%`, transition: "width 0.5s ease" }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Блок 5: Устройства + Блок 6: Популярные страницы */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: "24px" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 16 }}>Устройства (30 дней)</div>
+            {totalDevices === 0 ? (
+              <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center" }}>Нет данных</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[
+                  { label: "📱 Мобильные", count: data.devices.mobile, percent: data.devices.mobilePercent },
+                  { label: "🖥 Десктоп", count: data.devices.desktop, percent: data.devices.desktopPercent },
+                ].map(d => (
+                  <div key={d.label}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ fontSize: 13, color: "#374151", fontWeight: 500 }}>{d.label}</span>
+                      <span style={{ fontSize: 13, color: "#6b7280" }}>{d.count} ({d.percent}%)</span>
+                    </div>
+                    <div style={{ background: "#f3f4f6", borderRadius: 4, height: 6 }}>
+                      <div style={{ background: d.label.includes("Моб") ? "#e8609a" : "#a78bfa", borderRadius: 4, height: 6, width: `${d.percent}%`, transition: "width 0.5s ease" }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: "24px" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#1a1a2e", marginBottom: 14 }}>Популярные страницы (30 дней)</div>
+            {data.topPages.length === 0 ? (
+              <div style={{ color: "#9ca3af", fontSize: 13, textAlign: "center" }}>Нет данных</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {data.topPages.map((p, i) => (
+                  <div key={p.page} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#d1d5db", width: 20, textAlign: "right" }}>#{i + 1}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: "#374151", fontFamily: "monospace" }}>{PAGE_LABELS[p.page] ?? p.page}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e" }}>{p.views.toLocaleString("ru-RU")}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Блок 3: Популярные товары */}
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px 12px", fontSize: 14, fontWeight: 700, color: "#1a1a2e" }}>Популярные товары (топ-10, всё время)</div>
+        {data.topProducts.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af", fontSize: 14 }}>Нет данных о кликах</div>
+        ) : (
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderTop: "1px solid #f3f4f6", background: "#f9fafb" }}>
+                {["Товар", "Просмотры", "Авито", "Telegram", "Итого"].map(h => (
+                  <th key={h} style={{ padding: "10px 16px", textAlign: h === "Товар" ? "left" : "right", fontSize: 11, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.topProducts.map((p, i) => (
+                <tr key={p.productId} style={{ borderTop: "1px solid #f3f4f6", background: i % 2 === 1 ? "#fafafa" : "#fff" }}>
+                  <td style={{ padding: "10px 16px" }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a2e" }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: "#9ca3af" }}>{p.brand}</div>
+                  </td>
+                  <td style={{ padding: "10px 16px", textAlign: "right", fontSize: 13, color: "#374151" }}>{p.cardViews}</td>
+                  <td style={{ padding: "10px 16px", textAlign: "right", fontSize: 13, color: "#374151" }}>{p.avitoClicks}</td>
+                  <td style={{ padding: "10px 16px", textAlign: "right", fontSize: 13, color: "#374151" }}>{p.telegramClicks}</td>
+                  <td style={{ padding: "10px 16px", textAlign: "right" }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#e8609a" }}>{p.total}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
