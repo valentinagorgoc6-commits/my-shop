@@ -12,6 +12,42 @@ import { useGetProducts } from "@workspace/api-client-react";
 
 const queryClient = new QueryClient();
 
+// ─── Analytics helpers ────────────────────────────────────────────
+function getOrCreateVisitorId(): string {
+  const name = "pickme_vid";
+  const match = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+  if (match) return decodeURIComponent(match[1]);
+  const id = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const expires = new Date(Date.now() + 365 * 86400 * 1000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(id)}; expires=${expires}; path=/; SameSite=Lax`;
+  return id;
+}
+
+function trackPageview(page: string): void {
+  try {
+    const visitorId = getOrCreateVisitorId();
+    fetch("/api/analytics/pageview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ page, referrer: document.referrer || null, userAgent: navigator.userAgent, visitorId }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch { /* silent */ }
+}
+
+function trackClick(productId: number, actionType: "avito_click" | "telegram_click" | "card_view"): void {
+  try {
+    const visitorId = getOrCreateVisitorId();
+    fetch("/api/analytics/click", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, actionType, visitorId }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch { /* silent */ }
+}
+// ─────────────────────────────────────────────────────────────────
+
 // -- Animation Variants --
 const fadeInUp = {
   hidden: { opacity: 0, y: 32 },
@@ -502,6 +538,22 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   const [animating, setAnimating] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const matchedRow = product.category === "shoes" ? matchShoeSizeRow(product.size) : null;
+  const cardViewFired = useRef(false);
+  const cardRootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = cardRootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !cardViewFired.current) {
+        cardViewFired.current = true;
+        trackClick(product.id, "card_view");
+        observer.disconnect();
+      }
+    }, { threshold: 0.3 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [product.id]);
 
   // Attach non-passive listeners so we can call e.preventDefault()
   useEffect(() => {
@@ -578,7 +630,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   };
 
   return (
-    <div className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full">
+    <div ref={cardRootRef} className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full">
       {/* Carousel container */}
       <div
         ref={carouselRef}
@@ -754,6 +806,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               rel="noreferrer"
               className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
               data-testid={`button-buy-${product.id}`}
+              onClick={() => trackClick(product.id, "telegram_click")}
             >
               <ArrowRight size={18} />
             </a>
@@ -775,6 +828,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+                onClick={() => trackClick(product.id, "avito_click")}
               >
                 <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
                 Купить на Авито
@@ -797,6 +851,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+                onClick={() => trackClick(product.id, "telegram_click")}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
                   <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
@@ -1419,6 +1474,7 @@ function YmTracker() {
     if (typeof window !== "undefined" && (window as { ym?: (id: number, action: string, path: string) => void }).ym) {
       (window as { ym?: (id: number, action: string, path: string) => void }).ym!(108416864, "hit", window.location.pathname);
     }
+    trackPageview(window.location.pathname);
   }, [location]);
   return null;
 }

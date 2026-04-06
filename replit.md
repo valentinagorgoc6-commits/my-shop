@@ -92,6 +92,15 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+## PickMe Store Features
+
+- **Public**: landing page (`/`), catalog with infinite scroll + filters (`/catalog`)
+- **Admin** (`/admin`, password: stored as env-like constant in routes): product CRUD, SKU search, calculator mode (cost aggregation), approval workflow (published/pending tabs), analytics tab
+- **Analytics**: `page_views` + `product_clicks` DB tables; POST /api/analytics/pageview, POST /api/analytics/click (public); GET /api/analytics/dashboard (admin auth). Visitor ID stored in `pickme_vid` cookie (UUID, 365d). Admin analytics tab shows: overview stats, 30-day line chart (recharts), top products table, traffic sources, device split, top pages.
+- **Yandex.Metrika**: counter 108416864, injected in index.html + YmTracker component
+- **Product schema**: `imageUrls` (JSON text[]), `sku`, `purchasePrice`, `avitoLink`, `gender`, `sortOrder`, `published` (default false)
+- **Auth**: Bearer token via POST /api/admin/login; token stored in localStorage
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
