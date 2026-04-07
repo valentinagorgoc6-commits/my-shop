@@ -3,7 +3,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { db, productsTable } from "@workspace/db";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, desc } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -97,7 +97,7 @@ router.post("/admin/upload-multiple", adminAuth, upload.array("images", 3), (req
 // Admin: get ALL products (published and pending)
 router.get("/admin/products", adminAuth, async (req: Request, res: Response): Promise<void> => {
   try {
-    const products = await db.select().from(productsTable).orderBy(productsTable.createdAt);
+    const products = await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
     res.json(products.map(formatProduct));
   } catch (err) {
     req.log.error({ err }, "Failed to fetch admin products");
