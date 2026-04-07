@@ -694,6 +694,25 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             }}>ПРОДАНО</div>
           </div>
         )}
+        {product.badge === "reserved" && (
+          <div className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 10 }}>
+            <div style={{
+              position: "absolute",
+              top: "28px",
+              left: "-36px",
+              width: "148px",
+              background: "#f97316",
+              color: "#fff",
+              textAlign: "center",
+              transform: "rotate(-45deg)",
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "6px 0",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.22)",
+              letterSpacing: "0.08em",
+            }}>БРОНЬ</div>
+          </div>
+        )}
 
         {images.length > 1 && (
           <>
@@ -799,6 +818,14 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             >
               Продано
             </button>
+          ) : product.badge === "reserved" ? (
+            <button
+              disabled
+              className="px-4 py-2 rounded-full text-[13px] font-bold cursor-not-allowed"
+              style={{ background: "#fff7ed", color: "#f97316" }}
+            >
+              Забронировано
+            </button>
           ) : (
             <a
               href={product.telegramUrl}
@@ -813,52 +840,53 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           )}
         </div>
         <div className="mt-3 flex justify-center min-h-[36px]">
-          {product.avitoLink ? (
-            product.badge === "sold" ? (
-              <div
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
-                style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
-              >
-                <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
-                Купить на Авито
-              </div>
-            ) : (
-              <a
-                href={product.avitoLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
-                onClick={() => trackClick(product.id, "avito_click")}
-              >
-                <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
-                Купить на Авито
-              </a>
-            )
+          {(product.badge === "sold" || product.badge === "reserved") ? (
+            <div
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
+              style={product.badge === "reserved"
+                ? { background: "#fff7ed", color: "#f97316", pointerEvents: "none", cursor: "not-allowed" }
+                : { background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
+            >
+              {product.badge === "reserved" ? "Забронировано" : (
+                product.avitoLink ? (
+                  <>
+                    <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                    Купить на Авито
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+                    </svg>
+                    Написать в Telegram
+                  </>
+                )
+              )}
+            </div>
+          ) : product.avitoLink ? (
+            <a
+              href={product.avitoLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              onClick={() => trackClick(product.id, "avito_click")}
+            >
+              <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+              Купить на Авито
+            </a>
           ) : (
-            product.badge === "sold" ? (
-              <div
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
-                style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
-                </svg>
-                Написать в Telegram
-              </div>
-            ) : (
-              <a
-                href={product.telegramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
-                onClick={() => trackClick(product.id, "telegram_click")}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
-                </svg>
-                Написать в Telegram
-              </a>
-            )
+            <a
+              href={product.telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              onClick={() => trackClick(product.id, "telegram_click")}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+              </svg>
+              Написать в Telegram
+            </a>
           )}
         </div>
         <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight min-h-[1.75rem]">
@@ -947,11 +975,13 @@ function interleaveSection(items: { category: string; [key: string]: unknown }[]
 function applyDefaultSort<T extends { badge?: string | null; sortOrder?: number | null; category: string }>(list: T[]): T[] {
   const withOrder = list.filter(p => p.sortOrder != null).sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
   const withoutOrder = list.filter(p => p.sortOrder == null);
-  const available = withoutOrder.filter(p => p.badge !== "sold");
+  const available = withoutOrder.filter(p => p.badge !== "sold" && p.badge !== "reserved");
+  const reserved = withoutOrder.filter(p => p.badge === "reserved");
   const sold = withoutOrder.filter(p => p.badge === "sold");
   return [
     ...withOrder,
     ...interleaveSection(available),
+    ...interleaveSection(reserved),
     ...interleaveSection(sold),
   ] as T[];
 }
