@@ -1315,20 +1315,25 @@ function Reviews() {
           className="grid md:grid-cols-3 gap-6"
         >
           {reviews.map((r, i) => (
-            <motion.div
+            <motion.a
               key={i}
               variants={fadeInUp}
-              className="why-card-hover bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col"
+              href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col cursor-pointer transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
+              style={{ textDecoration: "none", color: "inherit" }}
             >
               <div className="flex text-[#f76da5] gap-1 mb-4">
                 {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
               </div>
               <p className="italic text-[15px] leading-relaxed text-muted-foreground mb-6 flex-grow">«{r.text}»</p>
-              <div>
+              <div className="mb-3">
                 <div className="text-[14px] font-bold text-foreground">{r.author}</div>
                 <div className="text-[12px] text-muted-foreground">{r.source}</div>
               </div>
-            </motion.div>
+              <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>
+            </motion.a>
           ))}
         </motion.div>
       </div>
