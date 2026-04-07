@@ -82,7 +82,7 @@ router.get("/products/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid ID" }); return; }
   try {
-    const [product] = await db.select().from(productsTable).where(eq(productsTable.id, id));
+    const [product] = await db.select().from(productsTable).where(and(eq(productsTable.id, id), eq(productsTable.published, true)));
     if (!product) { res.status(404).json({ error: "Not found" }); return; }
     res.json(formatProduct(product));
   } catch (err) {
