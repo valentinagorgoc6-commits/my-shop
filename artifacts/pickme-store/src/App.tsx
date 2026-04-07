@@ -843,24 +843,20 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           {(product.badge === "sold" || product.badge === "reserved") ? (
             <div
               className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
-              style={product.badge === "reserved"
-                ? { background: "#fff7ed", color: "#f97316", pointerEvents: "none", cursor: "not-allowed" }
-                : { background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
+              style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
             >
-              {product.badge === "reserved" ? "Забронировано" : (
-                product.avitoLink ? (
-                  <>
-                    <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
-                    Купить на Авито
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
-                    </svg>
-                    Написать в Telegram
-                  </>
-                )
+              {product.avitoLink ? (
+                <>
+                  <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                  Купить на Авито
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+                  </svg>
+                  Написать в Telegram
+                </>
               )}
             </div>
           ) : product.avitoLink ? (
@@ -897,10 +893,10 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   );
 }
 
-// -- Catalog Section (landing page — featured only, max 3) --
+// -- Catalog Section (landing page — featured only, max 6) --
 function Catalog() {
   const { data: products, isLoading } = useGetProducts({ featured: true });
-  const featured = products ? products.slice(0, 3) : [];
+  const featured = products ? products.slice(0, 6) : [];
 
   return (
     <section id="catalog" className="py-24 px-6">
@@ -909,7 +905,7 @@ function Catalog() {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
                 <div className="w-full aspect-[3/4] bg-secondary/50" />
                 <div className="p-5">
@@ -1319,20 +1315,25 @@ function Reviews() {
           className="grid md:grid-cols-3 gap-6"
         >
           {reviews.map((r, i) => (
-            <motion.div
+            <motion.a
               key={i}
               variants={fadeInUp}
-              className="why-card-hover bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col"
+              href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col cursor-pointer transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
+              style={{ textDecoration: "none", color: "inherit" }}
             >
               <div className="flex text-[#f76da5] gap-1 mb-4">
                 {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
               </div>
               <p className="italic text-[15px] leading-relaxed text-muted-foreground mb-6 flex-grow">«{r.text}»</p>
-              <div>
+              <div className="mb-3">
                 <div className="text-[14px] font-bold text-foreground">{r.author}</div>
                 <div className="text-[12px] text-muted-foreground">{r.source}</div>
               </div>
-            </motion.div>
+              <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>
+            </motion.a>
           ))}
         </motion.div>
       </div>
