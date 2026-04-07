@@ -893,10 +893,10 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   );
 }
 
-// -- Catalog Section (landing page — featured only, max 3) --
+// -- Catalog Section (landing page — featured only, max 6) --
 function Catalog() {
   const { data: products, isLoading } = useGetProducts({ featured: true });
-  const featured = products ? products.slice(0, 3) : [];
+  const featured = products ? products.slice(0, 6) : [];
 
   return (
     <section id="catalog" className="py-24 px-6">
@@ -905,7 +905,7 @@ function Catalog() {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
                 <div className="w-full aspect-[3/4] bg-secondary/50" />
                 <div className="p-5">
