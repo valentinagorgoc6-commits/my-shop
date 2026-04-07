@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+}
+
 const API = "/api";
 
 type Category = "shoes" | "tops" | "bottoms" | "accessories" | "supplements";
@@ -343,14 +353,24 @@ function ProductForm({
     }
   };
 
+  const isMobile = useIsMobile();
+  const formModalStyle: React.CSSProperties = {
+    ...modalStyle,
+    width: isMobile ? "calc(100vw - 24px)" : 560,
+    maxWidth: isMobile ? "100%" : 560,
+    maxHeight: "90vh",
+    overflowY: "auto",
+    padding: isMobile ? "20px 16px" : undefined,
+  };
+
   return (
     <div style={overlayStyle}>
-      <div style={{ ...modalStyle, width: 560, maxHeight: "90vh", overflowY: "auto" }}>
+      <div style={formModalStyle}>
         <h2 style={{ margin: "0 0 24px", fontSize: 18, fontWeight: 700, color: "#1a1a2e" }}>
           {initial ? "Редактировать товар" : "Добавить товар"}
         </h2>
         <form onSubmit={handleSubmit}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Бренд *</label>
               <input value={form.brand} onChange={set("brand")} style={inputStyle} required placeholder="Nike" />
@@ -364,7 +384,7 @@ function ProductForm({
           <label style={labelStyle}>Название *</label>
           <input value={form.name} onChange={set("name")} style={inputStyle} required placeholder="Кроссовки Air Max 90" />
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Цена (₽) *</label>
               <input value={form.price} onChange={set("price")} style={inputStyle} required type="number" min={0} placeholder="4500" />
@@ -389,7 +409,7 @@ function ProductForm({
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Артикул</label>
               <input value={form.sku} onChange={set("sku")} style={inputStyle} placeholder="SKU-001" />
@@ -412,7 +432,7 @@ function ProductForm({
             placeholder="идеально для похода к подружке и её бывшему"
           />
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Ссылка на Telegram *</label>
               <input value={form.telegramUrl} onChange={set("telegramUrl")} style={inputStyle} required placeholder="https://t.me/V_Limerence" />
@@ -423,7 +443,7 @@ function ProductForm({
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
             <div>
               <label style={labelStyle}>Статус</label>
               <select value={form.badge} onChange={set("badge")} style={inputStyle}>
@@ -509,6 +529,7 @@ function ProductForm({
 
 // ─── Dashboard ─────────────────────────────────────────────────────
 function Dashboard({ token, onLogout }: { token: string; onLogout: () => void }) {
+  const isMobile = useIsMobile();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -653,20 +674,20 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
       {/* Header */}
-      <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: isMobile ? "12px 16px" : "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <span style={{ fontSize: 18, fontWeight: 700, color: "#1a1a2e" }}>PickMe Store</span>
-          <span style={{ marginLeft: 12, fontSize: 13, color: "#6b7280" }}>Управление товарами</span>
+          <span style={{ fontSize: isMobile ? 15 : 18, fontWeight: 700, color: "#1a1a2e" }}>PickMe Store</span>
+          {!isMobile && <span style={{ marginLeft: 12, fontSize: 13, color: "#6b7280" }}>Управление товарами</span>}
         </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <a href="/" style={{ fontSize: 13, color: "#6b7280", textDecoration: "none" }}>← На сайт</a>
           <button onClick={onLogout} style={{ ...btnSecondary, padding: "6px 14px", fontSize: 13 }}>Выйти</button>
         </div>
       </div>
 
-      <div style={{ padding: "32px", maxWidth: 1100, margin: "0 auto" }}>
+      <div style={{ padding: isMobile ? "16px 12px" : "32px", maxWidth: 1100, margin: "0 auto" }}>
         {/* Stats bar */}
-        <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(5, 1fr)", gap: isMobile ? 10 : 16, marginBottom: 24 }}>
           {[
             { label: "Всего товаров", value: products.length },
             { label: "Опубликовано", value: products.filter(p => p.published).length },
@@ -674,15 +695,15 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             { label: "Забронировано", value: products.filter(p => p.badge === "reserved").length },
             { label: "Продано", value: products.filter(p => p.badge === "sold").length },
           ].map(stat => (
-            <div key={stat.label} style={{ background: "#fff", borderRadius: 10, padding: "14px 20px", border: "1px solid #e5e7eb", flex: 1 }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#1a1a2e" }}>{stat.value}</div>
-              <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{stat.label}</div>
+            <div key={stat.label} style={{ background: "#fff", borderRadius: 10, padding: isMobile ? "12px 14px" : "14px 20px", border: "1px solid #e5e7eb" }}>
+              <div style={{ fontSize: isMobile ? 20 : 24, fontWeight: 700, color: "#1a1a2e" }}>{stat.value}</div>
+              <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* Admin tabs: Опубликованные / Согласование / Аналитика */}
-        <div style={{ display: "flex", gap: 0, marginBottom: 20, borderBottom: "2px solid #e5e7eb" }}>
+        <div style={{ display: "flex", gap: 0, marginBottom: 20, borderBottom: "2px solid #e5e7eb", overflowX: "auto" } as React.CSSProperties}>
           {([
             { key: "published" as const, label: "Опубликованные" },
             { key: "pending" as const, label: "Согласование" },
@@ -691,7 +712,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             <button
               key={tab.key}
               onClick={() => { setAdminTab(tab.key); setPendingSelected(new Set()); setSkuSearch(""); setCalcSkuSearch(""); }}
-              style={{ padding: "10px 24px", border: "none", background: "transparent", cursor: "pointer", fontSize: 14, fontWeight: 600, color: adminTab === tab.key ? "#e8609a" : "#6b7280", borderBottom: adminTab === tab.key ? "2px solid #e8609a" : "2px solid transparent", marginBottom: -2, transition: "color 0.15s" }}
+              style={{ padding: isMobile ? "10px 16px" : "10px 24px", border: "none", background: "transparent", cursor: "pointer", fontSize: isMobile ? 13 : 14, fontWeight: 600, color: adminTab === tab.key ? "#e8609a" : "#6b7280", borderBottom: adminTab === tab.key ? "2px solid #e8609a" : "2px solid transparent", marginBottom: -2, transition: "color 0.15s", whiteSpace: "nowrap", flexShrink: 0 }}
             >
               {tab.label}
               {tab.key === "pending" && pendingCount > 0 && (
@@ -726,7 +747,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                 value={skuSearch}
                 onChange={e => setSkuSearch(e.target.value)}
                 placeholder="Поиск по артикулу..."
-                style={{ ...inputStyle, width: 220, marginBottom: 0 }}
+                style={{ ...inputStyle, width: isMobile ? 140 : 220, marginBottom: 0 }}
               />
             )}
           </div>
@@ -791,12 +812,86 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
           <div style={{ textAlign: "center", padding: 40, color: "#6b7280" }}>
             По запросу «{activeSearch}» ничего не найдено
           </div>
+        ) : isMobile ? (
+          /* ── Mobile: product cards ── */
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingBottom: mode === "calc" ? 200 : 0 }}>
+            {displayedProducts.map(product => {
+              const isCalcSelected = calcSelected.has(product.id);
+              const isPendingSelected = pendingSelected.has(product.id);
+              const isPublishing = publishing.has(product.id);
+              const badgeLabel = product.badge === "sold" ? "Продано" : product.badge === "new" ? "New" : product.badge === "reserved" ? "Забронировано" : "В наличии";
+              const badgeBg = product.badge === "sold" ? "#fee2e2" : product.badge === "new" ? "#dcfce7" : product.badge === "reserved" ? "#fff7ed" : "#f3f4f6";
+              const badgeColor = product.badge === "sold" ? "#b91c1c" : product.badge === "new" ? "#166534" : product.badge === "reserved" ? "#c2410c" : "#374151";
+              return (
+                <div
+                  key={product.id}
+                  style={{ background: isCalcSelected && mode === "calc" ? "#fdf4f8" : isPendingSelected && adminTab === "pending" ? "#f0fdf4" : "#fff", borderRadius: 12, border: "1px solid #e5e7eb", padding: "12px", position: "relative", cursor: mode === "calc" ? "pointer" : undefined }}
+                  onClick={mode === "calc" ? () => toggleCalcProduct(product.id) : undefined}
+                >
+                  {/* Checkbox top-left */}
+                  {(mode === "calc" || (adminTab === "pending" && mode === "list")) && (
+                    <div style={{ position: "absolute", top: 10, left: 10, zIndex: 1 }}>
+                      <input
+                        type="checkbox"
+                        checked={mode === "calc" ? isCalcSelected : isPendingSelected}
+                        onChange={() => mode === "calc" ? toggleCalcProduct(product.id) : togglePendingSelect(product.id)}
+                        onClick={e => e.stopPropagation()}
+                        style={{ width: 18, height: 18, accentColor: mode === "calc" ? "#f7147a" : "#16a34a", cursor: "pointer" }}
+                      />
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 10 }}>
+                    {/* Photo */}
+                    <div style={{ flexShrink: 0, marginLeft: (mode === "calc" || (adminTab === "pending" && mode === "list")) ? 28 : 0 }}>
+                      {product.imageUrl ? (
+                        <img src={product.imageUrl} alt={product.name} style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb" }} />
+                      ) : (
+                        <div style={{ width: 60, height: 60, background: "#f3f4f6", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>👗</div>
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.name}</div>
+                      <div style={{ fontSize: 12, color: "#6b7280", marginTop: 1 }}>{product.brand} · {product.size}</div>
+                      {product.sku && (
+                        <div style={{ fontSize: 11, fontFamily: "monospace", background: "#f3f4f6", color: "#374151", padding: "1px 5px", borderRadius: 4, display: "inline-block", marginTop: 3 }}>{product.sku}</div>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1a1a2e" }}>{product.price.toLocaleString("ru-RU")} ₽</span>
+                        {product.purchasePrice != null && product.purchasePrice > 0 && (
+                          <span style={{ fontSize: 11, color: "#6b7280" }}>закуп: {product.purchasePrice.toLocaleString("ru-RU")} ₽</span>
+                        )}
+                        {product.purchasePrice != null && product.purchasePrice > 0 && (
+                          <span style={{ fontSize: 11, fontWeight: 700, color: product.price - product.purchasePrice >= 0 ? "#16a34a" : "#dc2626" }}>
+                            +{(product.price - product.purchasePrice).toLocaleString("ru-RU")} ₽
+                          </span>
+                        )}
+                        <span style={{ padding: "2px 8px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: badgeBg, color: badgeColor }}>{badgeLabel}</span>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Action buttons */}
+                  {mode === "list" && (
+                    <div style={{ display: "flex", gap: 8, marginTop: 10, justifyContent: "flex-end" }}>
+                      {adminTab === "pending" && (
+                        <button onClick={() => handlePublish(product.id)} disabled={isPublishing} style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "7px 12px", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
+                          {isPublishing ? "..." : "✓ Опубликовать"}
+                        </button>
+                      )}
+                      <button onClick={() => { setEditProduct(product); setShowForm(true); }} style={{ ...btnSecondary, padding: "7px 14px", fontSize: 13 }}>Изменить</button>
+                      <button onClick={() => setDeleteProduct(product)} style={{ background: "transparent", border: "1px solid #fca5a5", color: "#ef4444", borderRadius: 8, padding: "7px 14px", fontSize: 13, cursor: "pointer", fontWeight: 500 }}>Удалить</button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         ) : (
+          /* ── Desktop: table ── */
           <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb", overflow: "hidden", paddingBottom: mode === "calc" ? 160 : 0 }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid #e5e7eb", background: "#f9fafb" }}>
-                  {/* Pending: select-all checkbox */}
                   {adminTab === "pending" && mode === "list" && (
                     <th style={{ padding: "12px 16px", width: 40 }}>
                       <input
@@ -826,7 +921,6 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                       style={{ borderBottom: idx < displayedProducts.length - 1 ? "1px solid #f3f4f6" : "none", background: isCalcSelected && mode === "calc" ? "#fdf4f8" : isPendingSelected && adminTab === "pending" ? "#f0fdf4" : undefined, cursor: mode === "calc" ? "pointer" : undefined }}
                       onClick={mode === "calc" ? () => toggleCalcProduct(product.id) : undefined}
                     >
-                      {/* Pending checkbox */}
                       {adminTab === "pending" && mode === "list" && (
                         <td style={{ padding: "12px 16px" }}>
                           <input
@@ -913,9 +1007,9 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
         {/* Sticky calculator panel */}
         {mode === "calc" && (
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderTop: "2px solid #f7147a", boxShadow: "0 -4px 24px rgba(0,0,0,0.10)", padding: "16px 32px", zIndex: 100, display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 6 }}>
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderTop: "2px solid #f7147a", boxShadow: "0 -4px 24px rgba(0,0,0,0.10)", padding: isMobile ? "12px 14px" : "16px 32px", zIndex: 100, display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 8 : 24, alignItems: isMobile ? "stretch" : "flex-start", flexWrap: isMobile ? "nowrap" : "wrap" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 4 }}>
                 Выбрано позиций: <strong style={{ color: "#1a1a2e" }}>{calcSelected.size}</strong>
               </div>
               {selectedProducts.length > 0 && (
@@ -932,17 +1026,19 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                 </div>
               )}
             </div>
-            <div style={{ textAlign: "right", minWidth: 180 }}>
-              <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 4 }}>Итого закупочная стоимость:</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#f7147a", lineHeight: 1 }}>
-                {totalPurchase.toLocaleString("ru-RU")} ₽
+            <div style={{ display: "flex", alignItems: "center", justifyContent: isMobile ? "space-between" : "flex-end", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 2 }}>Итого закупка:</div>
+                <div style={{ fontSize: isMobile ? 22 : 28, fontWeight: 800, color: "#f7147a", lineHeight: 1 }}>
+                  {totalPurchase.toLocaleString("ru-RU")} ₽
+                </div>
               </div>
               {calcSelected.size > 0 && (
                 <button
                   onClick={() => setCalcSelected(new Set())}
-                  style={{ ...btnSecondary, padding: "6px 16px", fontSize: 13, marginTop: 8 }}
+                  style={{ ...btnSecondary, padding: "6px 16px", fontSize: 13 }}
                 >
-                  Очистить выбор
+                  Очистить
                 </button>
               )}
             </div>
