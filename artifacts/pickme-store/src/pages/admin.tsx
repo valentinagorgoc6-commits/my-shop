@@ -37,6 +37,7 @@ interface Product {
   gender: Gender;
   sortOrder?: number | null;
   published: boolean;
+  description?: string | null;
   createdAt: string;
 }
 
@@ -64,6 +65,7 @@ const EMPTY_FORM = {
   purchasePrice: "",
   gender: "women" as Gender,
   sortOrder: "",
+  description: "",
 };
 
 function useAdminToken() {
@@ -207,6 +209,7 @@ function ProductForm({
           purchasePrice: initial.purchasePrice != null ? String(initial.purchasePrice) : "",
           gender: (initial.gender ?? "women") as Gender,
           sortOrder: initial.sortOrder != null ? String(initial.sortOrder) : "",
+          description: initial.description ?? "",
         }
       : {
           brand: EMPTY_FORM.brand,
@@ -223,6 +226,7 @@ function ProductForm({
           purchasePrice: EMPTY_FORM.purchasePrice,
           gender: EMPTY_FORM.gender,
           sortOrder: EMPTY_FORM.sortOrder,
+          description: EMPTY_FORM.description,
         }
   );
 
@@ -331,6 +335,7 @@ function ProductForm({
       purchasePrice: form.purchasePrice !== "" ? Number(form.purchasePrice) : null,
       gender: form.gender,
       sortOrder: form.sortOrder !== "" ? Number(form.sortOrder) : null,
+      description: form.description.trim() || null,
     };
     try {
       const url = initial ? `${API}/products/${initial.id}` : `${API}/products`;
@@ -439,6 +444,14 @@ function ProductForm({
             onChange={set("caption")}
             style={{ ...inputStyle, height: 64, resize: "vertical" }}
             placeholder="идеально для похода к подружке и её бывшему"
+          />
+
+          <label style={labelStyle}>Описание товара</label>
+          <textarea
+            value={form.description}
+            onChange={set("description")}
+            style={{ ...inputStyle, height: 80, resize: "vertical" }}
+            placeholder="Материал, особенности, состояние..."
           />
 
           <div className="pf-grid-2">

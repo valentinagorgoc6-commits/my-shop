@@ -1506,12 +1506,42 @@ function Home() {
   );
 }
 
+// ─── Similar Products ─────────────────────────────────────────────
+function SimilarProducts({ currentId, category }: { currentId: number; category: string }) {
+  const { data: allProducts } = useGetProducts({ category: category as "shoes" | "tops" | "bottoms" | "accessories" | "supplements" });
+  const similar = React.useMemo(() => {
+    if (!allProducts) return [];
+    const available = allProducts.filter(p => p.id !== currentId && p.badge !== "sold" && p.badge !== "reserved");
+    if (available.length === 0) return [];
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }, [allProducts, currentId]);
+
+  if (similar.length === 0) return null;
+
+  return (
+    <div className="mt-16">
+      <div className="mb-8">
+        <DecorBar align="left" />
+        <h2 className="font-serif text-[26px] md:text-[32px] font-bold text-foreground">Тебе также понравится</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {similar.map(p => (
+          <div key={p.id} className="h-full">
+            <ProductCard product={p} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Product Page ─────────────────────────────────────────────────
 type ProductDetail = {
   id: number; brand: string; name: string; size: string; price: number;
   category: string; badge: string | null; imageUrl: string; imageUrls?: string[];
   telegramUrl: string; avitoLink?: string | null; caption?: string | null;
-  published: boolean;
+  published: boolean; description?: string | null;
 };
 
 function ProductPage() {
@@ -1713,6 +1743,7 @@ function ProductPage() {
 
             {/* ── Info ── */}
             <div className="w-full md:w-1/2 flex flex-col gap-5">
+              {/* Brand + badges */}
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-[13px] font-bold tracking-[1.5px] uppercase text-primary">{product.brand}</span>
                 {product.badge === "new" && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary">New</span>}
@@ -1720,8 +1751,15 @@ function ProductPage() {
                 {isReserved && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "#f97316" }}>Забронировано</span>}
               </div>
 
+              {/* Name */}
               <h1 className="font-serif text-[28px] md:text-[36px] font-bold text-foreground leading-tight">{product.name}</h1>
 
+              {/* Caption */}
+              {product.caption && (
+                <p className="font-script text-[22px] text-[#e8609a] leading-tight -mt-2">{product.caption}</p>
+              )}
+
+              {/* Size */}
               <p className="text-[15px] text-muted-foreground">
                 {product.category === "shoes" ? `Длина стельки: ${product.size} см` : `Размер: ${product.size}`}
               </p>
@@ -1763,61 +1801,103 @@ function ProductPage() {
                 </div>
               )}
 
-              {product.caption && (
-                <p className="font-script text-[22px] text-[#e8609a] leading-tight">{product.caption}</p>
-              )}
-
+              {/* Price */}
               <div className={`text-[34px] font-bold ${isSold ? "line-through text-muted-foreground" : "text-foreground"}`}>
                 {Number(product.price).toLocaleString("ru-RU")} ₽
               </div>
 
               {/* Buy button */}
-              <div className="flex flex-col gap-3">
-                {isSold ? (
-                  <button disabled className="w-full py-4 rounded-full bg-[#f3f4f6] text-[#9ca3af] text-[15px] font-bold cursor-not-allowed">Продано</button>
-                ) : isReserved ? (
-                  <button disabled className="w-full py-4 rounded-full text-[15px] font-bold cursor-not-allowed" style={{ background: "#fff7ed", color: "#f97316" }}>Забронировано</button>
-                ) : product.avitoLink ? (
-                  <a
-                    href={product.avitoLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[#e02163] transition-colors flex items-center justify-center gap-2 btn-glow"
-                    onClick={() => trackClick(product.id, "avito_click")}
-                  >
-                    <img src="https://www.avito.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" />
-                    Купить на Авито
-                  </a>
-                ) : (
-                  <a
-                    href={product.telegramUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[#e02163] transition-colors flex items-center justify-center gap-2 btn-glow"
-                    onClick={() => trackClick(product.id, "telegram_click")}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
-                    </svg>
-                    Написать в Telegram
-                  </a>
-                )}
-
-                <button
-                  onClick={() => {
-                    const url = window.location.href;
-                    if (navigator.share) {
-                      navigator.share({ title: `${product.name} ${product.brand}`, url }).catch(() => {});
-                    } else {
-                      navigator.clipboard.writeText(url).then(() => {}).catch(() => {});
-                    }
-                  }}
-                  className="w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[#fef1f6] transition-colors flex items-center justify-center gap-2"
+              {isSold ? (
+                <button disabled className="w-full py-4 rounded-full bg-[#f3f4f6] text-[#9ca3af] text-[15px] font-bold cursor-not-allowed">Продано</button>
+              ) : isReserved ? (
+                <button disabled className="w-full py-4 rounded-full text-[15px] font-bold cursor-not-allowed" style={{ background: "#fff7ed", color: "#f97316" }}>Забронировано</button>
+              ) : product.avitoLink ? (
+                <a
+                  href={product.avitoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[#e02163] transition-colors flex items-center justify-center gap-2 btn-glow"
+                  onClick={() => trackClick(product.id, "avito_click")}
                 >
-                  🔗 Поделиться
-                </button>
+                  <img src="https://www.avito.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" />
+                  Купить на Авито
+                </a>
+              ) : (
+                <a
+                  href={product.telegramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[#e02163] transition-colors flex items-center justify-center gap-2 btn-glow"
+                  onClick={() => trackClick(product.id, "telegram_click")}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+                  </svg>
+                  Написать в Telegram
+                </a>
+              )}
+
+              {/* Description */}
+              {product.description && (
+                <div className="text-[15px] text-foreground/80 leading-relaxed whitespace-pre-line">
+                  {product.description}
+                </div>
+              )}
+
+              {/* Guarantees */}
+              <div className="rounded-2xl p-4 flex flex-col gap-2" style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.18)" }}>
+                <div className="flex items-center gap-3 text-[13px] text-foreground/80 font-medium">
+                  <span className="text-base">✅</span>
+                  <span>100% оригинал</span>
+                </div>
+                <div className="flex items-center gap-3 text-[13px] text-foreground/80 font-medium">
+                  <span className="text-base">📸</span>
+                  <span>Живые фото — что видишь, то получишь</span>
+                </div>
+                <div className="flex items-center gap-3 text-[13px] text-foreground/80 font-medium">
+                  <span className="text-base">🚚</span>
+                  <span>Доставка по всей России</span>
+                </div>
               </div>
+
+              {/* Share */}
+              <button
+                onClick={() => {
+                  const url = window.location.href;
+                  if (navigator.share) {
+                    navigator.share({ title: `${product.name} ${product.brand}`, url }).catch(() => {});
+                  } else {
+                    navigator.clipboard.writeText(url).then(() => {}).catch(() => {});
+                  }
+                }}
+                className="w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[#fef1f6] transition-colors flex items-center justify-center gap-2"
+              >
+                🔗 Поделиться
+              </button>
             </div>
+          </div>
+
+          {/* ── Similar products ── */}
+          <SimilarProducts currentId={product.id} category={product.category} />
+        </div>
+
+        {/* ── CTA block ── */}
+        <div className="mt-16">
+          <div className="max-w-[700px] mx-auto rounded-[28px] p-8 md:p-12 text-center" style={{ background: "linear-gradient(135deg, #f7147a 0%, #f76da5 60%, #fbbcd8 100%)" }}>
+            <p className="font-serif text-[24px] md:text-[30px] font-bold text-white mb-2">Есть вопросы по этому товару?</p>
+            <p className="text-white/80 text-[15px] mb-6">Напишу, отвечу на все вопросы и помогу с выбором 💗</p>
+            <a
+              href={product.telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-bold text-[15px] hover:bg-[#fef1f6] transition-colors shadow-lg"
+              onClick={() => trackClick(product.id, "telegram_click")}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+              </svg>
+              Написать мне в Telegram
+            </a>
           </div>
         </div>
       </main>
