@@ -843,24 +843,20 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           {(product.badge === "sold" || product.badge === "reserved") ? (
             <div
               className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
-              style={product.badge === "reserved"
-                ? { background: "#fff7ed", color: "#f97316", pointerEvents: "none", cursor: "not-allowed" }
-                : { background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
+              style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
             >
-              {product.badge === "reserved" ? "Забронировано" : (
-                product.avitoLink ? (
-                  <>
-                    <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
-                    Купить на Авито
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
-                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
-                    </svg>
-                    Написать в Telegram
-                  </>
-                )
+              {product.avitoLink ? (
+                <>
+                  <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                  Купить на Авито
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
+                  </svg>
+                  Написать в Telegram
+                </>
               )}
             </div>
           ) : product.avitoLink ? (
