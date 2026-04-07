@@ -353,24 +353,33 @@ function ProductForm({
     }
   };
 
-  const isMobile = useIsMobile();
-  const formModalStyle: React.CSSProperties = {
-    ...modalStyle,
-    width: isMobile ? "calc(100vw - 24px)" : 560,
-    maxWidth: isMobile ? "100%" : 560,
-    maxHeight: "90vh",
-    overflowY: "auto",
-    padding: isMobile ? "20px 16px" : undefined,
-  };
-
   return (
     <div style={overlayStyle}>
-      <div style={formModalStyle}>
+      <style>{`
+        .pf-modal {
+          background: #fff;
+          border-radius: 14px;
+          padding: 32px;
+          width: 640px;
+          max-width: calc(100vw - 40px);
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+          font-family: system-ui, sans-serif;
+        }
+        .pf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .pf-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        @media (max-width: 767px) {
+          .pf-modal { width: calc(100vw - 24px); max-width: calc(100vw - 24px); padding: 20px 16px; }
+          .pf-grid-2, .pf-grid-3 { grid-template-columns: 1fr; }
+        }
+      `}</style>
+      <div className="pf-modal">
         <h2 style={{ margin: "0 0 24px", fontSize: 18, fontWeight: 700, color: "#1a1a2e" }}>
           {initial ? "Редактировать товар" : "Добавить товар"}
         </h2>
         <form onSubmit={handleSubmit}>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
+          <div className="pf-grid-2">
             <div>
               <label style={labelStyle}>Бренд *</label>
               <input value={form.brand} onChange={set("brand")} style={inputStyle} required placeholder="Nike" />
@@ -384,7 +393,7 @@ function ProductForm({
           <label style={labelStyle}>Название *</label>
           <input value={form.name} onChange={set("name")} style={inputStyle} required placeholder="Кроссовки Air Max 90" />
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14 }}>
+          <div className="pf-grid-3">
             <div>
               <label style={labelStyle}>Цена (₽) *</label>
               <input value={form.price} onChange={set("price")} style={inputStyle} required type="number" min={0} placeholder="4500" />
@@ -409,7 +418,7 @@ function ProductForm({
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 14 }}>
+          <div className="pf-grid-3">
             <div>
               <label style={labelStyle}>Артикул</label>
               <input value={form.sku} onChange={set("sku")} style={inputStyle} placeholder="SKU-001" />
@@ -432,7 +441,7 @@ function ProductForm({
             placeholder="идеально для похода к подружке и её бывшему"
           />
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
+          <div className="pf-grid-2">
             <div>
               <label style={labelStyle}>Ссылка на Telegram *</label>
               <input value={form.telegramUrl} onChange={set("telegramUrl")} style={inputStyle} required placeholder="https://t.me/V_Limerence" />
@@ -443,7 +452,7 @@ function ProductForm({
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
+          <div className="pf-grid-2">
             <div>
               <label style={labelStyle}>Статус</label>
               <select value={form.badge} onChange={set("badge")} style={inputStyle}>
