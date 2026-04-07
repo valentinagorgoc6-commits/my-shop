@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const categoryEnum = pgEnum("category", ["shoes", "tops", "bottoms", "accessories", "supplements"]);
-export const badgeEnum = pgEnum("badge", ["new", "sold"]);
+export const badgeEnum = pgEnum("badge", ["new", "sold", "reserved"]);
 
 export const productsTable = pgTable("products", {
   id: serial("id").primaryKey(),

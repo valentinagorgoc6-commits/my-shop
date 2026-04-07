@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const API = "/api";
 
 type Category = "shoes" | "tops" | "bottoms" | "accessories" | "supplements";
-type Badge = "new" | "sold" | null;
+type Badge = "new" | "sold" | "reserved" | null;
 
 type Gender = "women" | "men" | "unisex";
 
@@ -46,7 +46,7 @@ const EMPTY_FORM = {
   category: "shoes" as Category,
   caption: "",
   imageUrl: "",
-  badge: "" as "" | "new" | "sold",
+  badge: "" as "" | "new" | "sold" | "reserved",
   telegramUrl: "https://t.me/V_Limerence",
   avitoLink: "",
   featured: false,
@@ -189,7 +189,7 @@ function ProductForm({
           price: String(initial.price),
           category: initial.category,
           caption: initial.caption,
-          badge: (initial.badge ?? "") as "" | "new" | "sold",
+          badge: (initial.badge ?? "") as "" | "new" | "sold" | "reserved",
           telegramUrl: initial.telegramUrl,
           avitoLink: initial.avitoLink ?? "",
           featured: initial.featured ?? false,
@@ -429,6 +429,7 @@ function ProductForm({
               <select value={form.badge} onChange={set("badge")} style={inputStyle}>
                 <option value="">В наличии</option>
                 <option value="new">New</option>
+                <option value="reserved">Забронировано</option>
                 <option value="sold">Продано</option>
               </select>
             </div>
@@ -670,6 +671,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
             { label: "Всего товаров", value: products.length },
             { label: "Опубликовано", value: products.filter(p => p.published).length },
             { label: "На согласовании", value: pendingCount },
+            { label: "Забронировано", value: products.filter(p => p.badge === "reserved").length },
             { label: "Продано", value: products.filter(p => p.badge === "sold").length },
           ].map(stat => (
             <div key={stat.label} style={{ background: "#fff", borderRadius: 10, padding: "14px 20px", border: "1px solid #e5e7eb", flex: 1 }}>
@@ -867,8 +869,8 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
                         }
                       </td>
                       <td style={{ padding: "12px 16px" }}>
-                        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 600, background: product.badge === "sold" ? "#fee2e2" : product.badge === "new" ? "#dcfce7" : "#f3f4f6", color: product.badge === "sold" ? "#b91c1c" : product.badge === "new" ? "#166534" : "#374151" }}>
-                          {product.badge === "sold" ? "Продано" : product.badge === "new" ? "New" : "В наличии"}
+                        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 600, background: product.badge === "sold" ? "#fee2e2" : product.badge === "new" ? "#dcfce7" : product.badge === "reserved" ? "#fff7ed" : "#f3f4f6", color: product.badge === "sold" ? "#b91c1c" : product.badge === "new" ? "#166534" : product.badge === "reserved" ? "#c2410c" : "#374151" }}>
+                          {product.badge === "sold" ? "Продано" : product.badge === "new" ? "New" : product.badge === "reserved" ? "Забронировано" : "В наличии"}
                         </span>
                       </td>
                       {mode === "list" && <>
