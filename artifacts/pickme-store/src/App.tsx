@@ -1871,16 +1871,16 @@ function ProductPage() {
           <div className="max-w-[700px] mx-auto rounded-[28px] p-8 md:p-12 text-center" style={{ background: "linear-gradient(135deg, #f7147a 0%, #f76da5 60%, #fbbcd8 100%)" }}>
             <p className="font-serif text-[24px] md:text-[30px] font-bold text-white mb-2">Есть вопросы по этому товару?</p>
             <p className="text-white/80 text-[15px] mb-8">Пиши мне, отвечу на все вопросы и помогу с выбором 💗</p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
+            <div className="flex items-stretch justify-center gap-4 flex-wrap">
               {/* Авито */}
               <a
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[120px]"
+                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
               >
-                <img src="https://www.avito.ru/favicon.ico" width={22} height={22} alt="" aria-hidden="true" />
-                <span>Профиль на<br/>Авито</span>
+                <img src="https://www.avito.ru/favicon.ico" width={24} height={24} alt="" aria-hidden="true" className="shrink-0" />
+                <span className="leading-snug">Профиль на<br/>Авито</span>
               </a>
 
               {/* Telegram — центральная, выделена */}
@@ -1888,13 +1888,13 @@ function ProductPage() {
                 href={product.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 bg-white text-primary px-8 py-4 rounded-full font-bold text-[15px] hover:bg-[#fef1f6] transition-colors shadow-lg min-w-[140px]"
+                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-9 py-5 rounded-full font-bold text-[16px] transition-colors shadow-lg min-w-[165px]"
                 onClick={() => trackClick(product.id, "telegram_click")}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
                   <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
                 </svg>
-                <span>Написать в<br/>Telegram ✈️</span>
+                <span className="leading-snug">Написать в<br/>Telegram ✈️</span>
               </a>
 
               {/* MAX */}
@@ -1902,10 +1902,10 @@ function ProductPage() {
                 href="https://tinyurl.com/5h4bbmkr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[120px]"
+                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
               >
-                <img src="https://max.ru/favicon.ico" width={22} height={22} alt="" aria-hidden="true" />
-                <span>Написать в<br/>MAX</span>
+                <img src="https://max.ru/favicon.ico" width={24} height={24} alt="" aria-hidden="true" className="shrink-0" />
+                <span className="leading-snug">Написать в<br/>MAX</span>
               </a>
             </div>
           </div>
