@@ -25,6 +25,13 @@ export const productsTable = pgTable("products", {
   sortOrder: integer("sort_order"),
   published: boolean("published").notNull().default(false),
   description: text("description"),
+  outerSeam: integer("outer_seam"),
+  innerSeam: integer("inner_seam"),
+  riseHeight: integer("rise_height"),
+  halfWaist: integer("half_waist"),
+  halfHip: integer("half_hip"),
+  halfLegOpening: integer("half_leg_opening"),
+  model: text("model"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
