@@ -3,10 +3,12 @@ import healthRouter from "./health";
 import productsRouter from "./products";
 import adminRouter from "./admin";
 import analyticsRouter from "./analytics";
+import sitemapRouter from "./sitemap";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(sitemapRouter);
 router.use(productsRouter);
 router.use(adminRouter);
 router.use(analyticsRouter);
