@@ -1755,9 +1755,21 @@ function ProductPage() {
               <h1 className="font-serif text-[28px] md:text-[36px] font-bold text-foreground leading-tight">{product.name}</h1>
 
               {/* Caption — space always reserved */}
-              <p className="font-script text-[22px] text-[#e8609a] leading-tight -mt-2 min-h-[28px]">
-                {product.caption ?? ""}
-              </p>
+              {product.caption ? (
+                <p className="font-script text-[22px] text-[#e8609a] leading-tight -mt-2 min-h-[28px]">
+                  {product.caption}
+                </p>
+              ) : (
+                <div className="-mt-1 min-h-[28px]">
+                  <img
+                    src={`${import.meta.env.BASE_URL}caption-ornament.png`}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-[32px] w-auto max-w-full object-cover"
+                    style={{ objectPosition: "center 35%" }}
+                  />
+                </div>
+              )}
 
               {/* Size */}
               <p className="text-[15px] text-muted-foreground">
