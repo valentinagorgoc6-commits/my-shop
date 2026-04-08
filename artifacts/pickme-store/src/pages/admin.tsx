@@ -38,6 +38,13 @@ interface Product {
   sortOrder?: number | null;
   published: boolean;
   description?: string | null;
+  outerSeam?: number | null;
+  innerSeam?: number | null;
+  riseHeight?: number | null;
+  halfWaist?: number | null;
+  halfHip?: number | null;
+  halfLegOpening?: number | null;
+  model?: string | null;
   createdAt: string;
 }
 
@@ -66,6 +73,13 @@ const EMPTY_FORM = {
   gender: "women" as Gender,
   sortOrder: "",
   description: "",
+  outerSeam: "",
+  innerSeam: "",
+  riseHeight: "",
+  halfWaist: "",
+  halfHip: "",
+  halfLegOpening: "",
+  model: "",
 };
 
 function useAdminToken() {
@@ -210,6 +224,13 @@ function ProductForm({
           gender: (initial.gender ?? "women") as Gender,
           sortOrder: initial.sortOrder != null ? String(initial.sortOrder) : "",
           description: initial.description ?? "",
+          outerSeam: initial.outerSeam != null ? String(initial.outerSeam) : "",
+          innerSeam: initial.innerSeam != null ? String(initial.innerSeam) : "",
+          riseHeight: initial.riseHeight != null ? String(initial.riseHeight) : "",
+          halfWaist: initial.halfWaist != null ? String(initial.halfWaist) : "",
+          halfHip: initial.halfHip != null ? String(initial.halfHip) : "",
+          halfLegOpening: initial.halfLegOpening != null ? String(initial.halfLegOpening) : "",
+          model: initial.model ?? "",
         }
       : {
           brand: EMPTY_FORM.brand,
@@ -227,6 +248,13 @@ function ProductForm({
           gender: EMPTY_FORM.gender,
           sortOrder: EMPTY_FORM.sortOrder,
           description: EMPTY_FORM.description,
+          outerSeam: EMPTY_FORM.outerSeam,
+          innerSeam: EMPTY_FORM.innerSeam,
+          riseHeight: EMPTY_FORM.riseHeight,
+          halfWaist: EMPTY_FORM.halfWaist,
+          halfHip: EMPTY_FORM.halfHip,
+          halfLegOpening: EMPTY_FORM.halfLegOpening,
+          model: EMPTY_FORM.model,
         }
   );
 
@@ -336,6 +364,13 @@ function ProductForm({
       gender: form.gender,
       sortOrder: form.sortOrder !== "" ? Number(form.sortOrder) : null,
       description: form.description.trim() || null,
+      outerSeam: form.outerSeam !== "" ? Number(form.outerSeam) : null,
+      innerSeam: form.innerSeam !== "" ? Number(form.innerSeam) : null,
+      riseHeight: form.riseHeight !== "" ? Number(form.riseHeight) : null,
+      halfWaist: form.halfWaist !== "" ? Number(form.halfWaist) : null,
+      halfHip: form.halfHip !== "" ? Number(form.halfHip) : null,
+      halfLegOpening: form.halfLegOpening !== "" ? Number(form.halfLegOpening) : null,
+      model: form.model.trim() || null,
     };
     try {
       const url = initial ? `${API}/products/${initial.id}` : `${API}/products`;
@@ -454,6 +489,44 @@ function ProductForm({
             style={{ ...inputStyle, height: 80, resize: "vertical" }}
             placeholder="Материал, особенности, состояние..."
           />
+
+          {form.category === "bottoms" && (
+            <div style={{ background: "#fff7fb", border: "1px solid #f7c6dc", borderRadius: 10, padding: "16px 16px 12px", marginTop: 4 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: "#c0357a", marginBottom: 12 }}>📏 Замеры штанов (см)</div>
+              <div className="pf-grid-3">
+                <div>
+                  <label style={labelStyle}>Внешний шов</label>
+                  <input value={form.outerSeam} onChange={set("outerSeam")} style={inputStyle} type="number" min={0} placeholder="100" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Внутренний шов</label>
+                  <input value={form.innerSeam} onChange={set("innerSeam")} style={inputStyle} type="number" min={0} placeholder="76" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Высота посадки</label>
+                  <input value={form.riseHeight} onChange={set("riseHeight")} style={inputStyle} type="number" min={0} placeholder="25" />
+                </div>
+              </div>
+              <div className="pf-grid-3" style={{ marginTop: 10 }}>
+                <div>
+                  <label style={labelStyle}>Полуобхват талии</label>
+                  <input value={form.halfWaist} onChange={set("halfWaist")} style={inputStyle} type="number" min={0} placeholder="35" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Полуобхват бёдер</label>
+                  <input value={form.halfHip} onChange={set("halfHip")} style={inputStyle} type="number" min={0} placeholder="47" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Полуобхват штанины</label>
+                  <input value={form.halfLegOpening} onChange={set("halfLegOpening")} style={inputStyle} type="number" min={0} placeholder="14" />
+                </div>
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <label style={labelStyle}>Модель</label>
+                <input value={form.model} onChange={set("model")} style={inputStyle} placeholder="Straight, Slim, Skinny, Wide leg, Bootcut..." />
+              </div>
+            </div>
+          )}
 
           <div className="pf-grid-2">
             <div>
