@@ -3,6 +3,7 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import path from "path";
 import router from "./routes";
+import ogRouter from "./routes/og";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/uploads", express.static(path.resolve(process.cwd(), "uploads")));
 app.use("/api", router);
+app.use(ogRouter);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
