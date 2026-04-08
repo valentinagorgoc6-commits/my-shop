@@ -1,10 +1,35 @@
 import { Router } from "express";
+import path from "path";
 import { db, productsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 
 const router = Router();
 
+const BOT_PATTERNS = [
+  "TelegramBot",
+  "WhatsApp",
+  "facebookexternalhit",
+  "Twitterbot",
+  "vkShare",
+  "OdnoklassnikiBot",
+  "Slackbot",
+  "LinkedInBot",
+];
+
+const SPA_INDEX = path.resolve(__dirname, "../../pickme-store/dist/public/index.html");
+
+function isBot(ua: string): boolean {
+  return BOT_PATTERNS.some((pat) => ua.includes(pat));
+}
+
 router.get("/product/:id", async (req, res) => {
+  const ua = req.headers["user-agent"] ?? "";
+
+  if (!isBot(ua)) {
+    res.sendFile(SPA_INDEX);
+    return;
+  }
+
   const id = Number(req.params.id);
 
   if (!Number.isFinite(id)) {
