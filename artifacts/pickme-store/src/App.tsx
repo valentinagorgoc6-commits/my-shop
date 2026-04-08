@@ -1888,7 +1888,7 @@ function ProductPage() {
                 href={product.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-primary hover:bg-[#e02163] text-white px-8 py-4 rounded-full font-bold text-[15px] transition-colors shadow-lg min-w-[155px]"
+                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-9 py-5 rounded-full font-bold text-[16px] transition-colors shadow-lg min-w-[165px]"
                 onClick={() => trackClick(product.id, "telegram_click")}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
