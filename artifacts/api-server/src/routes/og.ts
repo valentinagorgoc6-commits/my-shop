@@ -48,7 +48,7 @@ router.get("/product/:id", async (req, res) => {
     return;
   }
 
-  const imageUrl = `https://pickmestore.ru${product.imageUrl}`;
+  const imageUrl = `https://pickmestore.ru${product.imageUrl.replace("/api/uploads/", "/uploads/")}`;
   const title = `${product.brand} ${product.name} — ${product.price} ₽`;
   const pageUrl = `/product/${product.id}`;
 
