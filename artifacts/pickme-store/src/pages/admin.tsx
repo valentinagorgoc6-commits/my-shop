@@ -446,11 +446,11 @@ function ProductForm({
             placeholder="идеально для похода к подружке и её бывшему"
           />
 
-          <label style={labelStyle}>Описание товара <span style={{ color: form.description.length >= 450 ? "#e02163" : "#b0b0b0", fontSize: 12 }}>({form.description.length}/450)</span></label>
+          <label style={labelStyle}>Описание товара <span style={{ color: form.description.length >= 400 ? "#e02163" : "#b0b0b0", fontSize: 12 }}>({form.description.length}/400)</span></label>
           <textarea
             value={form.description}
             onChange={set("description")}
-            maxLength={450}
+            maxLength={400}
             style={{ ...inputStyle, height: 80, resize: "vertical" }}
             placeholder="Материал, особенности, состояние..."
           />

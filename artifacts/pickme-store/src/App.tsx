@@ -1852,30 +1852,13 @@ function ProductPage() {
                 🔗 Поделиться
               </button>
 
-              {/* Description — below share button, fills remaining column height */}
+              {/* Description — fills all remaining height, always ends at photo bottom */}
               {product.description && (
-                <div className="rounded-2xl p-5 flex flex-col gap-2 mt-auto" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
-                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50">О товаре</p>
-                  <p className="text-[14px] text-foreground/80 leading-relaxed whitespace-pre-line">{product.description}</p>
+                <div className="flex-1 overflow-hidden rounded-2xl p-5 flex flex-col gap-2" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
+                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50 shrink-0">О товаре</p>
+                  <p className="text-[14px] text-foreground/80 leading-relaxed whitespace-pre-line overflow-hidden">{product.description}</p>
                 </div>
               )}
-
-              {/* Guarantees — always at the bottom of the column */}
-              <div className="rounded-2xl p-5 flex flex-col gap-3 mt-auto" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
-                <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50">Почему PickMe</p>
-                <div className="flex flex-col gap-2">
-                  {[
-                    { icon: "✅", text: "100% оригинал" },
-                    { icon: "📸", text: "Живые фото" },
-                    { icon: "🚚", text: "Доставка по всей России" },
-                  ].map(({ icon, text }) => (
-                    <div key={text} className="flex items-center gap-3">
-                      <span className="text-[18px] leading-none">{icon}</span>
-                      <span className="text-[13px] text-foreground/80 font-medium">{text}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
 
