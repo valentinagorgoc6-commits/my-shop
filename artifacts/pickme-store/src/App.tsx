@@ -1877,7 +1877,7 @@ function ProductPage() {
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-[20px] font-semibold text-[14px] transition-colors min-w-[120px]"
+                className="flex flex-col items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[120px]"
               >
                 <img src="https://www.avito.ru/favicon.ico" width={22} height={22} alt="" aria-hidden="true" />
                 <span>Профиль на<br/>Авито</span>
@@ -1888,7 +1888,7 @@ function ProductPage() {
                 href={product.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 bg-white text-primary px-8 py-4 rounded-[20px] font-bold text-[15px] hover:bg-[#fef1f6] transition-colors shadow-lg min-w-[140px]"
+                className="flex flex-col items-center gap-1.5 bg-white text-primary px-8 py-4 rounded-full font-bold text-[15px] hover:bg-[#fef1f6] transition-colors shadow-lg min-w-[140px]"
                 onClick={() => trackClick(product.id, "telegram_click")}
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1902,7 +1902,7 @@ function ProductPage() {
                 href="https://tinyurl.com/5h4bbmkr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-[20px] font-semibold text-[14px] transition-colors min-w-[120px]"
+                className="flex flex-col items-center gap-1.5 bg-white/20 hover:bg-white/30 text-white px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[120px]"
               >
                 <img src="https://max.ru/favicon.ico" width={22} height={22} alt="" aria-hidden="true" />
                 <span>Написать в<br/>MAX</span>
