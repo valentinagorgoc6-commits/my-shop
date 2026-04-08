@@ -1521,8 +1521,8 @@ function SimilarProducts({ currentId, category }: { currentId: number; category:
 
   return (
     <div className="mt-16">
-      <div className="mb-8">
-        <DecorBar align="left" />
+      <div className="mb-8 text-center">
+        <DecorBar />
         <h2 className="font-serif text-[26px] md:text-[32px] font-bold text-foreground">Тебе также понравится</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -1852,7 +1852,7 @@ function ProductPage() {
                 </div>
                 <div className="flex items-center gap-3 text-[13px] text-foreground/80 font-medium">
                   <span className="text-base">📸</span>
-                  <span>Живые фото — что видишь, то получишь</span>
+                  <span>Живые фото</span>
                 </div>
                 <div className="flex items-center gap-3 text-[13px] text-foreground/80 font-medium">
                   <span className="text-base">🚚</span>
