@@ -1543,6 +1543,9 @@ type ProductDetail = {
   category: string; badge: string | null; imageUrl: string; imageUrls?: string[];
   telegramUrl: string; avitoLink?: string | null; caption?: string | null;
   published: boolean; description?: string | null;
+  outerSeam?: number | null; innerSeam?: number | null; riseHeight?: number | null;
+  halfWaist?: number | null; halfHip?: number | null; halfLegOpening?: number | null;
+  model?: string | null;
 };
 
 function ProductPage() {
@@ -1554,6 +1557,7 @@ function ProductPage() {
   const [animating, setAnimating] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
+  const [measOpen, setMeasOpen] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const liveDragX = useRef(0);
   const touchStartX = useRef<number | null>(null);
@@ -1801,6 +1805,46 @@ function ProductPage() {
                   )}
                 </div>
               )}
+
+              {/* Measurements accordion — bottoms only */}
+              {product.category === "bottoms" && (() => {
+                const rows: { label: string; value: string }[] = [];
+                if (product.outerSeam != null) rows.push({ label: "Длина по внешнему шву", value: `${product.outerSeam} см` });
+                if (product.innerSeam != null) rows.push({ label: "Длина по внутреннему шву", value: `${product.innerSeam} см` });
+                if (product.riseHeight != null) rows.push({ label: "Высота посадки", value: `${product.riseHeight} см` });
+                if (product.halfWaist != null) rows.push({ label: "Полуобхват талии", value: `${product.halfWaist} см` });
+                if (product.halfHip != null) rows.push({ label: "Полуобхват бёдер", value: `${product.halfHip} см` });
+                if (product.halfLegOpening != null) rows.push({ label: "Полуобхват штанины внизу", value: `${product.halfLegOpening} см` });
+                if (product.model) rows.push({ label: "Модель", value: product.model });
+                if (rows.length === 0) return null;
+                return (
+                  <div className="rounded-xl border border-[#f7c6dc] overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setMeasOpen(v => !v)}
+                      className="flex items-center gap-2 w-full text-left text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors py-3 px-4 hover:bg-[#fef1f6]"
+                    >
+                      <span className="text-lg leading-none">📐</span>
+                      <span className="flex-1">Замеры</span>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ transform: measOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 220ms ease" }}>
+                        <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                    {measOpen && (
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                        <tbody>
+                          {rows.map(({ label, value }, i) => (
+                            <tr key={label} style={{ background: i % 2 === 0 ? "#fff" : "#fff9fc", borderBottom: i < rows.length - 1 ? "1px solid #fce4ef" : "none" }}>
+                              <td style={{ padding: "7px 12px", color: "#b0437a", fontWeight: 600, width: "60%" }}>{label}</td>
+                              <td style={{ padding: "7px 12px", color: "#374151", textAlign: "right" }}>{value}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Price */}
               <div className={`text-[34px] font-bold ${isSold ? "line-through text-muted-foreground" : "text-foreground"}`}>
