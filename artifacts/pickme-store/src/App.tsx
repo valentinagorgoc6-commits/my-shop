@@ -1683,7 +1683,7 @@ function ProductPage() {
             ← Назад в каталог
           </a>
 
-          <div className="flex flex-col md:flex-row gap-10 items-stretch">
+          <div className="flex flex-col md:flex-row gap-10 items-start">
             {/* ── Photo ── */}
             <div className="w-full md:w-1/2">
               <div
@@ -1742,7 +1742,7 @@ function ProductPage() {
             </div>
 
             {/* ── Info ── */}
-            <div className="w-full md:w-1/2 flex flex-col gap-5">
+            <div className="w-full md:w-1/2 md:aspect-[3/4] flex flex-col gap-5 min-h-0">
               {/* Brand + badges */}
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-[13px] font-bold tracking-[1.5px] uppercase text-primary">{product.brand}</span>
@@ -1854,7 +1854,7 @@ function ProductPage() {
 
               {/* Description — fills all remaining height, always ends at photo bottom */}
               {product.description && (
-                <div className="flex-1 overflow-hidden rounded-2xl p-5 flex flex-col gap-2" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
+                <div className="flex-1 min-h-0 overflow-hidden p-5 flex flex-col gap-2" style={{ borderRadius: 24, background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
                   <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50 shrink-0">О товаре</p>
                   <p className="text-[14px] text-foreground/80 leading-relaxed whitespace-pre-line overflow-hidden">{product.description}</p>
                 </div>
