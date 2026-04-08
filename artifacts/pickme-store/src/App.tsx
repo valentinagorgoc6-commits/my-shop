@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation, useParams } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { toast } from "@/hooks/use-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AdminPage from "@/pages/admin";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
@@ -1840,12 +1841,14 @@ function ProductPage() {
               {/* Share — always right after buy button */}
               <button
                 onClick={() => {
-                  const url = window.location.href;
-                  if (navigator.share) {
-                    navigator.share({ title: `${product.name} ${product.brand}`, url }).catch(() => {});
-                  } else {
-                    navigator.clipboard.writeText(url).then(() => {}).catch(() => {});
-                  }
+                  const url = `https://pickmestore.ru/product/${product.id}`;
+                  navigator.clipboard.writeText(url)
+                    .then(() => {
+                      toast({ title: "Ссылка скопирована ✓", duration: 2000 });
+                    })
+                    .catch(() => {
+                      toast({ title: "Не удалось скопировать ссылку", duration: 2000 });
+                    });
                 }}
                 className="w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[#fef1f6] transition-colors flex items-center justify-center gap-2"
               >
