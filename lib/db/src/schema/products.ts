@@ -24,6 +24,7 @@ export const productsTable = pgTable("products", {
   gender: text("gender").notNull().default("women"),
   sortOrder: integer("sort_order"),
   published: boolean("published").notNull().default(false),
+  description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
