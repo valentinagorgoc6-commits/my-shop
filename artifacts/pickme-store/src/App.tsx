@@ -1683,7 +1683,7 @@ function ProductPage() {
             ← Назад в каталог
           </a>
 
-          <div className="flex flex-col md:flex-row gap-10 items-start">
+          <div className="flex flex-col md:flex-row gap-10 items-stretch">
             {/* ── Photo ── */}
             <div className="w-full md:w-1/2">
               <div
