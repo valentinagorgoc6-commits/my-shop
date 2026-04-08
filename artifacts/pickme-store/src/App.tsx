@@ -1851,36 +1851,30 @@ function ProductPage() {
               >
                 🔗 Поделиться
               </button>
-            </div>
-          </div>
 
-          {/* ── Description + Guarantees (full width below photo/info) ── */}
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Description card — only if description exists */}
-            {product.description && (
-              <div className="rounded-2xl p-6 flex flex-col gap-3" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
-                <p className="text-[12px] font-bold uppercase tracking-[1.5px] text-primary/60">О товаре</p>
-                <p className="text-[15px] text-foreground/80 leading-relaxed whitespace-pre-line">{product.description}</p>
-              </div>
-            )}
+              {/* Description — below share button, fills remaining column height */}
+              {product.description && (
+                <div className="rounded-2xl p-5 flex flex-col gap-2 mt-auto" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
+                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50">О товаре</p>
+                  <p className="text-[14px] text-foreground/80 leading-relaxed whitespace-pre-line">{product.description}</p>
+                </div>
+              )}
 
-            {/* Guarantees card — full width when no description */}
-            <div
-              className={`rounded-2xl p-6 flex flex-col gap-4${!product.description ? " md:col-span-2" : ""}`}
-              style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}
-            >
-              <p className="text-[12px] font-bold uppercase tracking-[1.5px] text-primary/60">Почему PickMe</p>
-              <div className={`flex gap-6${!product.description ? " flex-row flex-wrap" : " flex-col"}`}>
-                {[
-                  { icon: "✅", text: "100% оригинал" },
-                  { icon: "📸", text: "Живые фото" },
-                  { icon: "🚚", text: "Доставка по всей России" },
-                ].map(({ icon, text }) => (
-                  <div key={text} className="flex items-center gap-3">
-                    <span className="text-[20px] leading-none">{icon}</span>
-                    <span className="text-[14px] text-foreground/80 font-medium">{text}</span>
-                  </div>
-                ))}
+              {/* Guarantees — always at the bottom of the column */}
+              <div className="rounded-2xl p-5 flex flex-col gap-3 mt-auto" style={{ background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
+                <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50">Почему PickMe</p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    { icon: "✅", text: "100% оригинал" },
+                    { icon: "📸", text: "Живые фото" },
+                    { icon: "🚚", text: "Доставка по всей России" },
+                  ].map(({ icon, text }) => (
+                    <div key={text} className="flex items-center gap-3">
+                      <span className="text-[18px] leading-none">{icon}</span>
+                      <span className="text-[13px] text-foreground/80 font-medium">{text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
