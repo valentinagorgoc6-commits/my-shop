@@ -1015,7 +1015,7 @@ function Catalog() {
         <div className="md:hidden">
           <div className="text-center mb-5 px-6">
             <DecorBar />
-            <h2 className="font-serif text-[30px] font-bold text-[#f04586] mt-2 leading-tight">тут все мои сокровища 🛍️</h2>
+            <h2 className="font-serif text-[30px] font-bold text-foreground mt-2 leading-tight">Тут все мои сокровища 🛍️</h2>
             <a
               href="/catalog"
               className="inline-block mt-4 w-[80%] py-4 rounded-full font-bold text-white text-base text-center transition-all"
