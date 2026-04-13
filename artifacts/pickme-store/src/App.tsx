@@ -466,7 +466,7 @@ function WhyPickMe() {
                 <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
               </div>
               <h3 className="font-serif text-[15px] md:text-xl font-bold text-foreground leading-tight">{f.title}</h3>
-              <p className="hidden md:block font-sans text-sm text-[#e8609a] mt-2 leading-snug">{f.desc}</p>
+              <p className="hidden md:block font-script text-[17px] text-[#e8609a] mt-2 leading-snug">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
