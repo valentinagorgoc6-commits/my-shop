@@ -1015,13 +1015,13 @@ function Catalog() {
         <div className="md:hidden">
           <div className="text-center mb-5 px-6">
             <DecorBar />
-            <p className="font-script text-[22px] font-medium text-[#e8609a] mt-2">тут все мои сокровища 🛍️</p>
+            <h2 className="font-serif text-[30px] font-bold text-[#f04586] mt-2 leading-tight">тут все мои сокровища 🛍️</h2>
             <a
               href="/catalog"
               className="inline-block mt-4 w-[80%] py-4 rounded-full font-bold text-white text-base text-center transition-all"
               style={{ background: "#f04586", boxShadow: "0 4px 20px rgba(240,69,134,0.45)" }}
             >
-              Открыть все сокровища
+              Смотреть весь каталог
             </a>
           </div>
           {allLoading ? (
