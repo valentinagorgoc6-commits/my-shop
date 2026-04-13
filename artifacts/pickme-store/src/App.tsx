@@ -315,7 +315,7 @@ function Hero() {
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
   return (
-    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-20 pb-12 relative overflow-hidden">
+    <section ref={ref} className="min-h-fit md:min-h-[100dvh] flex items-center px-6 pt-20 pb-12 relative overflow-hidden">
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)] pointer-events-none"
