@@ -453,20 +453,20 @@ function WhyPickMe() {
 
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className="grid md:grid-cols-2 gap-6"
+          className="grid grid-cols-2 gap-3 md:gap-6"
         >
           {features.map((f, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              className="why-card-hover glass-card rounded-[20px] p-8 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)]"
+              className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)]"
             >
               <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle,rgba(253,228,239,0.5)_0%,transparent_70%)] pointer-events-none" />
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-[#fef1f6] flex items-center justify-center mb-5">
-                {f.icon}
+              <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[#fef1f6] flex items-center justify-center mb-3 md:mb-5">
+                <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
               </div>
-              <h3 className="font-serif text-xl font-bold text-foreground mb-2">{f.title}</h3>
-              <p className="font-script text-[18px] font-medium text-[#e8609a] leading-snug">{f.desc}</p>
+              <h3 className="font-serif text-[15px] md:text-xl font-bold text-foreground mb-1 md:mb-2 leading-tight">{f.title}</h3>
+              <p className="font-script text-[13px] md:text-[18px] font-medium text-[#e8609a] leading-snug">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
