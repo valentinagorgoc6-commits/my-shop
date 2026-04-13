@@ -1006,12 +1006,24 @@ function Catalog() {
   return (
     <section id="catalog" className="pt-8 pb-12 md:py-24">
       <div className="max-w-[1100px] mx-auto">
-        <div className="px-6">
+        {/* Desktop: full section title */}
+        <div className="hidden md:block px-6">
           <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
         </div>
 
-        {/* Mobile: category horizontal scroll sections */}
+        {/* Mobile: subtitle + CTA + category sections */}
         <div className="md:hidden">
+          <div className="text-center mb-5 px-6">
+            <DecorBar />
+            <p className="font-script text-[22px] font-medium text-[#e8609a] mt-2">тут все мои сокровища 🛍️</p>
+            <a
+              href="/catalog"
+              className="inline-block mt-4 w-[80%] py-4 rounded-full font-bold text-white text-base text-center transition-all"
+              style={{ background: "#f04586", boxShadow: "0 4px 20px rgba(240,69,134,0.45)" }}
+            >
+              Открыть все сокровища
+            </a>
+          </div>
           {allLoading ? (
             <div className="px-6 text-center text-muted-foreground py-6 font-medium">Загрузка...</div>
           ) : (
