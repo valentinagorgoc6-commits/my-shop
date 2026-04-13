@@ -315,7 +315,7 @@ function Hero() {
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
   return (
-    <section ref={ref} className="min-h-[100dvh] flex items-center px-6 pt-20 pb-12 relative overflow-hidden">
+    <section ref={ref} className="min-h-fit md:min-h-[100dvh] flex items-center px-6 pt-20 pb-4 md:pb-12 relative overflow-hidden">
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)] pointer-events-none"
@@ -370,7 +370,7 @@ function Hero() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative mt-12 md:mt-0"
+          className="relative mt-12 md:mt-0 hidden md:block"
         >
           <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
             <img
@@ -447,26 +447,26 @@ function WhyPickMe() {
   );
 
   return (
-    <section className="py-24 px-6">
+    <section className="pt-8 pb-6 md:py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <SectionTitle titleNode={whyTitle} sub="мы не такие, мы особенные 💅" />
 
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className="grid md:grid-cols-2 gap-6"
+          className="grid grid-cols-2 gap-3 md:gap-6"
         >
           {features.map((f, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              className="why-card-hover glass-card rounded-[20px] p-8 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)]"
+              className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)] flex flex-col items-center text-center"
             >
               <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle,rgba(253,228,239,0.5)_0%,transparent_70%)] pointer-events-none" />
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-[#fef1f6] flex items-center justify-center mb-5">
-                {f.icon}
+              <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[#fef1f6] flex items-center justify-center mb-2 md:mb-4">
+                <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
               </div>
-              <h3 className="font-serif text-xl font-bold text-foreground mb-2">{f.title}</h3>
-              <p className="font-script text-[18px] font-medium text-[#e8609a] leading-snug">{f.desc}</p>
+              <h3 className="font-serif text-[15px] md:text-xl font-bold text-foreground leading-tight">{f.title}</h3>
+              <p className="hidden md:block font-script text-[17px] text-[#e8609a] mt-2 leading-snug">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -901,57 +901,167 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   );
 }
 
-// -- Catalog Section (landing page — featured only, max 6) --
-function Catalog() {
-  const { data: products, isLoading } = useGetProducts({ featured: true });
-  const featured = products ? products.slice(0, 6) : [];
-
+// -- Compact Card (mobile) --
+function CompactCard({ product }: { product: { id: number; brand: string; name: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; createdAt: string } }) {
+  const isSold = product.badge === "sold";
+  const isReserved = product.badge === "reserved";
+  const image = (product.imageUrls && product.imageUrls.length > 0) ? product.imageUrls[0] : product.imageUrl;
   return (
-    <section id="catalog" className="py-24 px-6">
-      <div className="max-w-[1100px] mx-auto">
-        <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
-
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
-                <div className="w-full aspect-[3/4] bg-secondary/50" />
-                <div className="p-5">
-                  <div className="h-3 w-16 bg-secondary rounded mb-2" />
-                  <div className="h-5 w-3/4 bg-secondary rounded mb-2" />
-                  <div className="h-4 w-1/4 bg-secondary rounded mb-4" />
-                  <div className="flex justify-between items-center">
-                    <div className="h-6 w-20 bg-secondary rounded" />
-                    <div className="h-10 w-10 bg-secondary rounded-full" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : featured.length > 0 ? (
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-          >
-            {featured.map((product) => (
-              <motion.div key={product.id} variants={fadeInUp} className="h-full">
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </motion.div>
+    <a
+      href={`/product/${product.id}`}
+      style={{ display: "flex", flexDirection: "column", background: "#fff", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(240,69,134,0.12)", boxShadow: "0 2px 8px rgba(61,32,48,0.06)", textDecoration: "none" }}
+    >
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "linear-gradient(135deg,#fef1f6,#fde8f2)", flexShrink: 0 }}>
+        {image ? (
+          <img src={image} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         ) : (
-          <div className="text-center py-20 text-muted-foreground font-medium">
-            <p>Скоро здесь появятся товары. Загляни позже!</p>
+          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👗</div>
+        )}
+        {isSold && (
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10 }}>
+            <div style={{ position: "absolute", top: 20, left: -28, width: 110, background: "#f04586", color: "#fff", textAlign: "center", transform: "rotate(-45deg)", fontSize: 9, fontWeight: 700, padding: "4px 0", letterSpacing: "0.08em" }}>ПРОДАНО</div>
           </div>
         )}
+        {isReserved && (
+          <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10 }}>
+            <div style={{ position: "absolute", top: 20, left: -28, width: 110, background: "#f97316", color: "#fff", textAlign: "center", transform: "rotate(-45deg)", fontSize: 9, fontWeight: 700, padding: "4px 0", letterSpacing: "0.08em" }}>БРОНЬ</div>
+          </div>
+        )}
+        {product.badge === "new" && !isSold && !isReserved && (
+          <div style={{ position: "absolute", top: 6, left: 6, zIndex: 10, padding: "2px 7px", borderRadius: 20, background: "#f7147a", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: "0.08em" }}>NEW</div>
+        )}
+      </div>
+      <div style={{ padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+        <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#e02163", letterSpacing: "0.06em", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.brand}</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "#1a1a2e", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.3 }}>{product.name}</p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 4, marginTop: 4 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: isSold ? "#9ca3af" : "#1a1a2e", textDecoration: isSold ? "line-through" : "none" }}>
+            {product.price.toLocaleString("ru-RU")} ₽
+          </span>
+          {isSold ? (
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20, background: "#f3f4f6", color: "#9ca3af" }}>Продано</span>
+          ) : isReserved ? (
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20, background: "#fff7ed", color: "#f97316" }}>Бронь</span>
+          ) : (
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 20, background: "#f7147a", color: "#fff" }}>Купить</span>
+          )}
+        </div>
+      </div>
+    </a>
+  );
+}
 
-        <div className="flex justify-center mt-12">
-          <a
-            href="/catalog"
-            className="inline-flex items-center gap-2 px-10 py-4 rounded-full border-2 border-primary text-primary font-bold text-base hover:bg-primary hover:text-white transition-all"
-          >
-            Смотреть весь ассортимент →
-          </a>
+// -- Category Scroll Sections (mobile home page) --
+const CAT_SCROLL_ORDER = [
+  { id: "shoes", label: "Обувь" },
+  { id: "tops", label: "Верх" },
+  { id: "bottoms", label: "Низ" },
+  { id: "accessories", label: "Аксессуары" },
+] as const;
+
+function CategoryScrollSections({ products }: { products: Array<{ id: number; brand: string; name: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; category: string; createdAt: string }> | undefined }) {
+  if (!products) return null;
+  const available = products.filter(p => p.badge !== "sold" && p.badge !== "reserved");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {CAT_SCROLL_ORDER.map(({ id, label }) => {
+        const items = available
+          .filter(p => p.category === id)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 8);
+        if (items.length < 2) return null;
+        return (
+          <div key={id}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", marginBottom: 8 }}>
+              <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, color: "#1a1a2e", margin: 0 }}>{label}</h3>
+              <a href={`/catalog?category=${id}`} style={{ fontSize: 13, fontWeight: 700, color: "#e02163", textDecoration: "none" }}>Смотреть все →</a>
+            </div>
+            <div
+              className="[&::-webkit-scrollbar]:hidden"
+              style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, padding: "0 16px 8px", scrollbarWidth: "none" } as React.CSSProperties}
+            >
+              {items.map(p => (
+                <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start" }}>
+                  <CompactCard product={p} />
+                </div>
+              ))}
+              <a
+                href={`/catalog?category=${id}`}
+                style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.7)", border: "2px solid rgba(240,69,134,0.2)", borderRadius: 10, color: "#e02163", fontSize: 22, fontWeight: 700, textDecoration: "none" }}
+              >→</a>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// -- Catalog Section (landing page — category scroll on mobile, featured grid on desktop) --
+function Catalog() {
+  const { data: featuredProducts, isLoading: featuredLoading } = useGetProducts({ featured: true });
+  const { data: allProducts, isLoading: allLoading } = useGetProducts();
+  const featured = featuredProducts ? featuredProducts.slice(0, 6) : [];
+
+  return (
+    <section id="catalog" className="pt-8 pb-12 md:py-24">
+      <div className="max-w-[1100px] mx-auto">
+        <div className="px-6">
+          <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
+        </div>
+
+        {/* Mobile: category horizontal scroll sections */}
+        <div className="md:hidden">
+          {allLoading ? (
+            <div className="px-6 text-center text-muted-foreground py-6 font-medium">Загрузка...</div>
+          ) : (
+            <CategoryScrollSections products={allProducts} />
+          )}
+        </div>
+
+        {/* Desktop: featured grid */}
+        <div className="hidden md:block px-6">
+          {featuredLoading ? (
+            <div className="grid grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
+                  <div className="w-full aspect-[3/4] bg-secondary/50" />
+                  <div className="p-5">
+                    <div className="h-3 w-16 bg-secondary rounded mb-2" />
+                    <div className="h-5 w-3/4 bg-secondary rounded mb-2" />
+                    <div className="h-4 w-1/4 bg-secondary rounded mb-4" />
+                    <div className="flex justify-between items-center">
+                      <div className="h-6 w-20 bg-secondary rounded" />
+                      <div className="h-10 w-10 bg-secondary rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : featured.length > 0 ? (
+            <motion.div
+              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
+              className="grid grid-cols-3 gap-6"
+            >
+              {featured.map((product) => (
+                <motion.div key={product.id} variants={fadeInUp} className="h-full">
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <div className="text-center py-20 text-muted-foreground font-medium">
+              <p>Скоро здесь появятся товары. Загляни позже!</p>
+            </div>
+          )}
+          <div className="flex justify-center mt-12">
+            <a
+              href="/catalog"
+              className="inline-flex items-center gap-2 px-10 py-4 rounded-full border-2 border-primary text-primary font-bold text-base hover:bg-primary hover:text-white transition-all"
+            >
+              Смотреть весь ассортимент →
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -992,7 +1102,12 @@ function applyDefaultSort<T extends { badge?: string | null; sortOrder?: number 
 
 // -- Full Catalog Page --
 function CatalogPage() {
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState<string>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get("category");
+    const valid = ["shoes", "tops", "bottoms", "accessories", "supplements"];
+    return cat && valid.includes(cat) ? cat : "all";
+  });
   const [genderFilter, setGenderFilter] = useState<"all" | "women" | "men">("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"default" | "newest" | "price_asc" | "price_desc">("default");
@@ -1150,25 +1265,48 @@ function CatalogPage() {
             </div>
 
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
-                    <div className="w-full aspect-[3/4] bg-secondary/50" />
-                    <div className="p-5">
-                      <div className="h-3 w-16 bg-secondary rounded mb-2" />
-                      <div className="h-5 w-3/4 bg-secondary rounded mb-2" />
-                      <div className="h-4 w-1/4 bg-secondary rounded mb-4" />
-                      <div className="flex justify-between items-center">
-                        <div className="h-6 w-20 bg-secondary rounded" />
-                        <div className="h-10 w-10 bg-secondary rounded-full" />
+              <>
+                {/* Mobile loading */}
+                <div className="md:hidden grid grid-cols-2 gap-2">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className="bg-white rounded-[10px] overflow-hidden border border-primary/10 animate-pulse">
+                      <div className="w-full aspect-square bg-secondary/50" />
+                      <div className="p-2">
+                        <div className="h-2.5 w-12 bg-secondary rounded mb-1" />
+                        <div className="h-3.5 w-3/4 bg-secondary rounded mb-2" />
+                        <div className="h-3 w-1/3 bg-secondary rounded" />
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+                {/* Desktop loading */}
+                <div className="hidden md:grid grid-cols-4 gap-6">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
+                      <div className="w-full aspect-[3/4] bg-secondary/50" />
+                      <div className="p-5">
+                        <div className="h-3 w-16 bg-secondary rounded mb-2" />
+                        <div className="h-5 w-3/4 bg-secondary rounded mb-2" />
+                        <div className="h-4 w-1/4 bg-secondary rounded mb-4" />
+                        <div className="flex justify-between items-center">
+                          <div className="h-6 w-20 bg-secondary rounded" />
+                          <div className="h-10 w-10 bg-secondary rounded-full" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : filtered.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {/* Mobile: 2-col compact grid */}
+                <div className="md:hidden grid grid-cols-2 gap-2">
+                  {visible.map((product) => (
+                    <CompactCard key={product.id} product={product} />
+                  ))}
+                </div>
+                {/* Desktop: 4-col full cards */}
+                <div className="hidden md:grid grid-cols-4 gap-6">
                   {visible.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
