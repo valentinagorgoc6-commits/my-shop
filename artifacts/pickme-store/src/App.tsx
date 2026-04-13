@@ -447,7 +447,7 @@ function WhyPickMe() {
   );
 
   return (
-    <section className="pt-8 pb-12 md:py-24 px-6">
+    <section className="pt-8 pb-6 md:py-24 px-6">
       <div className="max-w-5xl mx-auto">
         <SectionTitle titleNode={whyTitle} sub="мы не такие, мы особенные 💅" />
 
@@ -906,7 +906,7 @@ function Catalog() {
   const featured = products ? products.slice(0, 6) : [];
 
   return (
-    <section id="catalog" className="py-24 px-6">
+    <section id="catalog" className="pt-8 pb-12 md:py-24 px-6">
       <div className="max-w-[1100px] mx-auto">
         <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
 
