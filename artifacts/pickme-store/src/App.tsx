@@ -370,7 +370,7 @@ function Hero() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative mt-12 md:mt-0"
+          className="relative mt-12 md:mt-0 hidden md:block"
         >
           <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
             <img
