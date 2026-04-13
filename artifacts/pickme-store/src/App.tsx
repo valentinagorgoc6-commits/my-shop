@@ -963,7 +963,7 @@ function CategoryScrollSections({ products }: { products: Array<{ id: number; br
   if (!products) return null;
   const available = products.filter(p => p.badge !== "sold" && p.badge !== "reserved");
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
       {CAT_SCROLL_ORDER.map(({ id, label }) => {
         const items = available
           .filter(p => p.category === id)
@@ -971,23 +971,28 @@ function CategoryScrollSections({ products }: { products: Array<{ id: number; br
           .slice(0, 8);
         if (items.length < 2) return null;
         return (
-          <div key={id}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", marginBottom: 8 }}>
-              <h3 style={{ fontFamily: "Georgia, serif", fontSize: 18, fontWeight: 700, color: "#1a1a2e", margin: 0 }}>{label}</h3>
-              <a href={`/catalog?category=${id}`} style={{ fontSize: 13, fontWeight: 700, color: "#e02163", textDecoration: "none" }}>Смотреть все →</a>
+          <div key={id} style={{ background: "rgba(255,255,255,0.6)", borderRadius: 14, padding: 16, margin: "0 12px 12px" }}>
+            {/* Section header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 4, height: 20, background: "#f04586", borderRadius: 2, flexShrink: 0 }} />
+                <h3 style={{ fontSize: 17, fontWeight: 500, color: "#1a1a2e", margin: 0 }}>{label}</h3>
+              </div>
+              <a href={`/catalog?category=${id}`} style={{ fontSize: 12, fontWeight: 600, color: "#e02163", textDecoration: "none" }}>Смотреть все →</a>
             </div>
+            {/* Horizontal scroll */}
             <div
               className="[&::-webkit-scrollbar]:hidden"
-              style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, padding: "0 16px 8px", scrollbarWidth: "none" } as React.CSSProperties}
+              style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, paddingBottom: 4, scrollbarWidth: "none" } as React.CSSProperties}
             >
               {items.map(p => (
-                <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start" }}>
+                <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid rgba(0,0,0,0.06)", borderRadius: 10, overflow: "hidden" }}>
                   <CompactCard product={p} />
                 </div>
               ))}
               <a
                 href={`/catalog?category=${id}`}
-                style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.7)", border: "2px solid rgba(240,69,134,0.2)", borderRadius: 10, color: "#e02163", fontSize: 22, fontWeight: 700, textDecoration: "none" }}
+                style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(240,69,134,0.25)", borderRadius: 10, color: "#e02163", fontSize: 22, fontWeight: 700, textDecoration: "none" }}
               >→</a>
             </div>
           </div>
@@ -1006,12 +1011,24 @@ function Catalog() {
   return (
     <section id="catalog" className="pt-8 pb-12 md:py-24">
       <div className="max-w-[1100px] mx-auto">
-        <div className="px-6">
+        {/* Desktop: full section title */}
+        <div className="hidden md:block px-6">
           <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
         </div>
 
-        {/* Mobile: category horizontal scroll sections */}
+        {/* Mobile: subtitle + CTA + category sections */}
         <div className="md:hidden">
+          <div className="text-center mb-5 px-6">
+            <DecorBar />
+            <p className="font-script text-[30px] font-medium text-foreground mt-2 leading-tight whitespace-nowrap">Тут все мои сокровища 🛍️</p>
+            <a
+              href="/catalog"
+              className="inline-block mt-4 w-[80%] py-4 rounded-full font-bold text-white text-base text-center transition-all"
+              style={{ background: "#f04586", boxShadow: "0 4px 20px rgba(240,69,134,0.45)" }}
+            >
+              Смотреть весь каталог
+            </a>
+          </div>
           {allLoading ? (
             <div className="px-6 text-center text-muted-foreground py-6 font-medium">Загрузка...</div>
           ) : (
