@@ -757,12 +757,12 @@ function Hero() {
                 <img src="/hero-photo.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
               </div>
 
-              {/* Floating badges — male style: clean, no emojis, blue accent */}
+              {/* Floating badges — male style: glass with blur */}
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -top-4 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
-                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+                style={{ background: "color-mix(in srgb, var(--pm-card-bg) 75%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 ✓ Только оригиналы
               </motion.div>
@@ -770,7 +770,7 @@ function Hero() {
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
                 className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 px-5 py-3 rounded-2xl text-[13px] font-bold"
-                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+                style={{ background: "color-mix(in srgb, var(--pm-card-bg) 75%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 До −70% от розницы
               </motion.div>
@@ -778,7 +778,7 @@ function Hero() {
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
                 className="absolute bottom-8 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
-                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+                style={{ background: "color-mix(in srgb, var(--pm-card-bg) 75%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 Доставка по России
               </motion.div>
