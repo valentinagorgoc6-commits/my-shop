@@ -761,6 +761,7 @@ function Hero() {
 function WhyPickMe() {
   const { gender } = useTheme();
   const isMale = gender === "male";
+  if (isMale) return null;
   const features = isMale ? [
     { icon: <Check className="text-primary w-8 h-8" />, title: "Только оригиналы", desc: "Гарантия подлинности на каждый товар" },
     { icon: <Camera className="text-primary w-8 h-8" />, title: "Живые фото", desc: "Реальные фото с замерами — без фотошопа" },
