@@ -754,7 +754,7 @@ function Hero() {
           {isMale && (
             <>
               <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 48px rgba(0,0,0,0.32), 0 8px 20px rgba(0,0,0,0.18)", border: "1px solid var(--pm-primary-border)" }}>
-                <img src="/hero-photo.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
+                <img src="/hero-photo-male.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
               </div>
 
               {/* Floating badges — male style: glass with blur */}
