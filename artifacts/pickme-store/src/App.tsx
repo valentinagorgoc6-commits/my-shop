@@ -633,7 +633,7 @@ function Hero() {
   const isMale = gender === "male";
 
   return (
-    <section ref={ref} className={`flex items-center px-6 relative overflow-hidden ${isMale ? "pt-[60px] pb-[40px]" : "min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12"}`}>
+    <section ref={ref} className="flex items-center px-6 relative overflow-hidden min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12">
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none"
@@ -649,13 +649,13 @@ function Hero() {
         <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
       </motion.div>
 
-      <div className={`w-full relative z-10 ${isMale ? "max-w-[680px]" : "max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center"}`}>
+      <div className="max-w-6xl mx-auto w-full relative z-10 grid md:grid-cols-2 gap-12 md:gap-20 items-center">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className={isMale ? "text-left" : "text-center md:text-left"}
+          className="text-center md:text-left"
         >
           {/* Female version */}
           {!isMale && (
@@ -686,21 +686,24 @@ function Hero() {
           {/* Male version */}
           {isMale && (
             <>
-              <h1 className="font-serif text-[36px] md:text-[58px] font-bold leading-[1.1] text-foreground mb-2">
+              <h1 className="font-serif text-[36px] md:text-[58px] font-bold leading-[1.1] text-foreground mb-4">
                 {themeContent.male.hero.titleLine1}
                 <br />
-                <em className="italic not-italic" style={{ color: "var(--pm-primary)" }}>{themeContent.male.hero.titleLine2}</em>
+                <span style={{ color: "var(--pm-primary)" }}>{themeContent.male.hero.titleLine2}</span>
               </h1>
-              <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-md">
+              <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-md mx-auto md:mx-0">
                 {themeContent.male.hero.body}
               </p>
-              <div className="flex justify-start mb-8">
-                <a href="/catalog" className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-4 rounded-full font-bold text-base" data-testid="button-hero-catalog">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-8">
+                <a href="/catalog" className="btn-glow inline-flex items-center justify-center text-white px-8 py-4 rounded-full font-bold text-base" style={{ background: "var(--pm-primary)" }} data-testid="button-hero-catalog">
                   {themeContent.male.hero.ctaPrimary}
+                </a>
+                <a href="#about" className="inline-flex items-center justify-center bg-transparent border-2 text-muted-foreground px-7 py-4 rounded-full font-bold text-[15px] transition-all" style={{ borderColor: "var(--pm-primary-border)" }}>
+                  О магазине
                 </a>
               </div>
               {/* Badges row */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                 {themeContent.male.hero.badges.map((b) => (
                   <div key={b.title} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}>
                     <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-base shrink-0" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)" }}>
@@ -717,8 +720,8 @@ function Hero() {
           )}
         </motion.div>
 
-        {/* Right side — female only (photo + floating badges) */}
-        {!isMale && <motion.div
+        {/* Right side — photo column (both themes) */}
+        <motion.div
           style={{ y: badgesY }}
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -726,20 +729,15 @@ function Hero() {
           transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0 hidden md:block"
         >
-          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 64px color-mix(in srgb, var(--pm-primary) 18%, transparent), 0 8px 24px rgba(61,32,48,0.08)" }}>
-            <img
-              src="/hero-photo.png"
-              alt="PickMe Store — модная одежда"
-              className="w-full h-full object-cover object-center"
-            />
-          </div>
-
-          <motion.span animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 right-0 text-2xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</motion.span>
-          <motion.span animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</motion.span>
-          <motion.span animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✿</motion.span>
-
+          {/* Female: single tall photo with floating badges */}
           {!isMale && (
             <>
+              <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 64px color-mix(in srgb, var(--pm-primary) 18%, transparent), 0 8px 24px rgba(61,32,48,0.08)" }}>
+                <img src="/hero-photo.png" alt="PickMe Store — модная одежда" className="w-full h-full object-cover object-center" />
+              </div>
+              <motion.span animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 right-0 text-2xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</motion.span>
+              <motion.span animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</motion.span>
+              <motion.span animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✿</motion.span>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
                 💯 Только оригиналы
               </motion.div>
@@ -751,7 +749,40 @@ function Hero() {
               </motion.div>
             </>
           )}
-        </motion.div>}
+
+          {/* Male: 2×2 product photo grid */}
+          {isMale && (
+            <div className="w-full max-w-[440px] mx-auto">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { src: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", label: "Nike" },
+                  { src: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&q=80", label: "Casio" },
+                  { src: "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=400&q=80", label: "Carhartt" },
+                  { src: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80", label: "Lacoste" },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className="relative rounded-2xl overflow-hidden aspect-square"
+                    style={{ border: "1px solid var(--pm-primary-border)", background: "var(--pm-card-bg)" }}
+                  >
+                    <img src={item.src} alt={item.label} className="w-full h-full object-cover" />
+                    <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)" }}>
+                      <span className="text-[11px] font-bold text-white tracking-wide">{item.label}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              {/* Bottom label */}
+              <p className="text-center text-[12px] mt-4 font-medium" style={{ color: "var(--pm-text-muted)" }}>
+                и ещё сотни позиций в каталоге
+              </p>
+            </div>
+          )}
+        </motion.div>
       </div>
     </section>
   );
