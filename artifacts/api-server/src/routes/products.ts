@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, productsTable, insertProductSchema } from "@workspace/db";
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -29,8 +29,8 @@ type ValidGender = typeof VALID_GENDERS[number];
 
 // Public product list — only published=true
 router.get("/products", async (req, res) => {
-  const { category, featured, gender, giftSuggestion, limit: limitRaw, offset: offsetRaw } = req.query as {
-    category?: string; featured?: string; gender?: string; giftSuggestion?: string; limit?: string; offset?: string;
+  const { category, featured, gender, giftSuggestion, random, limit: limitRaw, offset: offsetRaw } = req.query as {
+    category?: string; featured?: string; gender?: string; giftSuggestion?: string; random?: string; limit?: string; offset?: string;
   };
   const limit = limitRaw !== undefined ? parseInt(limitRaw, 10) : undefined;
   const offset = offsetRaw !== undefined ? parseInt(offsetRaw, 10) : undefined;
@@ -59,7 +59,7 @@ router.get("/products", async (req, res) => {
       .select()
       .from(productsTable)
       .where(and(...conditions))
-      .orderBy(productsTable.createdAt)
+      .orderBy(random === "true" ? sql`RANDOM()` : productsTable.createdAt)
       .$dynamic();
     if (limit !== undefined && !isNaN(limit)) query = query.limit(limit);
     if (offset !== undefined && !isNaN(offset)) query = query.offset(offset);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation, useParams } from "wouter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,6 +49,100 @@ function trackClick(productId: number, actionType: "avito_click" | "telegram_cli
   } catch { /* silent */ }
 }
 // ─────────────────────────────────────────────────────────────────
+
+// ─── Custom products fetch hook (supports gender, giftSuggestion, random, limit) ──
+type ProductsParams = {
+  category?: string;
+  gender?: string;
+  giftSuggestion?: boolean;
+  random?: boolean;
+  limit?: number;
+  featured?: boolean;
+};
+
+function useProductsFetch(params: ProductsParams, enabled = true) {
+  const key = ["products-fetch", params];
+  return useQuery<Array<Record<string, unknown>>>({
+    queryKey: key,
+    queryFn: async () => {
+      const url = new URL("/api/products", window.location.origin);
+      if (params.category) url.searchParams.set("category", params.category);
+      if (params.gender) url.searchParams.set("gender", params.gender);
+      if (params.giftSuggestion) url.searchParams.set("giftSuggestion", "true");
+      if (params.random) url.searchParams.set("random", "true");
+      if (params.limit) url.searchParams.set("limit", String(params.limit));
+      if (params.featured) url.searchParams.set("featured", "true");
+      const res = await fetch(url.toString());
+      if (!res.ok) throw new Error("fetch error");
+      return res.json() as Promise<Array<Record<string, unknown>>>;
+    },
+    enabled,
+  });
+}
+
+// ─── Theme content ────────────────────────────────────────────────
+const themeContent = {
+  female: {
+    hero: {
+      badge: "✨ подберём лук и для пикми, и для её масика",
+      titleLine1: "Здесь твой",
+      titleEm: "total slay образ",
+      subtitle: "по цене даже ниже, чем пал твой бывший",
+      body: <>Оригиналы <strong className="text-foreground font-bold">Nike, Guess, Lacoste</strong> и других брендов — с живыми фото, примеркой на мне и честными ценами от 3 500 ₽. Доставка по всей России.</>,
+      ctaPrimary: "Смотреть каталог ↓",
+      ctaSecondary: "Узнать больше",
+    },
+    about: {
+      label: null as null | string,
+      title: <>Привет, я — <em className="italic text-primary">Валентинка</em></>,
+      sub: "та самая пикми-подружка, которая не бесит 💕",
+      paragraphs: [
+        "Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и кошелёк твоего масика.",
+        "Я люблю видеть женщин разными: от пикми до пацанок. Каждая индивидуальна и прекрасна в своём естестве. PickMe Store — мой маленький проект, в который я вкладываю всю себя: креатив, заботу и честный внимательный подход к каждому клиенту.",
+        "Здесь нет конвейера. Есть я, живые фото и желание, чтобы ты ушла довольной. Пиши в любое время, я почти всегда на связи, как будто меня до сих пор в любой момент могут вызвать в небо. Жду твоё сообщение так, как ещё год назад ждала звонка от планирования с фразой \"Валентина, нужно срочно слетать на Мальдивы, выручайте, пожалуйста\"",
+      ],
+      ctaLabel: "Написать в Telegram",
+    },
+    cta: {
+      title: <>Напиши мне — <em className="italic text-primary">подберу вещь под тебя</em></>,
+      sub: "отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️",
+      quote: null as null | string,
+      quoteHint: null as null | string,
+    },
+  },
+  male: {
+    hero: {
+      badge: null as null | string,
+      titleLine1: "Оригинальные товары популярных брендов",
+      titleLine2: "по низкой цене",
+      subtitle: null as null | string,
+      body: <>Nike, Adidas, Lacoste, Tommy Hilfiger, Calvin Klein, Guess и другие. Всё новое и оригинальное, со склада невыкупленных товаров известного магазина.</>,
+      ctaPrimary: "Смотреть весь каталог",
+      badges: [
+        { icon: "✓", title: "Оригинал", sub: "Гарантия подлинности" },
+        { icon: "₽", title: "Низкие цены", sub: "До −70% от розницы" },
+        { icon: "⚡", title: "Доставка", sub: "По всей России" },
+      ],
+    },
+    about: {
+      label: "Обо мне",
+      title: <>Привет, я Валентина</>,
+      sub: null as null | string,
+      paragraphs: [
+        "Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и помогаю подобрать подарок для «той самой».",
+        "PickMe Store — мой маленький проект, в который я вкладываю всю себя: креатив, заботу и честный внимательный подход к каждому клиенту.",
+        "Здесь нет конвейера. Есть я, живые фото и желание продуктивного сотрудничества, которое оставит приятное послевкусие для каждой из сторон. Пиши в любое время, я почти всегда на связи, как будто меня до сих пор в любой момент могут вызвать в небо. Жду твоё сообщение так, как ещё год назад ждала звонка от планирования с фразой «Валентина, нужно срочно слетать на Мальдивы, выручайте, пожалуйста»",
+      ],
+      ctaLabel: "Написать в Telegram",
+    },
+    cta: {
+      title: <>Остались вопросы?</>,
+      sub: "Выбери удобный способ связи 👇",
+      quote: "Я не смогу стать той, кто напишет тебе первой, но могу стать той самой, которая будет ждать твоё \"Привет\" и отвечать практически в любое время дня и ночи.",
+      quoteHint: null as null | string,
+    },
+  },
+} as const;
 
 // -- Animation Variants --
 const fadeInUp = {
@@ -533,17 +627,25 @@ function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  const { gender } = useTheme();
+  const isMale = gender === "male";
 
   return (
     <section ref={ref} className="min-h-fit md:min-h-[100dvh] flex items-center px-6 pt-20 pb-4 md:pb-12 relative overflow-hidden">
       <motion.div
         style={{ y: bgY }}
-        className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)] pointer-events-none"
-      />
+        className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none"
+        aria-hidden="true"
+      >
+        <div className="w-full h-full bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)]" style={{ opacity: isMale ? 0.4 : 1, transition: "opacity 0.4s ease" }} />
+      </motion.div>
       <motion.div
         style={{ y: bgY }}
-        className="absolute -bottom-[100px] -left-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)] pointer-events-none"
-      />
+        className="absolute -bottom-[100px] -left-[150px] w-[500px] h-[500px] pointer-events-none"
+        aria-hidden="true"
+      >
+        <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0.4 : 1, transition: "opacity 0.4s ease" }} />
+      </motion.div>
 
       <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
         <motion.div
@@ -553,37 +655,67 @@ function Hero() {
           variants={fadeInUp}
           className="text-center md:text-left"
         >
-          <div className="inline-block font-script text-[18px] font-medium mb-4 -rotate-2" style={{ color: "var(--pm-primary)" }}>
-            ✨ подберём лук и для пикми, и для её масика
-          </div>
-          <h1 className="font-serif text-[40px] md:text-[64px] font-bold leading-[1.1] text-foreground mb-2">
-            Здесь твой <em className="italic text-primary">total slay</em> образ
-          </h1>
-          <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-text-body)" }}>
-            по цене даже ниже, чем пал твой бывший
-          </p>
-          <p className="text-lg leading-relaxed text-muted-foreground mb-10 max-w-md mx-auto md:mx-0">
-            Оригиналы <strong className="text-foreground font-bold">Nike, Guess, Lacoste</strong> и других брендов — с живыми фото, примеркой на мне и честными ценами от 3 500 ₽. Доставка по всей России.
-          </p>
+          {/* Female version */}
+          {!isMale && (
+            <>
+              <div className="inline-block font-script text-[18px] font-medium mb-4 -rotate-2" style={{ color: "var(--pm-primary)" }}>
+                {themeContent.female.hero.badge}
+              </div>
+              <h1 className="font-serif text-[40px] md:text-[64px] font-bold leading-[1.1] text-foreground mb-2">
+                {themeContent.female.hero.titleLine1} <em className="italic text-primary">{themeContent.female.hero.titleEm}</em>
+              </h1>
+              <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-text-body)" }}>
+                {themeContent.female.hero.subtitle}
+              </p>
+              <p className="text-lg leading-relaxed text-muted-foreground mb-10 max-w-md mx-auto md:mx-0">
+                {themeContent.female.hero.body}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a href="#catalog" className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-4 rounded-full font-bold text-base" data-testid="button-hero-catalog">
+                  {themeContent.female.hero.ctaPrimary}
+                </a>
+                <a href="#about" className="inline-flex items-center justify-center bg-transparent border-2 border-secondary hover:border-[var(--pm-primary)] text-muted-foreground hover:text-primary px-7 py-4 rounded-full font-bold text-[15px] transition-all" data-testid="button-hero-about">
+                  {themeContent.female.hero.ctaSecondary}
+                </a>
+              </div>
+            </>
+          )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <a
-              href="#catalog"
-              className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-4 rounded-full font-bold text-base"
-              data-testid="button-hero-catalog"
-            >
-              Смотреть каталог ↓
-            </a>
-            <a
-              href="#about"
-              className="inline-flex items-center justify-center bg-transparent border-2 border-secondary hover:border-[var(--pm-primary)] text-muted-foreground hover:text-primary px-7 py-4 rounded-full font-bold text-[15px] transition-all"
-              data-testid="button-hero-about"
-            >
-              Узнать больше
-            </a>
-          </div>
+          {/* Male version */}
+          {isMale && (
+            <>
+              <h1 className="font-serif text-[36px] md:text-[58px] font-bold leading-[1.1] text-foreground mb-2">
+                {themeContent.male.hero.titleLine1}
+                <br />
+                <em className="italic not-italic" style={{ color: "var(--pm-primary)" }}>{themeContent.male.hero.titleLine2}</em>
+              </h1>
+              <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-md mx-auto md:mx-0">
+                {themeContent.male.hero.body}
+              </p>
+              <div className="flex justify-center md:justify-start mb-8">
+                <a href="/catalog" className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-4 rounded-full font-bold text-base" data-testid="button-hero-catalog">
+                  {themeContent.male.hero.ctaPrimary}
+                </a>
+              </div>
+              {/* Badges row — hidden on mobile */}
+              <div className="hidden md:flex gap-4">
+                {themeContent.male.hero.badges.map((b) => (
+                  <div key={b.title} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}>
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-base shrink-0" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)" }}>
+                      {b.icon}
+                    </div>
+                    <div>
+                      <div className="text-[13px] font-bold text-foreground leading-tight">{b.title}</div>
+                      <div className="text-[11px] text-muted-foreground leading-tight">{b.sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </motion.div>
 
+        {/* Right side — only shown for female on desktop, or male on desktop */}
         <motion.div
           style={{ y: badgesY }}
           initial={{ opacity: 0, scale: 0.9 }}
@@ -592,7 +724,7 @@ function Hero() {
           transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0 hidden md:block"
         >
-          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden shadow-[0_24px_64px_rgba(240,69,134,0.18),0_8px_24px_rgba(61,32,48,0.08)]">
+          <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 64px color-mix(in srgb, var(--pm-primary) 18%, transparent), 0 8px 24px rgba(61,32,48,0.08)" }}>
             <img
               src="/hero-photo.png"
               alt="PickMe Store — модная одежда"
@@ -600,54 +732,36 @@ function Hero() {
             />
           </div>
 
-          {/* Floating sparkle decorations */}
-          <motion.span
-            animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-4 right-0 text-2xl pointer-events-none select-none"
-            style={{ color: "var(--pm-primary)" }}
-            aria-hidden="true"
-          >✦</motion.span>
-          <motion.span
-            animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none"
-            style={{ color: "var(--pm-primary)" }}
-            aria-hidden="true"
-          >♡</motion.span>
-          <motion.span
-            animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none"
-            style={{ color: "var(--pm-primary)" }}
-            aria-hidden="true"
-          >✿</motion.span>
+          <motion.span animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 right-0 text-2xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</motion.span>
+          <motion.span animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</motion.span>
+          <motion.span animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✿</motion.span>
 
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold"
-            style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}
-          >
-            💯 Только оригиналы
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
-            className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold"
-            style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}
-          >
-            Живые фото 📸
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]"
-          >
-            Низкие цены 💰
-          </motion.div>
+          {!isMale && (
+            <>
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+                💯 Только оригиналы
+              </motion.div>
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }} className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+                Живые фото 📸
+              </motion.div>
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]">
+                Низкие цены 💰
+              </motion.div>
+            </>
+          )}
+          {isMale && (
+            <>
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+                💯 Только оригиналы
+              </motion.div>
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }} className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+                Новое с бирками 🏷️
+              </motion.div>
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]">
+                Низкие цены 💰
+              </motion.div>
+            </>
+          )}
         </motion.div>
       </div>
     </section>
@@ -1180,7 +1294,7 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
   );
 }
 
-// -- Category Scroll Sections (mobile home page) --
+// -- Category Scroll Sections (mobile home page, each section fetches own data) --
 const CAT_SCROLL_ORDER = [
   { id: "shoes", label: "Обувь" },
   { id: "tops", label: "Верх" },
@@ -1188,54 +1302,51 @@ const CAT_SCROLL_ORDER = [
   { id: "accessories", label: "Аксессуары" },
 ] as const;
 
-function CategoryScrollSections({ products }: { products: Array<{ id: number; brand: string; name: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; category: string; createdAt: string }> | undefined }) {
-  if (!products) return null;
-  const available = products.filter(p => p.badge !== "sold" && p.badge !== "reserved");
+function CategoryScrollSection({ catId, label, genderParam }: { catId: string; label: string; genderParam: string }) {
+  const { data: products } = useProductsFetch({ category: catId, gender: genderParam, random: true, limit: 8 });
+  const items = React.useMemo(() => {
+    if (!products) return [];
+    return (products as Array<{ id: number; brand: string; name: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; category: string; createdAt: string }>)
+      .filter(p => p.badge !== "sold" && p.badge !== "reserved");
+  }, [products]);
+  if (!items || items.length < 2) return null;
+  return (
+    <div style={{ background: "var(--pm-surface-alt)", borderRadius: 14, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 4, height: 20, background: "var(--pm-primary)", borderRadius: 2, flexShrink: 0, transition: "background 0.3s ease" }} />
+          <h3 style={{ fontSize: 17, fontWeight: 500, color: "var(--pm-text-heading)", margin: 0, transition: "color 0.3s ease" }}>{label}</h3>
+        </div>
+        <a href={`/catalog?category=${catId}`} style={{ fontSize: 12, fontWeight: 600, color: "var(--pm-primary)", textDecoration: "none", transition: "color 0.3s ease" }}>Смотреть все →</a>
+      </div>
+      <div className="[&::-webkit-scrollbar]:hidden" style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, paddingBottom: 4, scrollbarWidth: "none" } as React.CSSProperties}>
+        {items.map(p => (
+          <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid var(--pm-border)", borderRadius: 10, overflow: "hidden" }}>
+            <CompactCard product={p} />
+          </div>
+        ))}
+        <a href={`/catalog?category=${catId}`} style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--pm-surface)", border: "1.5px solid var(--pm-primary-border)", borderRadius: 10, color: "var(--pm-primary)", fontSize: 22, fontWeight: 700, textDecoration: "none", transition: "background 0.3s ease, color 0.3s ease, border-color 0.3s ease" }}>→</a>
+      </div>
+    </div>
+  );
+}
+
+function CategoryScrollSections({ genderParam }: { genderParam: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      {CAT_SCROLL_ORDER.map(({ id, label }) => {
-        const items = available
-          .filter(p => p.category === id)
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .slice(0, 8);
-        if (items.length < 2) return null;
-        return (
-          <div key={id} style={{ background: "var(--pm-surface-alt)", borderRadius: 14, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease" }}>
-            {/* Section header */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 4, height: 20, background: "var(--pm-primary)", borderRadius: 2, flexShrink: 0, transition: "background 0.3s ease" }} />
-                <h3 style={{ fontSize: 17, fontWeight: 500, color: "var(--pm-text-heading)", margin: 0, transition: "color 0.3s ease" }}>{label}</h3>
-              </div>
-              <a href={`/catalog?category=${id}`} style={{ fontSize: 12, fontWeight: 600, color: "var(--pm-primary)", textDecoration: "none", transition: "color 0.3s ease" }}>Смотреть все →</a>
-            </div>
-            {/* Horizontal scroll */}
-            <div
-              className="[&::-webkit-scrollbar]:hidden"
-              style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, paddingBottom: 4, scrollbarWidth: "none" } as React.CSSProperties}
-            >
-              {items.map(p => (
-                <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid var(--pm-border)", borderRadius: 10, overflow: "hidden" }}>
-                  <CompactCard product={p} />
-                </div>
-              ))}
-              <a
-                href={`/catalog?category=${id}`}
-                style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--pm-surface)", border: "1.5px solid var(--pm-primary-border)", borderRadius: 10, color: "var(--pm-primary)", fontSize: 22, fontWeight: 700, textDecoration: "none", transition: "background 0.3s ease, color 0.3s ease, border-color 0.3s ease" }}
-              >→</a>
-            </div>
-          </div>
-        );
-      })}
+      {CAT_SCROLL_ORDER.map(({ id, label }) => (
+        <CategoryScrollSection key={`${id}-${genderParam}`} catId={id} label={label} genderParam={genderParam} />
+      ))}
     </div>
   );
 }
 
 // -- Catalog Section (landing page — category scroll on mobile, featured grid on desktop) --
 function Catalog() {
-  const { data: featuredProducts, isLoading: featuredLoading } = useGetProducts({ featured: true });
-  const { data: allProducts, isLoading: allLoading } = useGetProducts();
-  const featured = featuredProducts ? featuredProducts.slice(0, 6) : [];
+  const { gender } = useTheme();
+  const genderParam = gender === "female" ? "women" : "men";
+  const { data: featuredProducts, isLoading: featuredLoading } = useProductsFetch({ featured: true, gender: genderParam });
+  const featured = featuredProducts ? (featuredProducts as Array<Record<string, unknown>>).slice(0, 6) : [];
 
   return (
     <section id="catalog" className="pt-8 pb-12 md:py-24">
@@ -1258,11 +1369,7 @@ function Catalog() {
               Смотреть весь каталог
             </a>
           </div>
-          {allLoading ? (
-            <div className="px-6 text-center text-muted-foreground py-6 font-medium">Загрузка...</div>
-          ) : (
-            <CategoryScrollSections products={allProducts} />
-          )}
+          <CategoryScrollSections genderParam={genderParam} />
         </div>
 
         {/* Desktop: featured grid */}
@@ -1289,9 +1396,9 @@ function Catalog() {
               initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
               className="grid grid-cols-3 gap-6"
             >
-              {featured.map((product) => (
-                <motion.div key={product.id} variants={fadeInUp} className="h-full">
-                  <ProductCard product={product} />
+              {(featured as Parameters<typeof ProductCard>[0]["product"][]).map((product) => (
+                <motion.div key={(product as {id: number}).id} variants={fadeInUp} className="h-full">
+                  <ProductCard product={product as Parameters<typeof ProductCard>[0]["product"]} />
                 </motion.div>
               ))}
             </motion.div>
@@ -1348,20 +1455,32 @@ function applyDefaultSort<T extends { badge?: string | null; sortOrder?: number 
 
 // -- Full Catalog Page --
 function CatalogPage() {
+  const { gender: themeGender } = useTheme();
   const [filter, setFilter] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get("category");
     const valid = ["shoes", "tops", "bottoms", "accessories", "supplements"];
     return cat && valid.includes(cat) ? cat : "all";
   });
-  const [genderFilter, setGenderFilter] = useState<"all" | "women" | "men">("all");
+  const [genderFilter, setGenderFilter] = useState<"all" | "women" | "men">(() =>
+    themeGender === "female" ? "women" : themeGender === "male" ? "men" : "all"
+  );
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<"default" | "newest" | "price_asc" | "price_desc">("default");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [hideSold, setHideSold] = useState(false);
 
-  const queryParam = filter !== "all" ? (filter as "shoes" | "tops" | "bottoms" | "accessories" | "supplements") : undefined;
-  const { data: allProducts, isLoading } = useGetProducts({ category: queryParam });
+  // Sync genderFilter when theme gender changes
+  React.useEffect(() => {
+    setGenderFilter(themeGender === "female" ? "women" : themeGender === "male" ? "men" : "all");
+  }, [themeGender]);
+
+  const queryParam = filter !== "all" ? filter : undefined;
+  const genderQueryParam = genderFilter !== "all" ? genderFilter : undefined;
+  const { data: allProducts, isLoading } = useProductsFetch({
+    category: queryParam,
+    gender: genderQueryParam,
+  });
 
   React.useEffect(() => {
     setVisibleCount(PAGE_SIZE);
@@ -1376,9 +1495,12 @@ function CatalogPage() {
     { id: "supplements", label: "БАД" },
   ];
 
+  type CatalogProduct = { id: number; brand: string; name: string; price: number; badge?: string | null; imageUrl: string; imageUrls?: string[]; category: string; createdAt: string; gender?: string | null; sortOrder?: number | null; telegramUrl?: string; avitoLink?: string | null; caption?: string | null; published?: boolean; size?: string };
+  const products = (allProducts ?? []) as CatalogProduct[];
+
   const filtered = React.useMemo(() => {
-    if (!allProducts) return [];
-    let list = [...allProducts];
+    if (!products) return [];
+    let list = [...products];
     if (hideSold) list = list.filter(p => p.badge !== "sold");
     if (genderFilter === "women") list = list.filter(p => p.gender === "women" || p.gender === "unisex");
     else if (genderFilter === "men") list = list.filter(p => p.gender === "men" || p.gender === "unisex");
@@ -1391,7 +1513,7 @@ function CatalogPage() {
     else if (sort === "newest") list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     else list = applyDefaultSort(list);
     return list;
-  }, [allProducts, genderFilter, search, sort, hideSold]);
+  }, [products, genderFilter, search, sort, hideSold]);
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
@@ -1607,6 +1729,9 @@ function CatalogPage() {
 
 // -- About Section --
 function About() {
+  const { gender } = useTheme();
+  const c = gender === "male" ? themeContent.male.about : themeContent.female.about;
+
   return (
     <section id="about" className="py-24 px-6">
       <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-12 md:gap-16 items-center">
@@ -1633,15 +1758,92 @@ function About() {
           transition={{ duration: 0.7 }}
         >
           <DecorBar align="responsive" />
+          {c.label && (
+            <p className="text-[11px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "var(--pm-primary)" }}>{c.label}</p>
+          )}
           <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
-            Привет, я — <em className="italic text-primary">Валентинка</em>
+            {c.title}
           </h2>
-          <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-primary)" }}>та самая пикми-подружка, которая не бесит 💕</p>
+          {c.sub && (
+            <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-primary)" }}>{c.sub}</p>
+          )}
 
           <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground">
-            <p>Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и кошелёк твоего масика.</p>
-            <p>Я люблю видеть женщин разными: от пикми до пацанок. Каждая индивидуальна и прекрасна в своём естестве. PickMe Store — мой маленький проект, в который я вкладываю всю себя: креатив, заботу и честный внимательный подход к каждому клиенту.</p>
-            <p>Здесь нет конвейера. Есть я, живые фото и желание, чтобы ты ушла довольной. Пиши в любое время, я почти всегда на связи, как будто меня до сих пор в любой момент могут вызвать в небо. Жду твоё сообщение так, как ещё год назад ждала звонка от планирования с фразой "Валентина, нужно срочно слетать на Мальдивы, выручайте, пожалуйста"</p>
+            {c.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+          </div>
+
+          <a
+            href="https://t.me/V_Limerence"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 mt-8 px-8 py-3 rounded-full font-bold text-[15px] transition-all hover:bg-[var(--pm-primary)] hover:text-white"
+            style={{ border: "2px solid var(--pm-primary)", color: "var(--pm-primary)" }}
+          >
+            {c.ctaLabel}
+          </a>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// -- Gift Section (male only) --
+function GiftSection() {
+  const { gender } = useTheme();
+  const { data: gifts } = useProductsFetch({ giftSuggestion: true, limit: 4 }, gender === "male");
+  if (gender !== "male") return null;
+  if (!gifts || gifts.length === 0) return null;
+
+  type GiftProduct = { id: number; brand: string; name: string; imageUrl: string; imageUrls?: string[] };
+  const items = gifts as unknown as GiftProduct[];
+
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-[1100px] mx-auto">
+        <motion.div
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+          className="rounded-[14px] p-8 md:p-10"
+          style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1 h-7 rounded-full shrink-0" style={{ background: "var(--pm-primary)" }} />
+            <h2 className="font-serif text-[26px] md:text-[32px] font-bold italic" style={{ color: "var(--pm-primary)" }}>
+              Подарок для неё
+            </h2>
+          </div>
+          <p className="text-[15px] text-muted-foreground mb-8 max-w-xl">
+            Отправь ссылку на вещь — она увидит подарок без цены. Стильно, лично и без неловких моментов.
+          </p>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {items.map(p => {
+              const img = (p.imageUrls && p.imageUrls.length > 0) ? p.imageUrls[0] : p.imageUrl;
+              return (
+                <a
+                  key={p.id}
+                  href={`/product/${p.id}`}
+                  className="flex flex-col rounded-xl overflow-hidden no-underline transition-all hover:-translate-y-1"
+                  style={{ border: "1px solid var(--pm-primary-border)", background: "var(--pm-card-bg)" }}
+                >
+                  <div className="w-full aspect-square overflow-hidden" style={{ background: "var(--pm-primary-light)" }}>
+                    {img ? <img src={img} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🎁</div>}
+                  </div>
+                  <div className="p-3 flex flex-col gap-1 flex-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--pm-primary)" }}>{p.brand}</p>
+                    <p className="text-[12px] font-semibold leading-snug" style={{ color: "var(--pm-text-heading)" }}>{p.name}</p>
+                    <div className="mt-auto pt-2 flex items-center gap-1 text-[13px] font-bold" style={{ color: "var(--pm-primary)" }}>
+                      <span>Подарить</span><span>🎁</span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+
+          <div className="mt-6">
+            <a href="/catalog" className="text-[14px] font-semibold" style={{ color: "var(--pm-primary)" }}>
+              Смотреть все →
+            </a>
           </div>
         </motion.div>
       </div>
@@ -1773,6 +1975,10 @@ function FAQ() {
 
 // -- Final CTA Section --
 function FinalCTA() {
+  const { gender } = useTheme();
+  const c = gender === "male" ? themeContent.male.cta : themeContent.female.cta;
+  const isMale = gender === "male";
+
   return (
     <section className="py-28 px-6 section-cta relative overflow-hidden text-center">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(249,176,208,0.3),transparent_60%)] pointer-events-none" />
@@ -1783,45 +1989,75 @@ function FinalCTA() {
       >
         <DecorBar />
         <h2 className="font-serif text-[32px] md:text-[48px] font-bold text-foreground mb-4">
-          Напиши мне — <em className="italic text-primary">подберу вещь под тебя</em>
+          {c.title}
         </h2>
-        <p className="font-script text-[22px] md:text-[24px] font-medium mb-10" style={{ color: "var(--pm-primary)" }}>
-          отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️
-        </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="https://t.me/V_Limerence"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary text-white px-10 py-5 rounded-full font-bold text-[17px] sm:order-2"
-            data-testid="button-final-cta"
-          >
-            Написать в Telegram ✈️
-          </a>
-          <a
-            href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-1"
-            style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
-            data-testid="button-final-avito"
-          >
-            <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
-            Профиль на Авито
-          </a>
-          <a
-            href="https://tinyurl.com/5h4bbmkr"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-3"
-            style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
-            data-testid="button-final-max"
-          >
-            <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
-            Написать в MAX
-          </a>
-        </div>
+        {/* Female: script subtitle */}
+        {!isMale && c.sub && (
+          <p className="font-script text-[22px] md:text-[24px] font-medium mb-10" style={{ color: "var(--pm-primary)" }}>
+            {c.sub}
+          </p>
+        )}
+
+        {/* Male: italic quote + hint */}
+        {isMale && c.quote && (
+          <>
+            <p className="font-serif text-[18px] md:text-[20px] italic mb-4 max-w-[580px] mx-auto" style={{ color: "var(--pm-text-body)", fontStyle: "italic" }}>
+              «{c.quote}»
+            </p>
+            <p className="text-[16px] font-medium mb-10 text-muted-foreground">{c.sub}</p>
+          </>
+        )}
+
+        {/* Female buttons layout (Авито | Telegram | MAX) */}
+        {!isMale && (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="https://t.me/V_Limerence" target="_blank" rel="noreferrer"
+              className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary text-white px-10 py-5 rounded-full font-bold text-[17px] sm:order-2"
+              data-testid="button-final-cta">
+              Написать в Telegram ✈️
+            </a>
+            <a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-1"
+              style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
+              data-testid="button-final-avito">
+              <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
+              Профиль на Авито
+            </a>
+            <a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-3"
+              style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
+              data-testid="button-final-max">
+              <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
+              Написать в MAX
+            </a>
+          </div>
+        )}
+
+        {/* Male buttons: Авито (secondary) | Telegram (primary, center) | MAX (secondary) */}
+        {isMale && (
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-colors"
+              style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
+              data-testid="button-final-avito">
+              <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
+              Авито
+            </a>
+            <a href="https://t.me/V_Limerence" target="_blank" rel="noreferrer"
+              className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary text-white px-10 py-5 rounded-full font-bold text-[17px]"
+              data-testid="button-final-cta">
+              Написать в Telegram ✈️
+            </a>
+            <a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-colors"
+              style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
+              data-testid="button-final-max">
+              <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
+              MAX
+            </a>
+          </div>
+        )}
       </motion.div>
     </section>
   );
@@ -1887,6 +2123,7 @@ function Home() {
         <Hero />
         <WhyPickMe />
         <Catalog />
+        <GiftSection />
         <About />
         <HowItWorks />
         <Reviews />
