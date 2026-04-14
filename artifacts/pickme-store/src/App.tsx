@@ -138,7 +138,7 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
           <button
             onClick={() => choose("female")}
             disabled={leaving}
-            className="w-[200px] rounded-[24px] p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95 group"
+            className="w-[200px] rounded-[24px] p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
             style={{
               background: "rgba(240,69,134,0.04)",
               borderColor: "rgba(240,69,134,0.25)",
@@ -153,9 +153,14 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
               (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(240,69,134,0.25)";
             }}
           >
-            <div className="text-5xl mb-4">👠</div>
-            <div className="font-serif text-[20px] font-bold mb-1" style={{ color: "#f04586" }}>Для неё</div>
-            <div className="text-[12px] font-medium" style={{ color: "#c08090" }}>Женская коллекция</div>
+            <div className="flex justify-center mb-4">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="20" r="12" stroke="#f04586" strokeWidth="1.75"/>
+                <line x1="24" y1="32" x2="24" y2="44" stroke="#f04586" strokeWidth="1.75" strokeLinecap="round"/>
+                <line x1="17" y1="38" x2="31" y2="38" stroke="#f04586" strokeWidth="1.75" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div className="font-serif text-[20px] font-bold" style={{ color: "#f04586" }}>Для неё</div>
           </button>
 
           <button
@@ -176,11 +181,20 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
               (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,116,196,0.25)";
             }}
           >
-            <div className="text-5xl mb-4">👟</div>
-            <div className="font-serif text-[20px] font-bold mb-1" style={{ color: "#0074c4" }}>Для него</div>
-            <div className="text-[12px] font-medium" style={{ color: "#4a7090" }}>Мужская коллекция</div>
+            <div className="flex justify-center mb-4">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="28" r="12" stroke="#0074c4" strokeWidth="1.75"/>
+                <line x1="29.5" y1="18.5" x2="42" y2="6" stroke="#0074c4" strokeWidth="1.75" strokeLinecap="round"/>
+                <polyline points="33,6 42,6 42,15" stroke="#0074c4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            </div>
+            <div className="font-serif text-[20px] font-bold" style={{ color: "#0074c4" }}>Для него</div>
           </button>
         </div>
+
+        <p className="mt-8 text-[12px] text-center" style={{ color: "#aaa" }}>
+          Не переживай — переключиться можно в любой момент в меню
+        </p>
       </div>
     </motion.div>
   );
