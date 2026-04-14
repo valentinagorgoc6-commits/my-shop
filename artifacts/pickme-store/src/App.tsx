@@ -65,11 +65,11 @@ function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsiv
   const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
   return (
     <div className={`flex items-center ${justifyClass} gap-3 mb-3`}>
-      <span className="text-[#f76da5] text-base md:text-xl">✦</span>
-      <div className="h-[2px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#f76da5] opacity-60" />
-      <span className="text-[#f76da5] text-lg md:text-3xl">💗</span>
-      <div className="h-[2px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#f76da5] opacity-60" />
-      <span className="text-[#f76da5] text-base md:text-xl">✦</span>
+      <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>
+      <div style={{ background: `linear-gradient(to right, transparent, var(--pm-primary))` }} className="h-[2px] w-12 md:w-20 opacity-60" />
+      <span style={{ color: "var(--pm-primary)" }} className="text-lg md:text-3xl">💗</span>
+      <div style={{ background: `linear-gradient(to left, transparent, var(--pm-primary))` }} className="h-[2px] w-12 md:w-20 opacity-60" />
+      <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>
     </div>
   );
 }
@@ -86,7 +86,7 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: Reac
       <h2 className="font-serif text-[32px] md:text-[44px] font-bold text-foreground mb-2">
         {titleNode ?? title}
       </h2>
-      <p className="font-script text-[22px] md:text-[24px] font-medium text-[#e8609a]">{sub}</p>
+      <p className="font-script text-[22px] md:text-[24px] font-medium" style={{ color: "var(--pm-primary)" }}>{sub}</p>
     </motion.div>
   );
 }
@@ -95,8 +95,9 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: Reac
 function LogoWord() {
   return (
     <span className="font-serif text-2xl font-bold no-underline tracking-tight">
-      <span className="text-[#e02163]">Pick</span><span className="font-script text-[26px] font-semibold text-[#f76da5]">Me</span>
-      <span className="text-[#e02163]"> Store</span>
+      <span style={{ color: "var(--pm-primary-hover)" }}>Pick</span>
+      <span className="font-script text-[26px] font-semibold" style={{ color: "var(--pm-primary)" }}>Me</span>
+      <span style={{ color: "var(--pm-primary-hover)" }}> Store</span>
     </span>
   );
 }
@@ -180,7 +181,7 @@ function Header() {
             href="https://t.me/V_Limerence"
             target="_blank"
             rel="noreferrer"
-            className="btn-glow bg-primary hover:bg-[#e02163] text-white px-6 py-2.5 rounded-full font-semibold text-sm"
+            className="btn-glow bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-6 py-2.5 rounded-full font-semibold text-sm"
             data-testid="button-nav-contact"
           >
             Написать мне
@@ -222,9 +223,9 @@ function Header() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="fixed top-0 right-0 bottom-0 z-[70] w-[300px] sm:w-[340px] flex flex-col"
               style={{
-                background: "linear-gradient(160deg, #fff5f9 0%, #fde4ef 100%)",
-                borderLeft: "1px solid rgba(247,109,165,0.2)",
-                boxShadow: "-8px 0 48px rgba(240,69,134,0.12)",
+                background: "linear-gradient(160deg, var(--pm-surface) 0%, var(--pm-bg-page) 100%)",
+                borderLeft: "1px solid var(--pm-primary-border)",
+                boxShadow: "-8px 0 48px color-mix(in srgb, var(--pm-primary) 12%, transparent)",
               }}
             >
               {/* Panel header */}
@@ -297,7 +298,7 @@ function Header() {
                 >
                   Написать мне ✈️
                 </a>
-                <p className="font-script text-[14px] text-[#f76da5] text-center mt-3">на связи 24/7 💕</p>
+                <p className="font-script text-[14px] text-center mt-3" style={{ color: "var(--pm-primary)" }}>на связи 24/7 💕</p>
               </div>
             </motion.div>
           </>
@@ -333,13 +334,13 @@ function Hero() {
           variants={fadeInUp}
           className="text-center md:text-left"
         >
-          <div className="inline-block font-script text-[18px] font-medium text-[#f76da5] mb-4 -rotate-2">
+          <div className="inline-block font-script text-[18px] font-medium mb-4 -rotate-2" style={{ color: "var(--pm-primary)" }}>
             ✨ подберём лук и для пикми, и для её масика
           </div>
           <h1 className="font-serif text-[40px] md:text-[64px] font-bold leading-[1.1] text-foreground mb-2">
             Здесь твой <em className="italic text-primary">total slay</em> образ
           </h1>
-          <p className="font-script text-[22px] md:text-[24px] font-medium text-[#6b4a5a] mb-6">
+          <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-text-body)" }}>
             по цене даже ниже, чем пал твой бывший
           </p>
           <p className="text-lg leading-relaxed text-muted-foreground mb-10 max-w-md mx-auto md:mx-0">
@@ -349,14 +350,14 @@ function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <a
               href="#catalog"
-              className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[#e02163] text-white px-8 py-4 rounded-full font-bold text-base"
+              className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-4 rounded-full font-bold text-base"
               data-testid="button-hero-catalog"
             >
               Смотреть каталог ↓
             </a>
             <a
               href="#about"
-              className="inline-flex items-center justify-center bg-transparent border-2 border-secondary hover:border-[#f76da5] text-muted-foreground hover:text-primary px-7 py-4 rounded-full font-bold text-[15px] transition-all"
+              className="inline-flex items-center justify-center bg-transparent border-2 border-secondary hover:border-[var(--pm-primary)] text-muted-foreground hover:text-primary px-7 py-4 rounded-full font-bold text-[15px] transition-all"
               data-testid="button-hero-about"
             >
               Узнать больше
@@ -384,26 +385,30 @@ function Hero() {
           <motion.span
             animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-4 right-0 text-[#f76da5] text-2xl pointer-events-none select-none"
+            className="absolute top-4 right-0 text-2xl pointer-events-none select-none"
+            style={{ color: "var(--pm-primary)" }}
             aria-hidden="true"
           >✦</motion.span>
           <motion.span
             animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-24 -right-2 text-[#fba2c8] text-xl pointer-events-none select-none"
+            className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none"
+            style={{ color: "var(--pm-primary)" }}
             aria-hidden="true"
           >♡</motion.span>
           <motion.span
             animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-            className="absolute top-1/3 -left-2 text-[#e8609a] text-lg pointer-events-none select-none"
+            className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none"
+            style={{ color: "var(--pm-primary)" }}
             aria-hidden="true"
           >✿</motion.span>
 
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-[#e02163] shadow-[0_8px_24px_rgba(240,69,134,0.22)]"
+            className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold"
+            style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}
           >
             💯 Только оригиналы
           </motion.div>
@@ -411,7 +416,8 @@ function Hero() {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
-            className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold text-[#e02163] shadow-[0_8px_24px_rgba(240,69,134,0.22)]"
+            className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold"
+            style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}
           >
             Живые фото 📸
           </motion.div>
@@ -442,7 +448,8 @@ function WhyPickMe() {
   const whyTitle = (
     <>
       Почему{" "}
-      <span className="text-[#e02163]">Pick</span><span className="font-script text-[28px] md:text-[40px] font-medium text-[#f76da5]">Me</span>?
+      <span style={{ color: "var(--pm-primary-hover)" }}>Pick</span>
+      <span className="font-script text-[28px] md:text-[40px] font-medium" style={{ color: "var(--pm-primary)" }}>Me</span>?
     </>
   );
 
@@ -462,11 +469,11 @@ function WhyPickMe() {
               className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)] flex flex-col items-center text-center"
             >
               <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle,rgba(253,228,239,0.5)_0%,transparent_70%)] pointer-events-none" />
-              <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[#fef1f6] flex items-center justify-center mb-2 md:mb-4">
+              <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[var(--pm-primary-bg)] flex items-center justify-center mb-2 md:mb-4">
                 <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
               </div>
               <h3 className="font-serif text-[15px] md:text-xl font-bold text-foreground leading-tight">{f.title}</h3>
-              <p className="hidden md:block font-script text-[17px] text-[#e8609a] mt-2 leading-snug">{f.desc}</p>
+              <p className="hidden md:block font-script text-[17px] mt-2 leading-snug" style={{ color: "var(--pm-primary)" }}>{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -642,7 +649,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
       {/* Carousel container */}
       <div
         ref={carouselRef}
-        className="relative w-full aspect-[3/4] overflow-hidden group flex-shrink-0 bg-gradient-to-br from-[#fef1f6] to-secondary"
+        className="relative w-full aspect-[3/4] overflow-hidden group flex-shrink-0 bg-gradient-to-br from-[var(--pm-primary-bg)] to-secondary"
         style={{ touchAction: "pan-y", cursor: "pointer" }}
         onClick={handleCarouselClick}
       >
@@ -691,7 +698,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               top: "28px",
               left: "-36px",
               width: "148px",
-              background: "#f04586",
+              background: "var(--pm-primary)",
               color: "#fff",
               textAlign: "center",
               transform: "rotate(-45deg)",
@@ -768,7 +775,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               <button
                 type="button"
                 onClick={() => setSizeChartOpen(v => !v)}
-                className="flex items-center gap-1.5 w-full text-left text-[12px] font-semibold text-primary/80 hover:text-primary transition-colors py-1.5 px-2.5 rounded-lg hover:bg-[#fef1f6]"
+                className="flex items-center gap-1.5 w-full text-left text-[12px] font-semibold text-primary/80 hover:text-primary transition-colors py-1.5 px-2.5 rounded-lg hover:bg-[var(--pm-primary-bg)]"
               >
                 <span className="text-base leading-none">📏</span>
                 <span className="flex-1">Таблица размеров</span>
@@ -782,14 +789,14 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
 
               {sizeChartOpen && (
                 <div
-                  className="mt-1 rounded-xl border border-[#f7c6dc] overflow-hidden"
-                  style={{ animation: "fadeIn 200ms ease" }}
+                  className="mt-1 rounded-xl overflow-hidden"
+                  style={{ border: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)", animation: "fadeIn 200ms ease" }}
                 >
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
                     <thead>
-                      <tr style={{ background: "#fde8f2" }}>
-                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>Стелька (см)</th>
-                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>RU</th>
+                      <tr style={{ background: "var(--pm-primary-bg)" }}>
+                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>Стелька (см)</th>
+                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>RU</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -797,8 +804,8 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                         <tr
                           key={row.cm}
                           style={{
-                            background: globalIdx === matchedRow ? "#fde8f2" : i % 2 === 0 ? "#fff" : "#fff9fc",
-                            borderBottom: i < arr.length - 1 ? "1px solid #fce4ef" : "none",
+                            background: globalIdx === matchedRow ? "var(--pm-primary-bg)" : i % 2 === 0 ? "#fff" : "color-mix(in srgb, var(--pm-primary) 4%, white)",
+                            borderBottom: i < arr.length - 1 ? "1px solid color-mix(in srgb, var(--pm-primary) 15%, white)" : "none",
                           }}
                         >
                           <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
@@ -840,7 +847,8 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           ) : (
             <a
               href={`/product/${product.id}`}
-              className="w-10 h-10 rounded-full bg-[#fef1f6] text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+              className="w-10 h-10 rounded-full text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+              style={{ background: "var(--pm-primary-bg)" }}
               data-testid={`button-buy-${product.id}`}
             >
               <ArrowRight size={18} />
@@ -872,7 +880,8 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               href={product.avitoLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              style={{ background: "var(--pm-primary-bg)" }}
               onClick={() => trackClick(product.id, "avito_click")}
             >
               <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
@@ -883,7 +892,8 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               href={product.telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#fef1f6] text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+              style={{ background: "var(--pm-primary-bg)" }}
               onClick={() => trackClick(product.id, "telegram_click")}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
@@ -893,7 +903,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             </a>
           )}
         </div>
-        <p className="font-script text-[18px] font-medium text-[#e8609a] mt-3 leading-tight min-h-[1.75rem]">
+        <p className="font-script text-[18px] font-medium mt-3 leading-tight min-h-[1.75rem]" style={{ color: "var(--pm-primary)" }}>
           {product.caption ?? ""}
         </p>
       </div>
@@ -909,9 +919,9 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
   return (
     <a
       href={`/product/${product.id}`}
-      style={{ display: "flex", flexDirection: "column", background: "#fff", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(240,69,134,0.12)", boxShadow: "0 2px 8px rgba(61,32,48,0.06)", textDecoration: "none" }}
+      style={{ display: "flex", flexDirection: "column", background: "var(--pm-card-bg)", borderRadius: 10, overflow: "hidden", border: "1px solid var(--pm-primary-border)", boxShadow: "0 2px 8px rgba(61,32,48,0.06)", textDecoration: "none", transition: "background 0.3s ease, border-color 0.3s ease" }}
     >
-      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "linear-gradient(135deg,#fef1f6,#fde8f2)", flexShrink: 0 }}>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "linear-gradient(135deg, var(--pm-primary-bg), var(--pm-primary-light))", flexShrink: 0 }}>
         {image ? (
           <img src={image} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         ) : (
@@ -919,7 +929,7 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
         )}
         {isSold && (
           <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 10 }}>
-            <div style={{ position: "absolute", top: 20, left: -28, width: 110, background: "#f04586", color: "#fff", textAlign: "center", transform: "rotate(-45deg)", fontSize: 9, fontWeight: 700, padding: "4px 0", letterSpacing: "0.08em" }}>ПРОДАНО</div>
+            <div style={{ position: "absolute", top: 20, left: -28, width: 110, background: "var(--pm-primary)", color: "#fff", textAlign: "center", transform: "rotate(-45deg)", fontSize: 9, fontWeight: 700, padding: "4px 0", letterSpacing: "0.08em" }}>ПРОДАНО</div>
           </div>
         )}
         {isReserved && (
@@ -928,14 +938,14 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
           </div>
         )}
         {product.badge === "new" && !isSold && !isReserved && (
-          <div style={{ position: "absolute", top: 6, left: 6, zIndex: 10, padding: "2px 7px", borderRadius: 20, background: "#f7147a", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: "0.08em" }}>NEW</div>
+          <div style={{ position: "absolute", top: 6, left: 6, zIndex: 10, padding: "2px 7px", borderRadius: 20, background: "var(--pm-primary)", color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: "0.08em" }}>NEW</div>
         )}
       </div>
       <div style={{ padding: "6px 8px 8px", display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-        <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "#e02163", letterSpacing: "0.06em", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.brand}</p>
-        <p style={{ fontSize: 12, fontWeight: 600, color: "#1a1a2e", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.3 }}>{product.name}</p>
+        <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "var(--pm-primary)", letterSpacing: "0.06em", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.brand}</p>
+        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pm-text-heading)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.3 }}>{product.name}</p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 4, marginTop: 4 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: isSold ? "#9ca3af" : "#1a1a2e", textDecoration: isSold ? "line-through" : "none" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: isSold ? "#9ca3af" : "var(--pm-text-heading)", textDecoration: isSold ? "line-through" : "none" }}>
             {product.price.toLocaleString("ru-RU")} ₽
           </span>
           {isSold ? (
@@ -943,7 +953,7 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
           ) : isReserved ? (
             <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20, background: "#fff7ed", color: "#f97316" }}>Бронь</span>
           ) : (
-            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 20, background: "#f7147a", color: "#fff" }}>Купить</span>
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 20, background: "var(--pm-primary)", color: "#fff" }}>Купить</span>
           )}
         </div>
       </div>
@@ -971,14 +981,14 @@ function CategoryScrollSections({ products }: { products: Array<{ id: number; br
           .slice(0, 8);
         if (items.length < 2) return null;
         return (
-          <div key={id} style={{ background: "rgba(255,255,255,0.6)", borderRadius: 14, padding: 16, margin: "0 12px 12px" }}>
+          <div key={id} style={{ background: "var(--pm-surface-alt)", borderRadius: 14, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease" }}>
             {/* Section header */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 4, height: 20, background: "#f04586", borderRadius: 2, flexShrink: 0 }} />
-                <h3 style={{ fontSize: 17, fontWeight: 500, color: "#1a1a2e", margin: 0 }}>{label}</h3>
+                <div style={{ width: 4, height: 20, background: "var(--pm-primary)", borderRadius: 2, flexShrink: 0, transition: "background 0.3s ease" }} />
+                <h3 style={{ fontSize: 17, fontWeight: 500, color: "var(--pm-text-heading)", margin: 0, transition: "color 0.3s ease" }}>{label}</h3>
               </div>
-              <a href={`/catalog?category=${id}`} style={{ fontSize: 12, fontWeight: 600, color: "#e02163", textDecoration: "none" }}>Смотреть все →</a>
+              <a href={`/catalog?category=${id}`} style={{ fontSize: 12, fontWeight: 600, color: "var(--pm-primary)", textDecoration: "none", transition: "color 0.3s ease" }}>Смотреть все →</a>
             </div>
             {/* Horizontal scroll */}
             <div
@@ -986,13 +996,13 @@ function CategoryScrollSections({ products }: { products: Array<{ id: number; br
               style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, paddingBottom: 4, scrollbarWidth: "none" } as React.CSSProperties}
             >
               {items.map(p => (
-                <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid rgba(0,0,0,0.06)", borderRadius: 10, overflow: "hidden" }}>
+                <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid var(--pm-border)", borderRadius: 10, overflow: "hidden" }}>
                   <CompactCard product={p} />
                 </div>
               ))}
               <a
                 href={`/catalog?category=${id}`}
-                style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.7)", border: "1.5px solid rgba(240,69,134,0.25)", borderRadius: 10, color: "#e02163", fontSize: 22, fontWeight: 700, textDecoration: "none" }}
+                style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--pm-surface)", border: "1.5px solid var(--pm-primary-border)", borderRadius: 10, color: "var(--pm-primary)", fontSize: 22, fontWeight: 700, textDecoration: "none", transition: "background 0.3s ease, color 0.3s ease, border-color 0.3s ease" }}
               >→</a>
             </div>
           </div>
@@ -1024,7 +1034,7 @@ function Catalog() {
             <a
               href="/catalog"
               className="inline-block mt-4 w-[80%] py-4 rounded-full font-bold text-white text-base text-center transition-all"
-              style={{ background: "#f04586", boxShadow: "0 4px 20px rgba(240,69,134,0.45)" }}
+              style={{ background: "var(--pm-primary)", boxShadow: "0 4px 20px color-mix(in srgb, var(--pm-primary) 45%, transparent)" }}
             >
               Смотреть весь каталог
             </a>
@@ -1197,7 +1207,7 @@ function CatalogPage() {
           <div className="max-w-[1100px] mx-auto">
             <div className="text-center mb-10">
               <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-3">Каталог</h1>
-              <p className="font-script text-2xl text-[#e8609a]">весь мой гардероб — выбирай своё ✨</p>
+              <p className="font-script text-2xl" style={{ color: "var(--pm-primary)" }}>весь мой гардероб — выбирай своё ✨</p>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -1243,7 +1253,7 @@ function CatalogPage() {
                   className={`px-5 py-2 rounded-full font-sans text-sm font-bold transition-all border-2 ${
                     genderFilter === g.id
                       ? "bg-primary border-primary text-white shadow-md"
-                      : "bg-transparent border-secondary text-muted-foreground hover:border-[#f76da5] hover:text-primary"
+                      : "bg-transparent border-secondary text-muted-foreground hover:border-[var(--pm-primary)] hover:text-primary"
                   }`}
                 >
                   {g.label}
@@ -1260,7 +1270,7 @@ function CatalogPage() {
                   className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 ${
                     filter === c.id
                       ? "bg-primary border-primary text-white shadow-md"
-                      : "bg-transparent border-secondary text-muted-foreground hover:border-[#f76da5] hover:text-primary"
+                      : "bg-transparent border-secondary text-muted-foreground hover:border-[var(--pm-primary)] hover:text-primary"
                   }`}
                 >
                   {c.label}
@@ -1407,7 +1417,7 @@ function About() {
           <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
             Привет, я — <em className="italic text-primary">Валентинка</em>
           </h2>
-          <p className="font-script text-[22px] md:text-[24px] font-medium text-[#e8609a] mb-6">та самая пикми-подружка, которая не бесит 💕</p>
+          <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-primary)" }}>та самая пикми-подружка, которая не бесит 💕</p>
 
           <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground">
             <p>Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и кошелёк твоего масика.</p>
@@ -1435,7 +1445,7 @@ function HowItWorks() {
         <SectionTitle title="Как это работает" sub="даже проще, чем пустить стрелку на новых колготках" />
 
         <div className="relative">
-          <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[#f76da5] to-secondary z-0" />
+          <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10">
             {steps.map((step, i) => (
               <motion.div
@@ -1446,7 +1456,7 @@ function HowItWorks() {
                 transition={{ duration: 0.5, delay: i * 0.12 }}
                 className="flex flex-col items-center text-center"
               >
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#f76da5] to-primary text-white font-serif text-[22px] font-bold flex items-center justify-center mb-5 shadow-[0_8px_24px_rgba(240,69,134,0.3)]">
+                <div className="w-14 h-14 rounded-full text-white font-serif text-[22px] font-bold flex items-center justify-center mb-5" style={{ background: "linear-gradient(135deg, var(--pm-primary), var(--pm-primary-hover))", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 30%, transparent)" }}>
                   {step.num}
                 </div>
                 <h3 className="font-serif text-[18px] font-bold text-foreground mb-2">{step.title}</h3>
@@ -1487,7 +1497,7 @@ function Reviews() {
               className="group bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col cursor-pointer transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <div className="flex text-[#f76da5] gap-1 mb-4">
+              <div className="flex gap-1 mb-4" style={{ color: "var(--pm-primary)" }}>
                 {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
               </div>
               <p className="italic text-[15px] leading-relaxed text-muted-foreground mb-6 flex-grow">«{r.text}»</p>
@@ -1524,7 +1534,8 @@ function FAQ() {
               <AccordionItem
                 key={i}
                 value={`item-${i}`}
-                className="glass-card border border-[rgba(251,162,200,0.2)] rounded-2xl px-6 data-[state=open]:border-[#fcc8df] transition-colors"
+                className="glass-card rounded-2xl px-6 transition-colors"
+              style={{ borderColor: "color-mix(in srgb, var(--pm-primary) 20%, transparent)", border: "1px solid color-mix(in srgb, var(--pm-primary) 20%, transparent)" }}
               >
                 <AccordionTrigger className="text-[16px] font-bold text-foreground hover:no-underline py-6 text-left">
                   {faq.q}
@@ -1555,7 +1566,7 @@ function FinalCTA() {
         <h2 className="font-serif text-[32px] md:text-[48px] font-bold text-foreground mb-4">
           Напиши мне — <em className="italic text-primary">подберу вещь под тебя</em>
         </h2>
-        <p className="font-script text-[22px] md:text-[24px] font-medium text-[#e8609a] mb-10">
+        <p className="font-script text-[22px] md:text-[24px] font-medium mb-10" style={{ color: "var(--pm-primary)" }}>
           отвечаю быстрее, чем ты свайпаешь влево, увидев имя Никита 🙅‍♀️
         </p>
 
@@ -1564,7 +1575,7 @@ function FinalCTA() {
             href="https://t.me/V_Limerence"
             target="_blank"
             rel="noreferrer"
-            className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#e02163] text-white px-10 py-5 rounded-full font-bold text-[17px] sm:order-2"
+            className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary text-white px-10 py-5 rounded-full font-bold text-[17px] sm:order-2"
             data-testid="button-final-cta"
           >
             Написать в Telegram ✈️
@@ -1573,7 +1584,8 @@ function FinalCTA() {
             href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-1"
+            className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-1"
+            style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
             data-testid="button-final-avito"
           >
             <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
@@ -1583,7 +1595,8 @@ function FinalCTA() {
             href="https://tinyurl.com/5h4bbmkr"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 bg-[#fde4ef] hover:bg-[#f9d4e5] text-[#e02163] px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-3"
+            className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-3"
+            style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
             data-testid="button-final-max"
           >
             <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
@@ -1599,36 +1612,40 @@ function FinalCTA() {
 function Footer() {
   return (
     <footer className="bg-foreground py-10 px-6 text-center">
-      <div className="font-serif text-xl font-bold text-[#fba2c8] mb-1">
-        <span className="text-[#fba2c8]">Pick</span><span className="font-script text-[24px] text-[#fcc8df]">Me</span>
-        <span className="text-[#fba2c8]"> Store</span>
+      <div className="font-serif text-xl font-bold mb-1" style={{ color: "var(--pm-primary)" }}>
+        <span style={{ color: "var(--pm-primary)" }}>Pick</span>
+        <span className="font-script text-[24px]" style={{ color: "var(--pm-primary-light)" }}>Me</span>
+        <span style={{ color: "var(--pm-primary)" }}> Store</span>
       </div>
-      <p className="text-[10px] text-[#fba2c8]/60 font-sans mb-4">ПикМи — магазин брендовых вещей</p>
+      <p className="text-[10px] font-sans mb-4" style={{ color: "color-mix(in srgb, var(--pm-primary) 60%, transparent)" }}>ПикМи — магазин брендовых вещей</p>
       <div className="flex items-center justify-center gap-6 mb-4">
         <a
           href="https://t.me/V_Limerence"
           target="_blank"
           rel="noreferrer"
-          className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold"
+          className="text-[13px] hover:text-white transition-colors font-semibold"
+          style={{ color: "var(--pm-primary)" }}
         >
           Telegram
         </a>
-        <span className="text-[#fba2c8]/30">·</span>
+        <span style={{ color: "color-mix(in srgb, var(--pm-primary) 30%, transparent)" }}>·</span>
         <a
           href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
           target="_blank"
           rel="noreferrer"
-          className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
+          className="text-[13px] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
+          style={{ color: "var(--pm-primary)" }}
         >
-          <span className="inline-flex w-4 h-4 rounded-full bg-[#fba2c8]/20 text-[#fba2c8] text-[9px] font-black items-center justify-center">A</span>
+          <span className="inline-flex w-4 h-4 rounded-full text-[9px] font-black items-center justify-center" style={{ background: "color-mix(in srgb, var(--pm-primary) 20%, transparent)", color: "var(--pm-primary)" }}>A</span>
           Авито
         </a>
-        <span className="text-[#fba2c8]/30">·</span>
+        <span style={{ color: "color-mix(in srgb, var(--pm-primary) 30%, transparent)" }}>·</span>
         <a
           href="https://tinyurl.com/5h4bbmkr"
           target="_blank"
           rel="noreferrer"
-          className="text-[13px] text-[#fba2c8] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
+          className="text-[13px] hover:text-white transition-colors font-semibold flex items-center gap-1.5"
+          style={{ color: "var(--pm-primary)" }}
         >
           <img src="https://max.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
           MAX
@@ -1818,7 +1835,7 @@ function ProductPage() {
         <Header />
         <main className="page-gradient min-h-screen pt-32 pb-24 px-6 flex flex-col items-center justify-center gap-6">
           <p className="font-serif text-3xl font-bold text-foreground">Товар не найден</p>
-          <a href="/catalog" className="btn-glow bg-primary hover:bg-[#e02163] text-white px-8 py-3 rounded-full font-bold text-sm">← Назад в каталог</a>
+          <a href="/catalog" className="btn-glow bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-3 rounded-full font-bold text-sm">← Назад в каталог</a>
         </main>
         <Footer />
       </>
@@ -1848,7 +1865,7 @@ function ProductPage() {
             <div className="w-full md:w-1/2">
               <div
                 ref={carouselRef}
-                className="relative w-full aspect-[3/4] overflow-hidden rounded-[24px] bg-gradient-to-br from-[#fef1f6] to-secondary"
+                className="relative w-full aspect-[3/4] overflow-hidden rounded-[24px] bg-gradient-to-br from-[var(--pm-primary-bg)] to-secondary"
                 style={{ touchAction: "pan-y" }}
               >
                 {images.length > 0 ? (
@@ -1878,7 +1895,7 @@ function ProductPage() {
                 {/* ПРОДАНО ribbon */}
                 {isSold && (
                   <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
-                    <div style={{ position: "absolute", top: "44px", left: "-52px", width: "210px", background: "#f04586", color: "#fff", textAlign: "center", transform: "rotate(-45deg)", fontSize: "15px", fontWeight: 700, padding: "8px 0", boxShadow: "0 2px 8px rgba(0,0,0,0.22)", letterSpacing: "0.08em" }}>ПРОДАНО</div>
+                    <div style={{ position: "absolute", top: "44px", left: "-52px", width: "210px", background: "var(--pm-primary)", color: "#fff", textAlign: "center", transform: "rotate(-45deg)", fontSize: "15px", fontWeight: 700, padding: "8px 0", boxShadow: "0 2px 8px rgba(0,0,0,0.22)", letterSpacing: "0.08em" }}>ПРОДАНО</div>
                   </div>
                 )}
                 {isReserved && (
@@ -1907,7 +1924,7 @@ function ProductPage() {
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-[13px] font-bold tracking-[1.5px] uppercase text-primary">{product.brand}</span>
                 {product.badge === "new" && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary">New</span>}
-                {isSold && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "#f04586" }}>Продано</span>}
+                {isSold && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "var(--pm-primary)" }}>Продано</span>}
                 {isReserved && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "#f97316" }}>Забронировано</span>}
               </div>
 
@@ -1915,7 +1932,7 @@ function ProductPage() {
               <h1 className="font-serif text-[28px] md:text-[36px] font-bold text-foreground leading-tight">{product.name}</h1>
 
               {/* Caption — space always reserved */}
-              <p className="font-script text-[22px] text-[#e8609a] leading-tight -mt-2 min-h-[28px]">
+              <p className="font-script text-[22px] leading-tight -mt-2 min-h-[28px]" style={{ color: "var(--pm-primary)" }}>
                 {product.caption ?? ""}
               </p>
 
@@ -1926,11 +1943,11 @@ function ProductPage() {
 
               {/* Size chart — shoes only */}
               {product.category === "shoes" && (
-                <div className="rounded-xl border border-[#f7c6dc] overflow-hidden">
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>
                   <button
                     type="button"
                     onClick={() => setSizeChartOpen(v => !v)}
-                    className="flex items-center gap-2 w-full text-left text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors py-3 px-4 hover:bg-[#fef1f6]"
+                    className="flex items-center gap-2 w-full text-left text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors py-3 px-4 hover:bg-[var(--pm-primary-bg)]"
                   >
                     <span className="text-lg leading-none">📏</span>
                     <span className="flex-1">Таблица размеров</span>
@@ -1941,16 +1958,16 @@ function ProductPage() {
                   {sizeChartOpen && (
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
                       <thead>
-                        <tr style={{ background: "#fde8f2" }}>
-                          <th style={{ padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>Стелька (см)</th>
-                          <th style={{ padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "#b0437a", borderBottom: "1px solid #f7c6dc" }}>RU</th>
+                        <tr style={{ background: "var(--pm-primary-bg)" }}>
+                          <th style={{ padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>Стелька (см)</th>
+                          <th style={{ padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>RU</th>
                         </tr>
                       </thead>
                       <tbody>
                         {getVisibleSizeRows(matchedRow).map(({ row, globalIdx }, i, arr) => (
-                          <tr key={row.cm} style={{ background: globalIdx === matchedRow ? "#fde8f2" : i % 2 === 0 ? "#fff" : "#fff9fc", borderBottom: i < arr.length - 1 ? "1px solid #fce4ef" : "none" }}>
-                            <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>{row.cm}</td>
-                            <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
+                          <tr key={row.cm} style={{ background: globalIdx === matchedRow ? "var(--pm-primary-bg)" : i % 2 === 0 ? "#fff" : "color-mix(in srgb, var(--pm-primary) 4%, white)", borderBottom: i < arr.length - 1 ? "1px solid color-mix(in srgb, var(--pm-primary) 15%, white)" : "none" }}>
+                            <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "var(--pm-primary-hover)" : "#374151" }}>{row.cm}</td>
+                            <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "var(--pm-primary-hover)" : "#374151" }}>
                               {row.ru}{globalIdx === matchedRow && <span style={{ marginLeft: 4, fontSize: 10 }}>◀</span>}
                             </td>
                           </tr>
@@ -1973,11 +1990,11 @@ function ProductPage() {
                 if (product.model) rows.push({ label: "Модель", value: product.model });
                 if (rows.length === 0) return null;
                 return (
-                  <div className="rounded-xl border border-[#f7c6dc] overflow-hidden">
+                  <div className="rounded-xl overflow-hidden" style={{ border: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>
                     <button
                       type="button"
                       onClick={() => setMeasOpen(v => !v)}
-                      className="flex items-center gap-2 w-full text-left text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors py-3 px-4 hover:bg-[#fef1f6]"
+                      className="flex items-center gap-2 w-full text-left text-[13px] font-semibold text-primary/80 hover:text-primary transition-colors py-3 px-4 hover:bg-[var(--pm-primary-bg)]"
                     >
                       <span className="text-lg leading-none">📐</span>
                       <span className="flex-1">Замеры</span>
@@ -1989,8 +2006,8 @@ function ProductPage() {
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
                         <tbody>
                           {rows.map(({ label, value }, i) => (
-                            <tr key={label} style={{ background: i % 2 === 0 ? "#fff" : "#fff9fc", borderBottom: i < rows.length - 1 ? "1px solid #fce4ef" : "none" }}>
-                              <td style={{ padding: "7px 12px", color: "#b0437a", fontWeight: 600, width: "60%" }}>{label}</td>
+                            <tr key={label} style={{ background: i % 2 === 0 ? "#fff" : "color-mix(in srgb, var(--pm-primary) 4%, white)", borderBottom: i < rows.length - 1 ? "1px solid color-mix(in srgb, var(--pm-primary) 15%, white)" : "none" }}>
+                              <td style={{ padding: "7px 12px", color: "var(--pm-primary-hover)", fontWeight: 600, width: "60%" }}>{label}</td>
                               <td style={{ padding: "7px 12px", color: "#374151", textAlign: "right" }}>{value}</td>
                             </tr>
                           ))}
@@ -2016,7 +2033,7 @@ function ProductPage() {
                   href={product.avitoLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[#e02163] transition-colors flex items-center justify-center gap-2 btn-glow"
+                  className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[var(--pm-primary-hover)] transition-colors flex items-center justify-center gap-2 btn-glow"
                   onClick={() => trackClick(product.id, "avito_click")}
                 >
                   <img src="https://www.avito.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" />
@@ -2027,7 +2044,7 @@ function ProductPage() {
                   href={product.telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[#e02163] transition-colors flex items-center justify-center gap-2 btn-glow"
+                  className="w-full py-4 rounded-full bg-primary text-white text-[15px] font-bold hover:bg-[var(--pm-primary-hover)] transition-colors flex items-center justify-center gap-2 btn-glow"
                   onClick={() => trackClick(product.id, "telegram_click")}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -2049,7 +2066,7 @@ function ProductPage() {
                       toast({ title: "Не удалось скопировать ссылку", duration: 2000 });
                     });
                 }}
-                className="w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[#fef1f6] transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[var(--pm-primary-bg)] transition-colors flex items-center justify-center gap-2"
               >
                 🔗 Поделиться
               </button>
@@ -2070,7 +2087,7 @@ function ProductPage() {
 
         {/* ── CTA block ── */}
         <div className="mt-16">
-          <div className="max-w-[700px] mx-auto rounded-[28px] p-8 md:p-12 text-center" style={{ background: "linear-gradient(135deg, #f7147a 0%, #f76da5 60%, #fbbcd8 100%)" }}>
+          <div className="max-w-[700px] mx-auto rounded-[28px] p-8 md:p-12 text-center" style={{ background: "linear-gradient(135deg, var(--pm-primary-hover) 0%, var(--pm-primary) 60%, var(--pm-primary-light) 100%)" }}>
             <p className="font-serif text-[24px] md:text-[30px] font-bold text-white mb-2">Есть вопросы по этому товару?</p>
             <p className="text-white/80 text-[15px] mb-8">Пиши мне, отвечу на все вопросы и помогу с выбором 💗</p>
             <div className="flex items-stretch justify-center gap-4 flex-wrap">
@@ -2079,7 +2096,7 @@ function ProductPage() {
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
+                className="flex items-center gap-3 bg-white hover:bg-[var(--pm-primary-bg)] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
               >
                 <img src="https://www.avito.ru/favicon.ico" width={24} height={24} alt="" aria-hidden="true" className="shrink-0" />
                 <span className="leading-snug">Профиль на<br/>Авито</span>
@@ -2090,7 +2107,7 @@ function ProductPage() {
                 href={product.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-9 py-5 rounded-full font-bold text-[16px] transition-colors shadow-lg min-w-[165px]"
+                className="flex items-center gap-3 bg-white hover:bg-[var(--pm-primary-bg)] text-primary px-9 py-5 rounded-full font-bold text-[16px] transition-colors shadow-lg min-w-[165px]"
                 onClick={() => trackClick(product.id, "telegram_click")}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
@@ -2104,7 +2121,7 @@ function ProductPage() {
                 href="https://tinyurl.com/5h4bbmkr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white hover:bg-[#fef1f6] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
+                className="flex items-center gap-3 bg-white hover:bg-[var(--pm-primary-bg)] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
               >
                 <img src="https://max.ru/favicon.ico" width={24} height={24} alt="" aria-hidden="true" className="shrink-0" />
                 <span className="leading-snug">Написать в<br/>MAX</span>

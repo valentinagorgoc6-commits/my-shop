@@ -1,0 +1,135 @@
+Двойная тема сайта. Этап 2 — CSS-переменные и ThemeContext.
+Сейчас все цвета в проекте захардкожены. Нужно перевести их на CSS-переменные и добавить React Context для переключения темы. Пока НЕ добавляй splash screen и НЕ меняй контент — только цветовая система.
+1. Подключи шрифты — добавь в index.html (или в head через React):
+Cormorant Garamond (weights: 400, 500, 600, italic)
+Montserrat (weights: 300, 400, 500, 600)
+Оба из Google Fonts. Они понадобятся для мужской темы.
+2. CSS-переменные — в глобальных стилях (index.css или global.css) добавь две темы через data-theme атрибут на <html>:
+css:root, [data-theme="female"] {
+  --color-primary: #f04586;
+  --color-primary-hover: #d63a75;
+  --color-primary-light: #fce4ec;
+  --color-primary-bg: rgba(240,69,134,0.06);
+  --color-primary-border: rgba(240,69,134,0.12);
+
+  --color-bg: #fdf0f4;
+  --color-bg-page: #f8e8ee;
+  --color-surface: rgba(255,255,255,0.8);
+  --color-surface-alt: rgba(255,255,255,0.6);
+  --color-card-bg: rgba(255,255,255,0.8);
+
+  --color-text-heading: #333;
+  --color-text-body: #555;
+  --color-text-muted: #888;
+
+  --color-border: rgba(0,0,0,0.06);
+  --color-border-hover: rgba(240,69,134,0.18);
+
+  --color-gift-bg: rgba(240,69,134,0.04);
+  --color-gift-border: rgba(240,69,134,0.10);
+  --color-gift-accent: #f04586;
+
+  --font-heading: 'Playfair Display', serif;
+  --font-accent: 'Caveat', cursive;
+  --font-body: 'Nunito', sans-serif;
+}
+
+[data-theme="male"] {
+  --color-primary: #0074c4;
+  --color-primary-hover: #005fa3;
+  --color-primary-light: rgba(0,100,190,0.06);
+  --color-primary-bg: rgba(0,100,190,0.06);
+  --color-primary-border: rgba(0,100,190,0.12);
+
+  --color-bg: #f4f5f7;
+  --color-bg-page: #eceef2;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f6f8fb;
+  --color-card-bg: #ffffff;
+
+  --color-text-heading: #1a1d28;
+  --color-text-body: #4a4f5c;
+  --color-text-muted: #8a90a0;
+
+  --color-border: rgba(0,0,0,0.06);
+  --color-border-hover: rgba(0,100,190,0.18);
+
+  --color-gift-bg: rgba(200,40,90,0.04);
+  --color-gift-border: rgba(200,40,90,0.10);
+  --color-gift-accent: #c0456e;
+
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-accent: 'Montserrat', sans-serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+[data-theme="male-dark"] {
+  --color-primary: #5aacf0;
+  --color-primary-hover: #4a9ae0;
+  --color-primary-light: rgba(90,172,240,0.06);
+  --color-primary-bg: rgba(90,172,240,0.08);
+  --color-primary-border: rgba(90,172,240,0.15);
+
+  --color-bg: #111118;
+  --color-bg-page: #0e0e14;
+  --color-surface: #161722;
+  --color-surface-alt: rgba(90,172,240,0.03);
+  --color-card-bg: #161722;
+
+  --color-text-heading: #e0e8f0;
+  --color-text-body: #c8ccd6;
+  --color-text-muted: #7a8090;
+
+  --color-border: rgba(90,172,240,0.10);
+  --color-border-hover: rgba(90,172,240,0.25);
+
+  --color-gift-bg: rgba(233,30,99,0.03);
+  --color-gift-border: rgba(233,30,99,0.12);
+  --color-gift-accent: #e091b0;
+
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-accent: 'Montserrat', sans-serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+3. ThemeContext — создай React Context:
+typescripttype ThemeGender = 'female' | 'male';
+type ThemeMode = 'light' | 'dark'; // dark доступен только для male
+
+interface ThemeContextType {
+  gender: ThemeGender;
+  mode: ThemeMode;
+  setGender: (g: ThemeGender) => void;
+  setMode: (m: ThemeMode) => void;
+  toggleMode: () => void;
+}
+Логика:
+
+При изменении gender или mode — ставить data-theme на <html>:
+
+female → data-theme="female"
+male + light → data-theme="male"
+male + dark → data-theme="male-dark"
+
+
+Сохранять в localStorage: ключ pickme-gender (female/male), ключ pickme-mode (light/dark)
+При загрузке — читать из localStorage. Если ничего нет — ставить female по умолчанию
+При переключении на female — mode автоматически сбрасывается на light (у женской версии нет тёмной темы)
+Обернуть всё приложение в <ThemeProvider>
+
+4. Замени хардкод-цвета — пройдись по всем компонентам и замени захардкоженные цвета на CSS-переменные:
+
+Все #f04586, pink, #fce4ec и похожие розовые → var(--color-primary), var(--color-primary-light) и т.д.
+Все фоны секций → var(--color-surface), var(--color-surface-alt)
+Все цвета текста → var(--color-text-heading), var(--color-text-body), var(--color-text-muted)
+Все бордеры → var(--color-border)
+Фон body → var(--color-bg)
+Шрифты заголовков → var(--font-heading), текста → var(--font-body)
+НЕ трогай цвет кнопки «Купить» (#fff на primary) и другие белые элементы на цветном фоне
+
+5. Все transition — добавь ко всем элементам, у которых меняется цвет или фон:
+csstransition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+ВАЖНО:
+
+После этого этапа сайт должен выглядеть ТОЧНО ТАК ЖЕ как сейчас (тема female по умолчанию)
+Переключение тем пока не видно пользователю — кнопки переключения будут добавлены в этапе 3
+Проверь, что в Preview всё выглядит одинаково до и после изменений
