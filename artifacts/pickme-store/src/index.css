@@ -332,6 +332,20 @@
   border-color: var(--pm-primary-border-hover);
 }
 
+/* Male: dark card bg + muted hover */
+[data-theme="male"] .product-card-hover,
+[data-theme="male-dark"] .product-card-hover {
+  background: var(--pm-card-bg);
+  border-color: var(--pm-border);
+}
+
+[data-theme="male"] .product-card-hover:hover,
+[data-theme="male-dark"] .product-card-hover:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  border-color: var(--pm-primary-border);
+  transform: translateY(-2px);
+}
+
 .product-card-hover:hover .product-img-zoom {
   transform: scale(1.07);
 }
@@ -352,6 +366,44 @@
   transform: translateY(-5px) scale(1.03);
   box-shadow: 0 16px 48px color-mix(in srgb, var(--pm-primary) 16%, transparent), 0 4px 16px rgba(61,32,48,0.06);
   border-color: var(--pm-primary-border-hover) !important;
+}
+
+/* Male: no glow, simple hover */
+[data-theme="male"] .why-card-hover:hover,
+[data-theme="male-dark"] .why-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+/* Male: hide the glow radial overlay */
+[data-theme="male"] .why-card-glow,
+[data-theme="male-dark"] .why-card-glow {
+  display: none;
+}
+
+/* ═══ SKELETON CARDS IN MALE THEME ═══ */
+[data-theme="male"] .animate-pulse,
+[data-theme="male-dark"] .animate-pulse {
+  background: var(--pm-card-bg);
+  border-color: var(--pm-border);
+}
+
+/* ═══ REVIEW CARD ═══ */
+.review-card {
+  background: white;
+}
+
+[data-theme="male"] .review-card,
+[data-theme="male-dark"] .review-card {
+  background: var(--pm-card-bg);
+  border-color: var(--pm-border);
+  box-shadow: none;
+}
+
+[data-theme="male"] .review-card:hover,
+[data-theme="male-dark"] .review-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
 }
 
 /* ═══ ABOUT PHOTO FRAME ═══ */

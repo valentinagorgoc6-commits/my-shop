@@ -633,7 +633,7 @@ function Hero() {
   const isMale = gender === "male";
 
   return (
-    <section ref={ref} className="min-h-fit md:min-h-[100dvh] flex items-center px-6 pt-20 pb-4 md:pb-12 relative overflow-hidden">
+    <section ref={ref} className={`flex items-center px-6 relative overflow-hidden ${isMale ? "pt-[60px] pb-[40px]" : "min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12"}`}>
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none"
@@ -655,7 +655,7 @@ function Hero() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
-          className="text-center md:text-left"
+          className={isMale ? "text-left" : "text-center md:text-left"}
         >
           {/* Female version */}
           {!isMale && (
@@ -691,16 +691,16 @@ function Hero() {
                 <br />
                 <em className="italic not-italic" style={{ color: "var(--pm-primary)" }}>{themeContent.male.hero.titleLine2}</em>
               </h1>
-              <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-md mx-auto md:mx-0">
+              <p className="text-lg leading-relaxed text-muted-foreground mb-8 max-w-md">
                 {themeContent.male.hero.body}
               </p>
-              <div className="flex justify-center md:justify-start mb-8">
+              <div className="flex justify-start mb-8">
                 <a href="/catalog" className="btn-glow inline-flex items-center justify-center bg-primary hover:bg-[var(--pm-primary-hover)] text-white px-8 py-4 rounded-full font-bold text-base" data-testid="button-hero-catalog">
                   {themeContent.male.hero.ctaPrimary}
                 </a>
               </div>
-              {/* Badges row — hidden on mobile */}
-              <div className="hidden md:flex gap-4">
+              {/* Badges row */}
+              <div className="flex flex-wrap gap-3">
                 {themeContent.male.hero.badges.map((b) => (
                   <div key={b.title} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}>
                     <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-base shrink-0" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)" }}>
@@ -798,7 +798,7 @@ function WhyPickMe() {
               className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden flex flex-col items-center text-center"
               style={{ border: "1px solid var(--pm-primary-border)" }}
             >
-              <div className="absolute top-0 right-0 w-[120px] h-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 20%, transparent) 0%, transparent 70%)" }} />
+              <div className="why-card-glow absolute top-0 right-0 w-[120px] h-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 20%, transparent) 0%, transparent 70%)" }} />
               <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[var(--pm-primary-bg)] flex items-center justify-center mb-2 md:mb-4">
                 <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
               </div>
@@ -975,7 +975,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   };
 
   return (
-    <div ref={cardRootRef} className="product-card-hover bg-white rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full">
+    <div ref={cardRootRef} className="product-card-hover rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full" style={{ background: "var(--pm-card-bg, white)" }}>
       {/* Carousel container */}
       <div
         ref={carouselRef}
@@ -1924,7 +1924,7 @@ function Reviews() {
               href={isMale ? undefined : "https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"}
               target={isMale ? undefined : "_blank"}
               rel={isMale ? undefined : "noopener noreferrer"}
-              className="group bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
+              className="review-card group rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
               style={{ textDecoration: "none", color: "inherit", cursor: isMale ? "default" : "pointer" }}
             >
               <div className="flex gap-1 mb-4" style={{ color: "var(--pm-primary)" }}>
@@ -2089,10 +2089,10 @@ function Footer() {
       style={{ background: isMale ? "var(--pm-surface)" : "hsl(var(--foreground))" }}
     >
       
-      <div className="font-serif text-xl font-bold mb-1" style={{ color: "var(--pm-primary)" }}>
+      <div className="font-serif text-xl font-bold mb-1">
         <span style={{ color: "var(--pm-primary)" }}>Pick</span>
-        <span className="font-script text-[24px]" style={{ color: "var(--pm-primary-light)" }}>Me</span>
-        <span style={{ color: "var(--pm-primary)" }}> Store</span>
+        <span className="font-script text-[24px]" style={{ color: isMale ? "var(--pm-primary)" : "var(--pm-primary-light)" }}>Me</span>
+        <span style={{ color: isMale ? "var(--pm-text-muted)" : "var(--pm-primary)" }}> Store</span>
       </div>
       <p className="text-[10px] font-sans mb-4" style={{ color: "color-mix(in srgb, var(--pm-primary) 60%, transparent)" }}>ПикМи — магазин брендовых вещей</p>
       <div className="flex items-center justify-center gap-6 mb-4">
