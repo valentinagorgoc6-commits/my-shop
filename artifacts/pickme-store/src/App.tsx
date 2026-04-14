@@ -750,37 +750,39 @@ function Hero() {
             </>
           )}
 
-          {/* Male: 2×2 product photo grid */}
+          {/* Male: same photo, badges in male style */}
           {isMale && (
-            <div className="w-full max-w-[440px] mx-auto">
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { src: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", label: "Nike" },
-                  { src: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&q=80", label: "Casio" },
-                  { src: "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=400&q=80", label: "Carhartt" },
-                  { src: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80", label: "Lacoste" },
-                ].map((item, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                    className="relative rounded-2xl overflow-hidden aspect-square"
-                    style={{ border: "1px solid var(--pm-primary-border)", background: "var(--pm-card-bg)" }}
-                  >
-                    <img src={item.src} alt={item.label} className="w-full h-full object-cover" />
-                    <div className="absolute bottom-0 left-0 right-0 px-3 py-2" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)" }}>
-                      <span className="text-[11px] font-bold text-white tracking-wide">{item.label}</span>
-                    </div>
-                  </motion.div>
-                ))}
+            <>
+              <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 48px rgba(0,0,0,0.32), 0 8px 20px rgba(0,0,0,0.18)", border: "1px solid var(--pm-primary-border)" }}>
+                <img src="/hero-photo.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
               </div>
-              {/* Bottom label */}
-              <p className="text-center text-[12px] mt-4 font-medium" style={{ color: "var(--pm-text-muted)" }}>
-                и ещё сотни позиций в каталоге
-              </p>
-            </div>
+
+              {/* Floating badges — male style: clean, no emojis, blue accent */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-4 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
+                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+              >
+                ✓ Только оригиналы
+              </motion.div>
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+                className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 px-5 py-3 rounded-2xl text-[13px] font-bold"
+                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+              >
+                До −70% от розницы
+              </motion.div>
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+                className="absolute bottom-8 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
+                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-text-heading)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+              >
+                Доставка по России
+              </motion.div>
+            </>
           )}
         </motion.div>
       </div>
