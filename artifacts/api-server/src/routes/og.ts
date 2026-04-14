@@ -105,7 +105,7 @@ router.get("/gift/:id", async (req, res) => {
   <meta charset="UTF-8">
   <title>${title} | PickMe Store</title>
   <meta property="og:title" content="${title}">
-  <meta property="og:description" content="Подарочная ссылка. Оригинальная брендовая вещь в PickMe Store">
+  <meta property="og:description" content="Подарочная ссылка — PickMe Store">
   <meta property="og:image" content="${imageUrl}">
   <meta property="og:url" content="https://pickmestore.ru/gift/${product.id}">
   <meta property="og:type" content="product">

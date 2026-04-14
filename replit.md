@@ -100,6 +100,10 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 - **Yandex.Metrika**: counter 108416864, injected in index.html + YmTracker component
 - **Product schema**: `imageUrls` (JSON text[]), `sku`, `purchasePrice`, `avitoLink`, `gender`, `sortOrder`, `published` (default false)
 - **Auth**: Bearer token via POST /api/admin/login; token stored in localStorage
+- **Gift page** (`/gift/:id`): Shareable product link with price hidden. Forces female (pink) theme on mount without saving to localStorage. Shows: photo carousel, brand, name, size, description, measurements. Hides: price, buy buttons, status badges. 404 state: "Этот подарок уже нашёл своего владельца 💝". No splash screen.
+- **Gift button** on `/product/:id`: Shown only when `giftSuggestion === true`. Uses Web Share API (mobile) or clipboard copy (desktop). Tooltip explains the mechanic.
+- **OG tags for `/gift/:id`**: Backend (og.ts) generates `og:title = brand + name`, `og:description = "Подарочная ссылка — PickMe Store"`, `og:image = first photo`. No price in any OG tags.
+- **Nginx note for production**: Add `/gift/` location block proxying to Express (same as `/product/`).
 
 ### `scripts` (`@workspace/scripts`)
 
