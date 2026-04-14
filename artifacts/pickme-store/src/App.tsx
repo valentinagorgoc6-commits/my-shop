@@ -7,9 +7,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import AdminPage from "@/pages/admin";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X } from "lucide-react";
+import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X, Moon, Sun } from "lucide-react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useGetProducts } from "@workspace/api-client-react";
+import { useTheme, type ThemeGender } from "@/context/ThemeContext";
 
 const queryClient = new QueryClient();
 
@@ -102,10 +103,94 @@ function LogoWord() {
   );
 }
 
+// -- Splash Screen --
+function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
+  const [leaving, setLeaving] = useState(false);
+
+  const choose = (g: ThemeGender) => {
+    if (leaving) return;
+    setLeaving(true);
+    setTimeout(() => onSelect(g), 420);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: leaving ? 0 : 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.42, ease: "easeInOut" }}
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-6"
+      style={{ background: "linear-gradient(135deg, #fff5f9 0%, #faf8ff 50%, #f5f9ff 100%)" }}
+    >
+      <div className="text-center max-w-lg w-full">
+        <div className="mb-1">
+          <span className="font-serif text-[40px] font-bold">
+            <span style={{ color: "#f04586" }}>Pick</span>
+            <span className="font-script text-[44px] font-semibold" style={{ color: "#f76da5" }}>Me</span>
+            <span style={{ color: "#2d1520" }}> Store</span>
+          </span>
+        </div>
+        <p className="font-script text-[22px] font-medium mb-10" style={{ color: "#b06090" }}>
+          Выбери свой стиль ✨
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
+          <button
+            onClick={() => choose("female")}
+            disabled={leaving}
+            className="w-[200px] rounded-[24px] p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95 group"
+            style={{
+              background: "rgba(240,69,134,0.04)",
+              borderColor: "rgba(240,69,134,0.25)",
+              boxShadow: "0 4px 20px rgba(240,69,134,0.08)",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 16px 48px rgba(240,69,134,0.22)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "#f04586";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(240,69,134,0.08)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(240,69,134,0.25)";
+            }}
+          >
+            <div className="text-5xl mb-4">👠</div>
+            <div className="font-serif text-[20px] font-bold mb-1" style={{ color: "#f04586" }}>Для неё</div>
+            <div className="text-[12px] font-medium" style={{ color: "#c08090" }}>Женская коллекция</div>
+          </button>
+
+          <button
+            onClick={() => choose("male")}
+            disabled={leaving}
+            className="w-[200px] rounded-[24px] p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
+            style={{
+              background: "rgba(0,116,196,0.04)",
+              borderColor: "rgba(0,116,196,0.25)",
+              boxShadow: "0 4px 20px rgba(0,116,196,0.08)",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 16px 48px rgba(0,116,196,0.22)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "#0074c4";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(0,116,196,0.08)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,116,196,0.25)";
+            }}
+          >
+            <div className="text-5xl mb-4">👟</div>
+            <div className="font-serif text-[20px] font-bold mb-1" style={{ color: "#0074c4" }}>Для него</div>
+            <div className="text-[12px] font-medium" style={{ color: "#4a7090" }}>Мужская коллекция</div>
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // -- Header --
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { gender, mode, setGender, toggleMode } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -133,10 +218,9 @@ function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between ${
-          scrolled
-            ? "glass-card border-b border-[rgba(251,162,200,0.2)] shadow-[0_4px_24px_rgba(240,69,134,0.06)]"
-            : "bg-transparent"
+          scrolled ? "glass-card shadow-[0_4px_24px_rgba(0,0,0,0.06)]" : "bg-transparent"
         }`}
+        style={scrolled ? { borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 20%, transparent)" } : undefined}
       >
         <a href="/" className="no-underline flex flex-col leading-none cursor-pointer" data-testid="link-logo">
           <LogoWord />
@@ -144,39 +228,87 @@ function Header() {
         </a>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6">
-          <ul className="flex gap-6 list-none m-0 p-0 items-center">
+        <nav className="hidden md:flex items-center gap-3">
+          <ul className="flex gap-5 list-none m-0 p-0 items-center mr-1">
             {navLinks.map((link) => (
               <li key={link.name}>
-                <a href={link.href} className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide" data-testid={`link-nav-${link.href.replace("#", "")}`}>
+                <a
+                  href={link.href}
+                  className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide"
+                  data-testid={`link-nav-${link.href.replace("#", "")}`}
+                >
                   {link.name}
                 </a>
               </li>
             ))}
-            <li>
-              <a
-                href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
-                data-testid="link-nav-avito"
-              >
-                <img src="https://www.avito.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
-                Авито
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://tinyurl.com/5h4bbmkr"
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
-              >
-                <img src="https://max.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
-                MAX
-              </a>
-            </li>
+            {gender === "female" && (
+              <>
+                <li>
+                  <a
+                    href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
+                    data-testid="link-nav-avito"
+                  >
+                    <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                    Авито
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://tinyurl.com/5h4bbmkr"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
+                  >
+                    <img src="https://max.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
+                    MAX
+                  </a>
+                </li>
+              </>
+            )}
           </ul>
+
+          {/* Female: "Для него" */}
+          {gender === "female" && (
+            <button
+              onClick={() => setGender("male")}
+              className="flex items-center gap-1.5 px-3 py-[7px] rounded-lg text-[12px] font-semibold transition-colors"
+              style={{ color: "#0074c4", background: "rgba(0,100,190,0.06)", border: "1px solid rgba(0,100,190,0.15)" }}
+              title="Мужская коллекция"
+            >
+              <span>👟</span>
+              <span>Для него</span>
+            </button>
+          )}
+
+          {/* Male: "Для неё" + mode toggle */}
+          {gender === "male" && (
+            <>
+              <button
+                onClick={() => setGender("female")}
+                className="flex items-center gap-1.5 px-3 py-[7px] rounded-lg text-[12px] font-semibold transition-colors"
+                style={{ color: "#f04586", background: "rgba(240,69,134,0.06)", border: "1px solid rgba(240,69,134,0.15)" }}
+                title="Женская коллекция"
+              >
+                <span>👠</span>
+                <span>Для неё</span>
+              </button>
+              <button
+                onClick={toggleMode}
+                className="flex items-center gap-1.5 px-3 py-[7px] rounded-lg text-[12px] font-semibold transition-colors"
+                style={{ background: "var(--pm-surface-alt)", border: "1px solid var(--pm-border)", color: "var(--pm-text-body)" }}
+                title={mode === "light" ? "Переключить на тёмную тему" : "Переключить на светлую тему"}
+              >
+                {mode === "light"
+                  ? <><Moon size={13} /><span>Тёмная</span></>
+                  : <><Sun size={13} /><span>Светлая</span></>
+                }
+              </button>
+            </>
+          )}
+
           <a
             href="https://t.me/V_Limerence"
             target="_blank"
@@ -188,22 +320,53 @@ function Header() {
           </a>
         </nav>
 
-        {/* Mobile burger */}
-        <button
-          className="md:hidden p-2 text-primary"
-          onClick={() => setMobileOpen(true)}
-          aria-label="Открыть меню"
-          data-testid="button-mobile-menu"
-        >
-          <Menu size={28} />
-        </button>
+        {/* Mobile: icon toggles + burger */}
+        <div className="md:hidden flex items-center gap-2">
+          {gender === "female" && (
+            <button
+              onClick={() => setGender("male")}
+              className="p-2 rounded-lg text-[17px] transition-colors"
+              style={{ color: "#0074c4", background: "rgba(0,100,190,0.08)", border: "1px solid rgba(0,100,190,0.18)" }}
+              aria-label="Мужская коллекция"
+            >
+              👟
+            </button>
+          )}
+          {gender === "male" && (
+            <>
+              <button
+                onClick={() => setGender("female")}
+                className="p-2 rounded-lg text-[17px] transition-colors"
+                style={{ color: "#f04586", background: "rgba(240,69,134,0.08)", border: "1px solid rgba(240,69,134,0.18)" }}
+                aria-label="Женская коллекция"
+              >
+                👠
+              </button>
+              <button
+                onClick={toggleMode}
+                className="p-2 rounded-lg text-[14px] font-semibold transition-colors"
+                style={{ background: "var(--pm-surface-alt)", border: "1px solid var(--pm-border)", color: "var(--pm-text-body)" }}
+                aria-label={mode === "light" ? "Тёмная тема" : "Светлая тема"}
+              >
+                {mode === "light" ? "☽" : "☀"}
+              </button>
+            </>
+          )}
+          <button
+            className="p-2 text-primary"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Открыть меню"
+            data-testid="button-mobile-menu"
+          >
+            <Menu size={28} />
+          </button>
+        </div>
       </header>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               key="backdrop"
               initial={{ opacity: 0 }}
@@ -214,7 +377,6 @@ function Header() {
               onClick={() => setMobileOpen(false)}
             />
 
-            {/* Panel */}
             <motion.div
               key="panel"
               initial={{ x: "100%" }}
@@ -229,7 +391,10 @@ function Header() {
               }}
             >
               {/* Panel header */}
-              <div className="flex items-center justify-between px-7 pt-7 pb-6 border-b border-[rgba(247,109,165,0.15)]">
+              <div
+                className="flex items-center justify-between px-7 pt-7 pb-6"
+                style={{ borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 15%, transparent)" }}
+              >
                 <a href="/" className="no-underline cursor-pointer" onClick={() => setMobileOpen(false)}>
                   <LogoWord />
                 </a>
@@ -259,36 +424,76 @@ function Header() {
                   </motion.a>
                 ))}
 
-                <motion.a
-                  href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
-                  target="_blank"
-                  rel="noreferrer"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 + navLinks.length * 0.07 }}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
-                >
-                  <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
-                  Авито
-                </motion.a>
-                <motion.a
-                  href="https://tinyurl.com/5h4bbmkr"
-                  target="_blank"
-                  rel="noreferrer"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 + navLinks.length * 0.07 + 0.07 }}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
-                >
-                  <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
-                  MAX
-                </motion.a>
+                {gender === "female" && (
+                  <>
+                    <motion.a
+                      href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+                      target="_blank"
+                      rel="noreferrer"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 + navLinks.length * 0.07 }}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
+                    >
+                      <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
+                      Авито
+                    </motion.a>
+                    <motion.a
+                      href="https://tinyurl.com/5h4bbmkr"
+                      target="_blank"
+                      rel="noreferrer"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 + navLinks.length * 0.07 + 0.07 }}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
+                    >
+                      <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
+                      MAX
+                    </motion.a>
+                  </>
+                )}
+
+                {/* Mobile menu gender/mode switches */}
+                <div className="mt-4 flex flex-col gap-2 px-1">
+                  {gender === "female" ? (
+                    <button
+                      onClick={() => { setGender("male"); setMobileOpen(false); }}
+                      className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors"
+                      style={{ color: "#0074c4", background: "rgba(0,100,190,0.06)", border: "1px solid rgba(0,100,190,0.15)" }}
+                    >
+                      <span className="text-xl">👟</span>
+                      Переключиться на мужскую тему
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => { setGender("female"); setMobileOpen(false); }}
+                        className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors"
+                        style={{ color: "#f04586", background: "rgba(240,69,134,0.06)", border: "1px solid rgba(240,69,134,0.15)" }}
+                      >
+                        <span className="text-xl">👠</span>
+                        Переключиться на женскую тему
+                      </button>
+                      <button
+                        onClick={() => { toggleMode(); setMobileOpen(false); }}
+                        className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors"
+                        style={{ background: "var(--pm-surface-alt)", border: "1px solid var(--pm-border)", color: "var(--pm-text-body)" }}
+                      >
+                        <span>{mode === "light" ? "☽" : "☀"}</span>
+                        {mode === "light" ? "Тёмная тема" : "Светлая тема"}
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Bottom CTA */}
-              <div className="px-7 pb-10 pt-4 border-t border-[rgba(247,109,165,0.15)]">
+              <div
+                className="px-7 pb-10 pt-4"
+                style={{ borderTop: "1px solid color-mix(in srgb, var(--pm-primary) 15%, transparent)" }}
+              >
                 <a
                   href="https://t.me/V_Limerence"
                   target="_blank"
@@ -2147,9 +2352,19 @@ function YmTracker() {
 }
 
 function Router() {
+  const [location] = useLocation();
+  const { hasChoice, setGender } = useTheme();
+
+  const showSplash = !hasChoice && location === "/";
+
   return (
     <>
       <YmTracker />
+      <AnimatePresence>
+        {showSplash && (
+          <SplashScreen key="splash" onSelect={setGender} />
+        )}
+      </AnimatePresence>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={AdminPage} />

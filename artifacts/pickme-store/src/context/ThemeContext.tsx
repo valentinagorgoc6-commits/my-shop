@@ -6,6 +6,7 @@ export type ThemeMode = "light" | "dark";
 interface ThemeContextType {
   gender: ThemeGender;
   mode: ThemeMode;
+  hasChoice: boolean;
   setGender: (g: ThemeGender) => void;
   setMode: (m: ThemeMode) => void;
   toggleMode: () => void;
@@ -14,6 +15,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({
   gender: "female",
   mode: "light",
+  hasChoice: false,
   setGender: () => {},
   setMode: () => {},
   toggleMode: () => {},
@@ -37,6 +39,11 @@ function writeStorage(key: string, value: string): void {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [hasChoice, setHasChoice] = useState<boolean>(() => {
+    const saved = readStorage("pickme-gender");
+    return saved === "female" || saved === "male";
+  });
+
   const [gender, setGenderState] = useState<ThemeGender>(() => {
     const saved = readStorage("pickme-gender");
     return saved === "female" || saved === "male" ? saved : "female";
@@ -61,6 +68,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       writeStorage("pickme-mode", "light");
     }
     setGenderState(g);
+    setHasChoice(true);
   };
 
   const setMode = (m: ThemeMode) => {
@@ -75,7 +83,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ gender, mode, setGender, setMode, toggleMode }}>
+    <ThemeContext.Provider value={{ gender, mode, hasChoice, setGender, setMode, toggleMode }}>
       {children}
     </ThemeContext.Provider>
   );
