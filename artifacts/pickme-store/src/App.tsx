@@ -1870,7 +1870,7 @@ function HowItWorks() {
         <SectionTitle title="Как это работает" sub={isMale ? undefined : "даже проще, чем пустить стрелку на новых колготках"} />
 
         <div className="relative">
-          <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />
+          {!isMale && <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10">
             {steps.map((step, i) => (
               <motion.div
@@ -1997,7 +1997,7 @@ function FinalCTA() {
 
   return (
     <section className="py-28 px-6 section-cta relative overflow-hidden text-center">
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--pm-primary) 18%, transparent), transparent 60%)" }} />
+      {!isMale && <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--pm-primary) 18%, transparent), transparent 60%)" }} />}
 
       <motion.div
         initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}

@@ -283,6 +283,12 @@
   z-index: 9999;
 }
 
+/* Male: flat background — hide noise texture and all decorative overlays */
+[data-theme="male"] .noise-overlay,
+[data-theme="male-dark"] .noise-overlay {
+  display: none;
+}
+
 /* ═══ SCRIPT FONT ═══ */
 .font-script {
   font-family: var(--pm-font-accent, var(--app-font-script));
