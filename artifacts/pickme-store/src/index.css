@@ -168,6 +168,10 @@
   --pm-font-accent: 'Montserrat', sans-serif;
   --pm-font-body: 'Montserrat', sans-serif;
 
+  /* Override Tailwind font vars so font-serif/font-sans classes use correct male fonts */
+  --app-font-sans: 'Montserrat', sans-serif;
+  --app-font-serif: 'Cormorant Garamond', serif;
+
   /* Override shadcn/Tailwind vars so utility classes (text-primary, bg-background, etc.) reflect male blue palette */
   --background: 220 11% 96%;
   --foreground: 220 22% 13%;
@@ -223,6 +227,10 @@
   --pm-font-heading: 'Cormorant Garamond', serif;
   --pm-font-accent: 'Montserrat', sans-serif;
   --pm-font-body: 'Montserrat', sans-serif;
+
+  /* Override Tailwind font vars so font-serif/font-sans classes use correct male fonts */
+  --app-font-sans: 'Montserrat', sans-serif;
+  --app-font-serif: 'Cormorant Garamond', serif;
 
   /* Override shadcn/Tailwind vars for dark male palette */
   --background: 240 10% 7%;
@@ -280,6 +288,14 @@
   font-family: var(--pm-font-accent, var(--app-font-script));
 }
 
+/* Male: override to Montserrat, non-italic */
+[data-theme="male"] .font-script,
+[data-theme="male-dark"] .font-script {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+}
+
 /* ═══ GLOW BUTTON ═══ */
 @keyframes glowPulse {
   0%, 100% { box-shadow: 0 0 12px 2px color-mix(in srgb, var(--pm-primary) 25%, transparent), 0 8px 32px color-mix(in srgb, var(--pm-primary) 20%, transparent); }
@@ -311,6 +327,24 @@
   transform: translateY(-4px);
   animation: none;
   box-shadow: 0 0 48px 16px color-mix(in srgb, var(--pm-primary) 60%, transparent), 0 20px 56px color-mix(in srgb, var(--pm-primary) 45%, transparent);
+}
+
+/* Male: disable pulsing glow — calm solid button */
+[data-theme="male"] .btn-glow,
+[data-theme="male-dark"] .btn-glow,
+[data-theme="male"] .btn-glow-strong,
+[data-theme="male-dark"] .btn-glow-strong {
+  animation: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="male"] .btn-glow:hover,
+[data-theme="male-dark"] .btn-glow:hover,
+[data-theme="male"] .btn-glow-strong:hover,
+[data-theme="male-dark"] .btn-glow-strong:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.24);
 }
 
 /* ═══ GLASS CARD ═══ */

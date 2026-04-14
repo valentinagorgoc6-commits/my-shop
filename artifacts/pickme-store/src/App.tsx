@@ -649,7 +649,7 @@ function Hero() {
         <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
       </motion.div>
 
-      <div className={`max-w-6xl mx-auto w-full relative z-10 ${isMale ? "max-w-[620px] w-full" : "grid md:grid-cols-2 gap-12 md:gap-20 items-center"}`}>
+      <div className={`w-full relative z-10 ${isMale ? "max-w-[680px]" : "max-w-6xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center"}`}>
         <motion.div
           initial="hidden"
           whileInView="visible"
