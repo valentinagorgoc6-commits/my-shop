@@ -1765,8 +1765,8 @@ function About() {
             <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-primary)" }}>{c.sub}</p>
           )}
 
-          <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground">
-            {c.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+          <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground font-sans">
+            {c.paragraphs.map((p, i) => <p key={i} style={{ fontFamily: "var(--pm-font-body, var(--font-sans))", fontStyle: "normal" }}>{p}</p>)}
           </div>
 
           <a
@@ -1804,7 +1804,7 @@ function GiftSection() {
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-7 rounded-full shrink-0" style={{ background: "var(--pm-gift-accent, var(--pm-primary))" }} />
-            <h2 className="font-serif text-[26px] md:text-[32px] font-bold italic" style={{ color: "var(--pm-primary)" }}>
+            <h2 className="text-[26px] md:text-[32px] font-semibold" style={{ fontFamily: "var(--pm-font-heading)", fontStyle: "italic", color: "var(--pm-gift-accent, var(--pm-primary))" }}>
               Подарок для неё
             </h2>
           </div>
@@ -2061,7 +2061,8 @@ function FinalCTA() {
               Авито
             </a>
             <a href="https://t.me/V_Limerence" target="_blank" rel="noreferrer"
-              className="btn-glow-strong inline-flex items-center justify-center gap-2 bg-primary text-white px-10 py-5 rounded-full font-bold text-[17px]"
+              className="btn-glow-strong inline-flex items-center justify-center gap-2 text-white px-10 py-5 rounded-full font-bold text-[17px]"
+              style={{ background: "var(--pm-primary)" }}
               data-testid="button-final-cta">
               Написать в Telegram ✈️
             </a>
@@ -2094,7 +2095,7 @@ function Footer() {
         <span className="font-script text-[24px]" style={{ color: isMale ? "var(--pm-primary)" : "var(--pm-primary-light)" }}>Me</span>
         <span style={{ color: isMale ? "var(--pm-text-muted)" : "var(--pm-primary)" }}> Store</span>
       </div>
-      <p className="text-[10px] font-sans mb-4" style={{ color: "color-mix(in srgb, var(--pm-primary) 60%, transparent)" }}>ПикМи — магазин брендовых вещей</p>
+      <p className="text-[10px] font-sans mb-4" style={{ color: isMale ? "var(--pm-text-muted)" : "color-mix(in srgb, var(--pm-primary) 60%, transparent)" }}>ПикМи — магазин брендовых {gender === "male" ? "товаров" : "вещей"}</p>
       <div className="flex items-center justify-center gap-6 mb-4">
         <a
           href="https://t.me/V_Limerence"

@@ -434,6 +434,17 @@
   box-shadow: none;
 }
 
+/* Ensure review body text is readable in male-dark */
+[data-theme="male-dark"] .review-card p {
+  color: var(--pm-text-body) !important;
+}
+[data-theme="male-dark"] .review-card .text-foreground {
+  color: var(--pm-text-heading) !important;
+}
+[data-theme="male-dark"] .review-card .text-muted-foreground {
+  color: var(--pm-text-muted) !important;
+}
+
 [data-theme="male"] .review-card:hover,
 [data-theme="male-dark"] .review-card:hover {
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
