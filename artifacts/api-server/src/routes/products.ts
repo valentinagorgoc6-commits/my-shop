@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, productsTable, insertProductSchema } from "@workspace/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -24,10 +24,13 @@ function formatProduct(p: { imageUrl: string; imageUrls: string | null; telegram
   };
 }
 
+const VALID_GENDERS = ["women", "men", "unisex"] as const;
+type ValidGender = typeof VALID_GENDERS[number];
+
 // Public product list — only published=true
 router.get("/products", async (req, res) => {
-  const { category, featured, limit: limitRaw, offset: offsetRaw } = req.query as {
-    category?: string; featured?: string; limit?: string; offset?: string;
+  const { category, featured, gender, giftSuggestion, limit: limitRaw, offset: offsetRaw } = req.query as {
+    category?: string; featured?: string; gender?: string; giftSuggestion?: string; limit?: string; offset?: string;
   };
   const limit = limitRaw !== undefined ? parseInt(limitRaw, 10) : undefined;
   const offset = offsetRaw !== undefined ? parseInt(offsetRaw, 10) : undefined;
@@ -38,6 +41,19 @@ router.get("/products", async (req, res) => {
     }
     if (featured === "true") {
       conditions.push(eq(productsTable.featured, true));
+    }
+    if (gender && (VALID_GENDERS as readonly string[]).includes(gender)) {
+      // women → women + unisex; men → men + unisex
+      if (gender === "women") {
+        conditions.push(or(eq(productsTable.gender, "women"), eq(productsTable.gender, "unisex"))!);
+      } else if (gender === "men") {
+        conditions.push(or(eq(productsTable.gender, "men"), eq(productsTable.gender, "unisex"))!);
+      } else {
+        conditions.push(eq(productsTable.gender, gender as ValidGender));
+      }
+    }
+    if (giftSuggestion === "true") {
+      conditions.push(eq(productsTable.giftSuggestion, true));
     }
     let query = db
       .select()

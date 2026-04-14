@@ -32,6 +32,7 @@ export const productsTable = pgTable("products", {
   halfHip: integer("half_hip"),
   halfLegOpening: integer("half_leg_opening"),
   model: text("model"),
+  giftSuggestion: boolean("gift_suggestion").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

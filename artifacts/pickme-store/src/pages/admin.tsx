@@ -32,6 +32,7 @@ interface Product {
   telegramUrl: string;
   avitoLink?: string | null;
   featured: boolean;
+  giftSuggestion: boolean;
   sku?: string | null;
   purchasePrice?: number | null;
   gender: Gender;
@@ -68,6 +69,7 @@ const EMPTY_FORM = {
   telegramUrl: "https://t.me/V_Limerence",
   avitoLink: "",
   featured: false,
+  giftSuggestion: false,
   sku: "",
   purchasePrice: "",
   gender: "women" as Gender,
@@ -219,6 +221,7 @@ function ProductForm({
           telegramUrl: initial.telegramUrl,
           avitoLink: initial.avitoLink ?? "",
           featured: initial.featured ?? false,
+          giftSuggestion: initial.giftSuggestion ?? false,
           sku: initial.sku ?? "",
           purchasePrice: initial.purchasePrice != null ? String(initial.purchasePrice) : "",
           gender: (initial.gender ?? "women") as Gender,
@@ -243,6 +246,7 @@ function ProductForm({
           telegramUrl: EMPTY_FORM.telegramUrl,
           avitoLink: EMPTY_FORM.avitoLink,
           featured: EMPTY_FORM.featured,
+          giftSuggestion: EMPTY_FORM.giftSuggestion,
           sku: EMPTY_FORM.sku,
           purchasePrice: EMPTY_FORM.purchasePrice,
           gender: EMPTY_FORM.gender,
@@ -359,6 +363,7 @@ function ProductForm({
       telegramUrl: form.telegramUrl,
       avitoLink: form.avitoLink.trim() || null,
       featured: form.featured,
+      giftSuggestion: form.giftSuggestion,
       sku: form.sku.trim() || null,
       purchasePrice: form.purchasePrice !== "" ? Number(form.purchasePrice) : null,
       gender: form.gender,
@@ -554,6 +559,10 @@ function ProductForm({
               <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, cursor: "pointer" }}>
                 <input type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} style={{ width: 16, height: 16, accentColor: "#f7147a" }} />
                 <span style={{ fontSize: 14 }}>Показывать в разделе «Новинки»</span>
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, cursor: "pointer" }}>
+                <input type="checkbox" checked={form.giftSuggestion} onChange={e => setForm(f => ({ ...f, giftSuggestion: e.target.checked }))} style={{ width: 16, height: 16, accentColor: "#f7147a" }} />
+                <span style={{ fontSize: 14 }}>Подходит для подарка 🎁</span>
               </label>
             </div>
           </div>

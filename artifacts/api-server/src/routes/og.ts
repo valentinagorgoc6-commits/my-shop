@@ -75,4 +75,51 @@ router.get("/product/:id", async (req, res) => {
   res.send(html);
 });
 
+router.get("/gift/:id", async (req, res) => {
+  const ua = req.headers["user-agent"] ?? "";
+  const id = Number(req.params.id);
+
+  if (!Number.isFinite(id)) {
+    res.sendFile(SPA_INDEX);
+    return;
+  }
+
+  const [product] = await db
+    .select()
+    .from(productsTable)
+    .where(eq(productsTable.id, id))
+    .limit(1);
+
+  if (!product || !isBot(ua)) {
+    res.sendFile(SPA_INDEX);
+    return;
+  }
+
+  const imageUrl = `https://pickmestore.ru${product.imageUrl.replace("/api/uploads/", "/uploads/")}`;
+  const title = `${product.brand} ${product.name} — PickMe Store`;
+  const pageUrl = `/gift/${product.id}`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${title} | PickMe Store</title>
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="Подарочная ссылка. Оригинальная брендовая вещь в PickMe Store">
+  <meta property="og:image" content="${imageUrl}">
+  <meta property="og:url" content="https://pickmestore.ru/gift/${product.id}">
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="PickMe Store">
+  <meta http-equiv="refresh" content="0;url=${pageUrl}">
+</head>
+<body>
+  <script>window.location.href='${pageUrl}'</script>
+</body>
+</html>`;
+
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=300");
+  res.send(html);
+});
+
 export default router;
