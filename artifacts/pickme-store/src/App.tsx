@@ -158,13 +158,13 @@ const staggerContainer = {
 // -- Shared Decorator Bar (bigger on desktop) --
 function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsive" }) {
   const { gender } = useTheme();
+  if (gender === "male") return null;
   const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
   return (
     <div className={`flex items-center ${justifyClass} gap-3 mb-3`}>
       <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>
       <div style={{ background: `linear-gradient(to right, transparent, var(--pm-primary))` }} className="h-[2px] w-12 md:w-20 opacity-60" />
-      {gender !== "male" && <span style={{ color: "var(--pm-primary)" }} className="text-lg md:text-3xl">💗</span>}
-      {gender === "male" && <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>}
+      <span style={{ color: "var(--pm-primary)" }} className="text-lg md:text-3xl">💗</span>
       <div style={{ background: `linear-gradient(to left, transparent, var(--pm-primary))` }} className="h-[2px] w-12 md:w-20 opacity-60" />
       <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>
     </div>
@@ -639,17 +639,17 @@ function Hero() {
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none"
         aria-hidden="true"
       >
-        <div className="w-full h-full bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)]" style={{ opacity: isMale ? 0.4 : 1, transition: "opacity 0.4s ease" }} />
+        <div className="w-full h-full bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
       </motion.div>
       <motion.div
         style={{ y: bgY }}
         className="absolute -bottom-[100px] -left-[150px] w-[500px] h-[500px] pointer-events-none"
         aria-hidden="true"
       >
-        <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0.4 : 1, transition: "opacity 0.4s ease" }} />
+        <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
       </motion.div>
 
-      <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
+      <div className={`max-w-6xl mx-auto w-full relative z-10 ${isMale ? "max-w-[620px] w-full" : "grid md:grid-cols-2 gap-12 md:gap-20 items-center"}`}>
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -717,8 +717,8 @@ function Hero() {
           )}
         </motion.div>
 
-        {/* Right side — only shown for female on desktop, or male on desktop */}
-        <motion.div
+        {/* Right side — female only (photo + floating badges) */}
+        {!isMale && <motion.div
           style={{ y: badgesY }}
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -751,20 +751,7 @@ function Hero() {
               </motion.div>
             </>
           )}
-          {isMale && (
-            <>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
-                💯 Только оригиналы
-              </motion.div>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }} className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
-                Новое с бирками 🏷️
-              </motion.div>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]">
-                Низкие цены 💰
-              </motion.div>
-            </>
-          )}
-        </motion.div>
+        </motion.div>}
       </div>
     </section>
   );
@@ -808,9 +795,10 @@ function WhyPickMe() {
             <motion.div
               key={i}
               variants={fadeInUp}
-              className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden border border-[rgba(251,162,200,0.2)] flex flex-col items-center text-center"
+              className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden flex flex-col items-center text-center"
+              style={{ border: "1px solid var(--pm-primary-border)" }}
             >
-              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-[radial-gradient(circle,rgba(253,228,239,0.5)_0%,transparent_70%)] pointer-events-none" />
+              <div className="absolute top-0 right-0 w-[120px] h-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 20%, transparent) 0%, transparent 70%)" }} />
               <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[var(--pm-primary-bg)] flex items-center justify-center mb-2 md:mb-4">
                 <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
               </div>
@@ -1812,10 +1800,10 @@ function GiftSection() {
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
           className="rounded-[14px] p-8 md:p-10"
-          style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}
+          style={{ background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)" }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-7 rounded-full shrink-0" style={{ background: "var(--pm-primary)" }} />
+            <div className="w-1 h-7 rounded-full shrink-0" style={{ background: "var(--pm-gift-accent, var(--pm-primary))" }} />
             <h2 className="font-serif text-[26px] md:text-[32px] font-bold italic" style={{ color: "var(--pm-primary)" }}>
               Подарок для неё
             </h2>
@@ -1832,7 +1820,7 @@ function GiftSection() {
                   key={p.id}
                   href={`/product/${p.id}`}
                   className="flex flex-col rounded-xl overflow-hidden no-underline transition-all hover:-translate-y-1"
-                  style={{ border: "1px solid var(--pm-primary-border)", background: "var(--pm-card-bg)" }}
+                  style={{ border: "1px solid var(--pm-gift-border, var(--pm-primary-border))", background: "var(--pm-card-bg)" }}
                 >
                   <div className="w-full aspect-square overflow-hidden" style={{ background: "var(--pm-primary-light)" }}>
                     {img ? <img src={img} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🎁</div>}
@@ -2093,8 +2081,14 @@ function FinalCTA() {
 
 // -- Footer --
 function Footer() {
+  const { gender } = useTheme();
+  const isMale = gender === "male";
   return (
-    <footer className="bg-foreground py-10 px-6 text-center">
+    <footer
+      className="py-10 px-6 text-center"
+      style={{ background: isMale ? "var(--pm-surface)" : "hsl(var(--foreground))" }}
+    >
+      
       <div className="font-serif text-xl font-bold mb-1" style={{ color: "var(--pm-primary)" }}>
         <span style={{ color: "var(--pm-primary)" }}>Pick</span>
         <span className="font-script text-[24px]" style={{ color: "var(--pm-primary-light)" }}>Me</span>

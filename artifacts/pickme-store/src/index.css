@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Montserrat:wght@400;500;600&family=Nunito:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -140,6 +140,7 @@
 }
 
 [data-theme="male"] {
+  /* PickMe custom vars */
   --pm-primary: #0074c4;
   --pm-primary-hover: #005fa3;
   --pm-primary-light: rgba(0,100,190,0.06);
@@ -157,15 +158,42 @@
   --pm-text-body: #4a4f5c;
   --pm-text-muted: #8a90a0;
 
-  --pm-border: rgba(0,0,0,0.06);
+  --pm-border: rgba(0,0,0,0.07);
 
-  --pm-gift-bg: rgba(200,40,90,0.04);
-  --pm-gift-border: rgba(200,40,90,0.10);
-  --pm-gift-accent: #c0456e;
+  --pm-gift-bg: rgba(180,40,80,0.04);
+  --pm-gift-border: rgba(180,40,80,0.12);
+  --pm-gift-accent: #b83060;
 
   --pm-font-heading: 'Cormorant Garamond', serif;
   --pm-font-accent: 'Montserrat', sans-serif;
   --pm-font-body: 'Montserrat', sans-serif;
+
+  /* Override shadcn/Tailwind vars so utility classes (text-primary, bg-background, etc.) reflect male blue palette */
+  --background: 220 11% 96%;
+  --foreground: 220 22% 13%;
+  --border: 220 13% 88%;
+  --input: 220 13% 88%;
+  --ring: 207 100% 38%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 22% 13%;
+  --card-border: 220 13% 90%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 22% 13%;
+  --popover-border: 220 13% 90%;
+
+  --primary: 207 100% 38%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 11% 92%;
+  --secondary-foreground: 220 22% 13%;
+
+  --muted: 220 11% 92%;
+  --muted-foreground: 220 10% 52%;
+
+  --accent: 220 11% 92%;
+  --accent-foreground: 207 100% 38%;
 }
 
 [data-theme="male-dark"] {
@@ -195,6 +223,33 @@
   --pm-font-heading: 'Cormorant Garamond', serif;
   --pm-font-accent: 'Montserrat', sans-serif;
   --pm-font-body: 'Montserrat', sans-serif;
+
+  /* Override shadcn/Tailwind vars for dark male palette */
+  --background: 240 10% 7%;
+  --foreground: 207 33% 91%;
+  --border: 240 15% 20%;
+  --input: 240 15% 20%;
+  --ring: 207 84% 65%;
+
+  --card: 240 10% 11%;
+  --card-foreground: 207 33% 91%;
+  --card-border: 240 15% 20%;
+
+  --popover: 240 10% 11%;
+  --popover-foreground: 207 33% 91%;
+  --popover-border: 240 15% 20%;
+
+  --primary: 207 84% 65%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 240 10% 15%;
+  --secondary-foreground: 207 33% 91%;
+
+  --muted: 240 10% 15%;
+  --muted-foreground: 220 10% 50%;
+
+  --accent: 240 10% 15%;
+  --accent-foreground: 207 84% 65%;
 }
 
 @layer base {
@@ -222,7 +277,7 @@
 
 /* ═══ SCRIPT FONT ═══ */
 .font-script {
-  font-family: var(--app-font-script);
+  font-family: var(--pm-font-accent, var(--app-font-script));
 }
 
 /* ═══ GLOW BUTTON ═══ */
@@ -312,9 +367,32 @@
   box-shadow: 0 28px 64px color-mix(in srgb, var(--pm-primary) 25%, transparent), 0 8px 24px rgba(61,32,48,0.12);
 }
 
+/* Male themes: no rotation, no colored border */
+[data-theme="male"] .about-photo-frame,
+[data-theme="male-dark"] .about-photo-frame {
+  transform: none;
+  border: 1px solid var(--pm-border);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-radius: 14px;
+}
+
+[data-theme="male"] .about-photo-frame:hover,
+[data-theme="male-dark"] .about-photo-frame:hover {
+  transform: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
 /* ═══ PAGE GRADIENT ═══ */
 .page-gradient {
   background: linear-gradient(180deg, #fffaf5 0%, #fef5f9 15%, #fde4ef 35%, #fef5f9 55%, #fde4ef 75%, #f9d4e5 90%, #f2b0cc 100%);
+}
+
+[data-theme="male"] .page-gradient {
+  background: var(--pm-bg);
+}
+
+[data-theme="male-dark"] .page-gradient {
+  background: var(--pm-bg-page);
 }
 
 .section-cta {
