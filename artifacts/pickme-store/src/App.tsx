@@ -157,12 +157,14 @@ const staggerContainer = {
 
 // -- Shared Decorator Bar (bigger on desktop) --
 function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsive" }) {
+  const { gender } = useTheme();
   const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
   return (
     <div className={`flex items-center ${justifyClass} gap-3 mb-3`}>
       <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>
       <div style={{ background: `linear-gradient(to right, transparent, var(--pm-primary))` }} className="h-[2px] w-12 md:w-20 opacity-60" />
-      <span style={{ color: "var(--pm-primary)" }} className="text-lg md:text-3xl">💗</span>
+      {gender !== "male" && <span style={{ color: "var(--pm-primary)" }} className="text-lg md:text-3xl">💗</span>}
+      {gender === "male" && <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>}
       <div style={{ background: `linear-gradient(to left, transparent, var(--pm-primary))` }} className="h-[2px] w-12 md:w-20 opacity-60" />
       <span style={{ color: "var(--pm-primary)" }} className="text-base md:text-xl">✦</span>
     </div>
@@ -170,7 +172,7 @@ function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsiv
 }
 
 // -- Section Title --
-function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: React.ReactNode; titleNode?: React.ReactNode; id?: string }) {
+function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub?: React.ReactNode; titleNode?: React.ReactNode; id?: string }) {
   return (
     <motion.div
       initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
@@ -181,7 +183,7 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub: Reac
       <h2 className="font-serif text-[32px] md:text-[44px] font-bold text-foreground mb-2">
         {titleNode ?? title}
       </h2>
-      <p className="font-script text-[22px] md:text-[24px] font-medium" style={{ color: "var(--pm-primary)" }}>{sub}</p>
+      {sub != null && <p className="font-script text-[22px] md:text-[24px] font-medium" style={{ color: "var(--pm-primary)" }}>{sub}</p>}
     </motion.div>
   );
 }
@@ -332,7 +334,7 @@ function Header() {
       >
         <a href="/" className="no-underline flex flex-col leading-none cursor-pointer" data-testid="link-logo">
           <LogoWord />
-          <span className="text-[10px] text-muted-foreground font-sans font-normal mt-0.5 tracking-normal">ПикМи — магазин брендовых вещей</span>
+          <span className="text-[10px] text-muted-foreground font-sans font-normal mt-0.5 tracking-normal">ПикМи — магазин брендовых {gender === "male" ? "товаров" : "вещей"}</span>
         </a>
 
         {/* Desktop Nav */}
@@ -770,7 +772,14 @@ function Hero() {
 
 // -- Why PickMe Section --
 function WhyPickMe() {
-  const features = [
+  const { gender } = useTheme();
+  const isMale = gender === "male";
+  const features = isMale ? [
+    { icon: <Check className="text-primary w-8 h-8" />, title: "Только оригиналы", desc: "Гарантия подлинности на каждый товар" },
+    { icon: <Camera className="text-primary w-8 h-8" />, title: "Живые фото", desc: "Реальные фото с замерами — без фотошопа" },
+    { icon: <DollarSign className="text-primary w-8 h-8" />, title: "Цены 3 500 – 8 000 ₽", desc: "До −70% от розницы: со склада напрямую" },
+    { icon: <Clock className="text-primary w-8 h-8" />, title: "На связи 24/7", desc: "Оперативно отвечаю на все вопросы" },
+  ] : [
     { icon: <Check className="text-primary w-8 h-8" />, title: "Только оригиналы", desc: "Оставь страх фразы \"поясни за шмот\" в 2к16" },
     { icon: <Camera className="text-primary w-8 h-8" />, title: "Живые фото", desc: "Мне было мало соцсетей — теперь все вещи в PickMe Store тоже с моими фото" },
     { icon: <DollarSign className="text-primary w-8 h-8" />, title: "Цены 3 500 – 8 000 ₽", desc: "Масику не обязательно знать о нашей тайне 🤫" },
@@ -789,7 +798,7 @@ function WhyPickMe() {
   return (
     <section className="pt-8 pb-6 md:py-24 px-6">
       <div className="max-w-5xl mx-auto">
-        <SectionTitle titleNode={whyTitle} sub="мы не такие, мы особенные 💅" />
+        <SectionTitle titleNode={whyTitle} sub={isMale ? undefined : "мы не такие, мы особенные 💅"} />
 
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
@@ -1353,14 +1362,14 @@ function Catalog() {
       <div className="max-w-[1100px] mx-auto">
         {/* Desktop: full section title */}
         <div className="hidden md:block px-6">
-          <SectionTitle title="Каталог" sub="тут все мои сокровища 🛍️" />
+          <SectionTitle title="Каталог" sub={gender === "female" ? "тут все мои сокровища 🛍️" : undefined} />
         </div>
 
         {/* Mobile: subtitle + CTA + category sections */}
         <div className="md:hidden">
           <div className="text-center mb-5 px-6">
             <DecorBar />
-            <p className="font-script text-[30px] font-medium text-foreground mt-2 leading-tight whitespace-nowrap">Тут все мои сокровища 🛍️</p>
+            {gender === "female" && <p className="font-script text-[30px] font-medium text-foreground mt-2 leading-tight whitespace-nowrap">Тут все мои сокровища 🛍️</p>}
             <a
               href="/catalog"
               className="inline-block mt-4 w-[80%] py-4 rounded-full font-bold text-white text-base text-center transition-all"
@@ -1853,7 +1862,14 @@ function GiftSection() {
 
 // -- How It Works --
 function HowItWorks() {
-  const steps = [
+  const { gender } = useTheme();
+  const isMale = gender === "male";
+  const steps = isMale ? [
+    { num: "1", title: "Выбери", desc: "Находишь нужную вещь в каталоге. Все товары с фото и замерами" },
+    { num: "2", title: "Напиши", desc: "Пишешь мне в мессенджер — оперативно отвечу на все вопросы" },
+    { num: "3", title: "Обсудим", desc: "Уточним размер, сделаю доп. фото, договоримся об оплате" },
+    { num: "4", title: "Получи", desc: "Отправлю в любой город. Авито Доставка или самовывоз из Зеленограда" },
+  ] : [
     { num: "1", title: "Выбираешь", desc: "Листаешь каталог и находишь свою вещь" },
     { num: "2", title: "Пишешь", desc: "Нажимаешь кнопку и пишешь мне в Telegram" },
     { num: "3", title: "Обсуждаем", desc: "Договариваемся по деталям и оплате в личке" },
@@ -1863,7 +1879,7 @@ function HowItWorks() {
   return (
     <section className="py-24 px-6">
       <div className="max-w-[1000px] mx-auto text-center">
-        <SectionTitle title="Как это работает" sub="даже проще, чем пустить стрелку на новых колготках" />
+        <SectionTitle title="Как это работает" sub={isMale ? undefined : "даже проще, чем пустить стрелку на новых колготках"} />
 
         <div className="relative">
           <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />
@@ -1893,7 +1909,12 @@ function HowItWorks() {
 
 // -- Reviews Section --
 function Reviews() {
-  const reviews = [
+  const { gender } = useTheme();
+  const isMale = gender === "male";
+  const reviews = isMale ? [
+    { text: "Заказывал кроссовки — оригинал, отличное состояние. Доставка быстрая, продавец на связи. Рекомендую!", author: "Алексей", source: "Москва" },
+    { text: "Брал поло Tommy Hilfiger в подарок жене — она в восторге. Цена ниже, чем в магазине, а качество идеальное.", author: "Дмитрий", source: "Санкт-Петербург" },
+  ] : [
     { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
     { text: "Суперр!! Спасибо вам, Валентина. Все соответствует", author: "Чика", source: "Авито" },
     { text: "Спасибо большое за чудесное платье!", author: "Наталья", source: "Авито" },
@@ -1902,21 +1923,21 @@ function Reviews() {
   return (
     <section id="reviews" className="py-24 px-6">
       <div className="max-w-[900px] mx-auto text-center">
-        <SectionTitle title="Отзывы" sub="нас уже выбрали 💕" />
+        <SectionTitle title="Отзывы" sub={isMale ? undefined : "нас уже выбрали 💕"} />
 
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className="grid md:grid-cols-3 gap-6"
+          className={`grid gap-6 ${isMale ? "md:grid-cols-2 max-w-[640px] mx-auto" : "md:grid-cols-3"}`}
         >
           {reviews.map((r, i) => (
             <motion.a
               key={i}
               variants={fadeInUp}
-              href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col cursor-pointer transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
-              style={{ textDecoration: "none", color: "inherit" }}
+              href={isMale ? undefined : "https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"}
+              target={isMale ? undefined : "_blank"}
+              rel={isMale ? undefined : "noopener noreferrer"}
+              className="group bg-white rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
+              style={{ textDecoration: "none", color: "inherit", cursor: isMale ? "default" : "pointer" }}
             >
               <div className="flex gap-1 mb-4" style={{ color: "var(--pm-primary)" }}>
                 {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
@@ -1926,7 +1947,7 @@ function Reviews() {
                 <div className="text-[14px] font-bold text-foreground">{r.author}</div>
                 <div className="text-[12px] text-muted-foreground">{r.source}</div>
               </div>
-              <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>
+              {!isMale && <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>}
             </motion.a>
           ))}
         </motion.div>
@@ -1937,7 +1958,14 @@ function Reviews() {
 
 // -- FAQ Section --
 function FAQ() {
-  const faqs = [
+  const { gender } = useTheme();
+  const isMale = gender === "male";
+  const faqs = isMale ? [
+    { q: "Это точно оригинал?", a: "Да, все товары оригинальные. Они поступают со склада невыкупленных товаров крупного магазина. Могу предоставить дополнительные фото бирок и этикеток." },
+    { q: "Как происходит доставка?", a: "Отправляю Авито Доставкой или Почтой России. Также возможен самовывоз из Зеленограда." },
+    { q: "Можно примерить перед покупкой?", a: "При самовывозе из Зеленограда — да. При доставке — к сожалению, нет, но я подробно консультирую по размерам и делаю замеры." },
+    { q: "Есть ли возврат?", a: "При покупке через Авито Доставку действует стандартная политика возвратов Авито." },
+  ] : [
     { q: "Это точно оригиналы?", a: "Да! Все вещи от официальных поставщиков, которые привозят бренды из-за рубежа в Россию. Готова показать бирки, ярлыки и любые подтверждения." },
     { q: "Как происходит доставка?", a: "Отправляю СДЭК или Почтой России — на выбор. Срок зависит от города, обычно 3–7 дней. Трек-номер дам сразу после отправки." },
     { q: "Можно ли вернуть вещь?", a: "Если вещь не подошла — обсудим индивидуально. Мне важно, чтобы ты осталась довольна покупкой." },
@@ -1947,7 +1975,7 @@ function FAQ() {
   return (
     <section id="faq" className="py-24 px-6">
       <div className="max-w-[700px] mx-auto">
-        <SectionTitle title="Частые вопросы" sub={<>отвечаю, пока ты не спросила <img src="/faq-emoji.png" width={28} height={28} alt="" aria-hidden="true" style={{ display: "inline", verticalAlign: "middle" }} /></>} />
+        <SectionTitle title="Частые вопросы" sub={isMale ? undefined : <>отвечаю, пока ты не спросила <img src="/faq-emoji.png" width={28} height={28} alt="" aria-hidden="true" style={{ display: "inline", verticalAlign: "middle" }} /></>} />
 
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <Accordion type="single" collapsible className="w-full space-y-3">
@@ -1981,7 +2009,7 @@ function FinalCTA() {
 
   return (
     <section className="py-28 px-6 section-cta relative overflow-hidden text-center">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(249,176,208,0.3),transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--pm-primary) 18%, transparent), transparent 60%)" }} />
 
       <motion.div
         initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
