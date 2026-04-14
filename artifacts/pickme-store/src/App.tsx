@@ -778,7 +778,7 @@ function Hero() {
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
                 className="absolute bottom-8 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
-                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-text-heading)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
+                style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 Доставка по России
               </motion.div>
