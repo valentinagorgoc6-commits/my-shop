@@ -717,13 +717,13 @@ html, body {
 }
 
 /* ═══ MALE: section title size compensation (Cormorant Garamond is visually smaller than Playfair) ═══ */
-[data-theme="male"] h2.font-serif,
-[data-theme="male-dark"] h2.font-serif {
+[data-theme="male"] h2.font-serif:not(.about-title),
+[data-theme="male-dark"] h2.font-serif:not(.about-title) {
   font-size: 51px;
 }
 @media (min-width: 768px) {
-  [data-theme="male"] h2.font-serif,
-  [data-theme="male-dark"] h2.font-serif {
+  [data-theme="male"] h2.font-serif:not(.about-title),
+  [data-theme="male-dark"] h2.font-serif:not(.about-title) {
     font-size: 65px;
   }
 }

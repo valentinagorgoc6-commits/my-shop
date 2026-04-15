@@ -1903,7 +1903,7 @@ function About() {
           {c.label && (
             <p className="text-[11px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "var(--pm-primary)" }}>{c.label}</p>
           )}
-          <h2 className="font-serif text-[5.2vw] md:text-[40px] font-bold text-foreground mb-2 whitespace-nowrap">
+          <h2 className="about-title font-serif text-[6.5vw] md:text-[40px] font-bold text-foreground mb-2">
             {c.title}
           </h2>
           {c.sub && (
