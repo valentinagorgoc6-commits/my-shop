@@ -50,11 +50,10 @@ function trackClick(productId: number, actionType: "avito_click" | "telegram_cli
 }
 // ─────────────────────────────────────────────────────────────────
 
-// ─── Custom products fetch hook (supports gender, giftSuggestion, random, limit) ──
+// ─── Custom products fetch hook (supports gender, random, limit, featured) ──
 type ProductsParams = {
   category?: string;
   gender?: string;
-  giftSuggestion?: boolean;
   random?: boolean;
   limit?: number;
   featured?: boolean;
@@ -68,7 +67,6 @@ function useProductsFetch(params: ProductsParams, enabled = true) {
       const url = new URL("/api/products", window.location.origin);
       if (params.category) url.searchParams.set("category", params.category);
       if (params.gender) url.searchParams.set("gender", params.gender);
-      if (params.giftSuggestion) url.searchParams.set("giftSuggestion", "true");
       if (params.random) url.searchParams.set("random", "true");
       if (params.limit) url.searchParams.set("limit", String(params.limit));
       if (params.featured) url.searchParams.set("featured", "true");
@@ -1587,8 +1585,8 @@ function CatalogPage() {
   const genderQueryParam = genderFilter !== "all" ? genderFilter : undefined;
   const { data: allProducts, isLoading } = useProductsFetch({
     category: queryParam,
-    gender: genderQueryParam,
-    giftSuggestion: giftOnly || undefined,
+    gender: giftOnly ? "women" : genderQueryParam,
+    featured: giftOnly || undefined,
   });
 
   React.useEffect(() => {
@@ -1923,7 +1921,7 @@ function About() {
 // -- Gift Section (male only) --
 function GiftSection() {
   const { gender, mode } = useTheme();
-  const { data: gifts } = useProductsFetch({ giftSuggestion: true, limit: 4 }, gender === "male");
+  const { data: gifts } = useProductsFetch({ gender: "women", featured: true, limit: 4 }, gender === "male");
   if (gender !== "male") return null;
   if (!gifts || gifts.length === 0) return null;
 
@@ -2579,7 +2577,7 @@ type ProductDetail = {
   published: boolean; description?: string | null;
   outerSeam?: number | null; innerSeam?: number | null; riseHeight?: number | null;
   halfWaist?: number | null; halfHip?: number | null; halfLegOpening?: number | null;
-  model?: string | null; giftSuggestion?: boolean;
+  model?: string | null;
 };
 
 function ProductPage() {
@@ -2950,8 +2948,8 @@ function ProductPage() {
                 🔗 Поделиться
               </button>
 
-              {/* Gift button — only if giftSuggestion */}
-              {product.giftSuggestion && (
+              {/* Gift button — show for women's products in male theme */}
+              {isMale && product.gender === "women" && (
                 <GiftShareButton productId={product.id} brand={product.brand} name={product.name} />
               )}
 

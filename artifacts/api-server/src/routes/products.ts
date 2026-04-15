@@ -29,8 +29,8 @@ type ValidGender = typeof VALID_GENDERS[number];
 
 // Public product list — only published=true
 router.get("/products", async (req, res) => {
-  const { category, featured, gender, giftSuggestion, random, limit: limitRaw, offset: offsetRaw } = req.query as {
-    category?: string; featured?: string; gender?: string; giftSuggestion?: string; random?: string; limit?: string; offset?: string;
+  const { category, featured, gender, random, limit: limitRaw, offset: offsetRaw } = req.query as {
+    category?: string; featured?: string; gender?: string; random?: string; limit?: string; offset?: string;
   };
   const limit = limitRaw !== undefined ? parseInt(limitRaw, 10) : undefined;
   const offset = offsetRaw !== undefined ? parseInt(offsetRaw, 10) : undefined;
@@ -51,9 +51,6 @@ router.get("/products", async (req, res) => {
       } else {
         conditions.push(eq(productsTable.gender, gender as ValidGender));
       }
-    }
-    if (giftSuggestion === "true") {
-      conditions.push(eq(productsTable.giftSuggestion, true));
     }
     let query = db
       .select()
