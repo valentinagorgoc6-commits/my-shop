@@ -9,7 +9,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X, Moon, Sun } from "lucide-react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { useGetProducts } from "@workspace/api-client-react";
+// api-client-react generated hooks available if needed
 import { useTheme, type ThemeGender } from "@/context/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -1657,6 +1657,7 @@ function CatalogPage() {
           <div className="max-w-[1100px] mx-auto">
             <div className="text-center mb-10">
               <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-3">Каталог</h1>
+              {themeGender === "female" && <p className="font-script text-2xl" style={{ color: "var(--pm-primary)" }}>весь мой гардероб — выбирай своё ✨</p>}
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -1761,6 +1762,15 @@ function CatalogPage() {
                 </button>
               )}
             </div>
+
+            {giftOnly && themeGender === "male" && (
+              <div className="mb-10 text-center relative py-8">
+                <div className="absolute inset-[-30%] pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 25%, transparent), transparent 70%)" }} />
+                <p className="relative text-[16px] md:text-[18px] mx-auto whitespace-nowrap" style={{ color: "var(--pm-text-body)", lineHeight: 1.7 }}>
+                  ✨ Открываю от сердца самые популярные и любимые женские позиции ✨
+                </p>
+              </div>
+            )}
 
             {isLoading ? (
               <>
@@ -2438,14 +2448,24 @@ function Home() {
 
 // ─── Similar Products ─────────────────────────────────────────────
 function SimilarProducts({ currentId, category }: { currentId: number; category: string }) {
-  const { data: allProducts } = useGetProducts({ category: category as "shoes" | "tops" | "bottoms" | "accessories" | "supplements" });
+  const { gender } = useTheme();
+  const genderParam = gender === "female" ? "women" : "men";
+  const { data: sameCat } = useProductsFetch({ category, gender: genderParam, random: true });
+  const { data: allGender } = useProductsFetch({ gender: genderParam, random: true });
+
   const similar = React.useMemo(() => {
-    if (!allProducts) return [];
-    const available = allProducts.filter(p => p.id !== currentId && p.badge !== "sold" && p.badge !== "reserved");
-    if (available.length === 0) return [];
-    const shuffled = [...available].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 3);
-  }, [allProducts, currentId]);
+    const exclude = (p: Record<string, unknown>) => p.id !== currentId && p.badge !== "sold" && p.badge !== "reserved";
+    const sameCatAvailable = (sameCat ?? []).filter(exclude);
+    const shuffled = [...sameCatAvailable].sort(() => Math.random() - 0.5);
+    const result = shuffled.slice(0, 4);
+    if (result.length < 4 && allGender) {
+      const usedIds = new Set(result.map(p => p.id));
+      usedIds.add(currentId);
+      const extras = allGender.filter(p => !usedIds.has(p.id) && exclude(p)).sort(() => Math.random() - 0.5);
+      result.push(...extras.slice(0, 4 - result.length));
+    }
+    return result;
+  }, [sameCat, allGender, currentId]);
 
   if (similar.length === 0) return null;
 
@@ -2455,10 +2475,10 @@ function SimilarProducts({ currentId, category }: { currentId: number; category:
         <DecorBar />
         <h2 className="font-serif text-[26px] md:text-[32px] font-bold text-foreground">Тебе также понравится</h2>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {similar.map(p => (
-          <div key={p.id} className="h-full">
-            <ProductCard product={p} />
+          <div key={p.id as number} className="h-full">
+            <ProductCard product={p as any} />
           </div>
         ))}
       </div>

@@ -621,12 +621,35 @@
 }
 
 [data-theme="male"] .page-gradient {
-  background: var(--pm-bg);
+  background: linear-gradient(135deg, #f5c0d0 0%, #e8d0f0 30%, #c0d8f8 70%, #7bb8e8 100%);
+  background-attachment: fixed;
 }
 
 [data-theme="male-dark"] .page-gradient {
   background: var(--pm-bg-page);
   background-image: radial-gradient(ellipse 80% 50% at 50% 0%, color-mix(in srgb, var(--pm-primary) 4%, transparent), transparent 60%);
+}
+
+/* ═══ MALE LIGHT: glass cards over gradient ═══ */
+[data-theme="male"] .glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="male"] .product-card-hover {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="male"] .review-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .section-cta {
