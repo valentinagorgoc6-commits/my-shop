@@ -1451,7 +1451,9 @@ function Catalog() {
   const { gender } = useTheme();
   const genderParam = gender === "female" ? "women" : "men";
   const { data: featuredProducts, isLoading: featuredLoading } = useProductsFetch({ featured: true, gender: genderParam });
-  const featured = featuredProducts ? (featuredProducts as Array<Record<string, unknown>>).slice(0, 6) : [];
+  const featured = featuredProducts
+    ? applyDefaultSort(featuredProducts as Array<Record<string, unknown> & { badge?: string | null; sortOrder?: number | null; category: string }>).slice(0, 6)
+    : [];
 
   return (
     <section id="catalog" className={`pt-8 pb-6 md:pt-24 md:pb-14 ${gender === "male" ? "section-glow section-glow-soft" : ""}`}>
