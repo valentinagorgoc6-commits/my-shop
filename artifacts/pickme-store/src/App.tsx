@@ -126,7 +126,7 @@ const themeContent = {
     },
     about: {
       label: "Обо мне",
-      title: <>Привет, я Валентина</>,
+      title: <>Привет, я Валентинка ♡</>,
       sub: null as null | string,
       paragraphs: [
         "Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и помогаю подобрать подарок для «той самой».",
@@ -157,8 +157,17 @@ const staggerContainer = {
 
 // -- Shared Decorator Bar (bigger on desktop) --
 function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsive" }) {
-  const { gender } = useTheme();
-  if (gender === "male") return null;
+  const { gender, mode } = useTheme();
+  if (gender === "male") {
+    const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
+    return (
+      <div className={`flex items-center ${justifyClass} mb-4 w-full`}>
+        <div className="h-[1px] w-16 md:w-20" style={{ background: "linear-gradient(to right, transparent, var(--pm-primary-border))" }} />
+        <div className="w-1.5 h-1.5 rounded-full mx-3" style={{ background: "var(--pm-primary)", opacity: mode === "dark" ? 0.6 : 0.3 }} />
+        <div className="h-[1px] w-16 md:w-20" style={{ background: "linear-gradient(to left, transparent, var(--pm-primary-border))" }} />
+      </div>
+    );
+  }
   const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
   return (
     <div className={`flex items-center ${justifyClass} gap-3 mb-3`}>
@@ -175,8 +184,8 @@ function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsiv
 function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub?: React.ReactNode; titleNode?: React.ReactNode; id?: string }) {
   return (
     <motion.div
-      initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
-      className="text-center mb-14"
+      initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={fadeInUp}
+      className="text-center mb-10"
       id={id}
     >
       <DecorBar />
@@ -191,10 +200,10 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub?: Rea
 // -- Logo Word --
 function LogoWord() {
   return (
-    <span className="font-serif text-2xl font-bold no-underline tracking-tight">
-      <span style={{ color: "var(--pm-primary-hover)" }}>Pick</span>
-      <span className="font-script text-[26px] font-semibold" style={{ color: "var(--pm-primary)" }}>Me</span>
-      <span style={{ color: "var(--pm-primary-hover)" }}> Store</span>
+    <span className="text-[26px] font-bold no-underline tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+      <span style={{ color: "var(--pm-primary)" }}>Pick</span>
+      <span className="text-[30px] font-semibold" style={{ color: "var(--pm-primary)", fontFamily: "'Caveat', cursive" }}>Me</span>
+      <span style={{ color: "var(--pm-text-heading, var(--foreground))" }}> Store</span>
     </span>
   );
 }
@@ -234,7 +243,7 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
           <button
             onClick={() => choose("female")}
             disabled={leaving}
-            className="w-[200px] rounded-[24px] p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
+            className="w-[200px] rounded-3xl p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
             style={{
               background: "rgba(240,69,134,0.04)",
               borderColor: "rgba(240,69,134,0.25)",
@@ -262,7 +271,7 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
           <button
             onClick={() => choose("male")}
             disabled={leaving}
-            className="w-[200px] rounded-[24px] p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
+            className="w-[200px] rounded-3xl p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
             style={{
               background: "rgba(0,116,196,0.04)",
               borderColor: "rgba(0,116,196,0.25)",
@@ -301,6 +310,22 @@ function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { gender, mode, setGender, toggleMode } = useTheme();
+  const [location, navigate] = useLocation();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("/#")) return;
+    const hash = href.slice(1); // "#about"
+    if (location === "/") {
+      e.preventDefault();
+      document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      e.preventDefault();
+      navigate("/");
+      setTimeout(() => {
+        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -319,9 +344,9 @@ function Header() {
 
   const navLinks = [
     { name: "Каталог", href: "/catalog" },
-    { name: "Обо мне", href: "#about" },
-    { name: "Отзывы", href: "#reviews" },
-    { name: "FAQ", href: "#faq" },
+    { name: "Обо мне", href: "/#about" },
+    { name: "Отзывы", href: "/#reviews" },
+    { name: "FAQ", href: "/#faq" },
   ];
 
   return (
@@ -334,7 +359,7 @@ function Header() {
       >
         <a href="/" className="no-underline flex flex-col leading-none cursor-pointer" data-testid="link-logo">
           <LogoWord />
-          <span className="text-[10px] text-muted-foreground font-sans font-normal mt-0.5 tracking-normal">ПикМи — магазин брендовых {gender === "male" ? "товаров" : "вещей"}</span>
+          <span className="text-[10px] text-muted-foreground font-sans font-normal mt-0.5 tracking-normal">ПикМи — магазин брендовых вещей</span>
         </a>
 
         {/* Desktop Nav */}
@@ -344,6 +369,7 @@ function Header() {
               <li key={link.name}>
                 <a
                   href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href)}
                   className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide"
                   data-testid={`link-nav-${link.href.replace("#", "")}`}
                 >
@@ -388,7 +414,7 @@ function Header() {
               style={{ color: "#0074c4", background: "rgba(0,100,190,0.06)", border: "1px solid rgba(0,100,190,0.15)" }}
               title="Мужская коллекция"
             >
-              <span>👟</span>
+              <svg width="14" height="14" viewBox="0 0 48 48" fill="none"><circle cx="20" cy="28" r="12" stroke="currentColor" strokeWidth="3"/><line x1="29.5" y1="18.5" x2="42" y2="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><polyline points="33,6 42,6 42,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
               <span>Для него</span>
             </button>
           )}
@@ -402,7 +428,7 @@ function Header() {
                 style={{ color: "#f04586", background: "rgba(240,69,134,0.06)", border: "1px solid rgba(240,69,134,0.15)" }}
                 title="Женская коллекция"
               >
-                <span>👠</span>
+                <svg width="14" height="14" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="20" r="12" stroke="currentColor" strokeWidth="3"/><line x1="24" y1="32" x2="24" y2="44" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><line x1="17" y1="38" x2="31" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
                 <span>Для неё</span>
               </button>
               <button
@@ -439,7 +465,7 @@ function Header() {
               style={{ color: "#0074c4", background: "rgba(0,100,190,0.08)", border: "1px solid rgba(0,100,190,0.18)" }}
               aria-label="Мужская коллекция"
             >
-              👟
+              <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><circle cx="20" cy="28" r="12" stroke="currentColor" strokeWidth="3"/><line x1="29.5" y1="18.5" x2="42" y2="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><polyline points="33,6 42,6 42,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
             </button>
           )}
           {gender === "male" && (
@@ -450,15 +476,15 @@ function Header() {
                 style={{ color: "#f04586", background: "rgba(240,69,134,0.08)", border: "1px solid rgba(240,69,134,0.18)" }}
                 aria-label="Женская коллекция"
               >
-                👠
+                <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="20" r="12" stroke="currentColor" strokeWidth="3"/><line x1="24" y1="32" x2="24" y2="44" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><line x1="17" y1="38" x2="31" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
               </button>
               <button
                 onClick={toggleMode}
-                className="p-2 rounded-lg text-[14px] font-semibold transition-colors"
-                style={{ background: "var(--pm-surface-alt)", border: "1px solid var(--pm-border)", color: "var(--pm-text-body)" }}
+                className="p-2 rounded-lg transition-colors"
+                style={{ color: "var(--pm-primary)", background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}
                 aria-label={mode === "light" ? "Тёмная тема" : "Светлая тема"}
               >
-                {mode === "light" ? "☽" : "☀"}
+                {mode === "light" ? <Moon size={18} /> : <Sun size={18} />}
               </button>
             </>
           )}
@@ -510,7 +536,8 @@ function Header() {
                 </a>
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="w-9 h-9 rounded-full bg-white/60 text-primary flex items-center justify-center hover:bg-white transition-colors"
+                  className="w-9 h-9 rounded-full text-primary flex items-center justify-center transition-colors"
+                  style={{ background: "var(--pm-surface-alt, rgba(255,255,255,0.6))" }}
                   aria-label="Закрыть меню"
                 >
                   <X size={20} />
@@ -526,8 +553,8 @@ function Header() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.05 + i * 0.07 }}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-foreground hover:text-primary hover:bg-white/50 transition-all"
+                    onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { setMobileOpen(false); handleNavClick(e, link.href); }}
+                    className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all"
                   >
                     <span className="text-primary text-sm">✦</span>
                     {link.name}
@@ -544,7 +571,7 @@ function Header() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.05 + navLinks.length * 0.07 }}
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
+                      className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all"
                     >
                       <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
                       Авито
@@ -557,7 +584,7 @@ function Header() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.05 + navLinks.length * 0.07 + 0.07 }}
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-white/50 transition-all"
+                      className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all"
                     >
                       <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
                       MAX
@@ -573,7 +600,7 @@ function Header() {
                       className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors"
                       style={{ color: "#0074c4", background: "rgba(0,100,190,0.06)", border: "1px solid rgba(0,100,190,0.15)" }}
                     >
-                      <span className="text-xl">👟</span>
+                      <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><circle cx="20" cy="28" r="12" stroke="currentColor" strokeWidth="3"/><line x1="29.5" y1="18.5" x2="42" y2="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><polyline points="33,6 42,6 42,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
                       Переключиться на мужскую тему
                     </button>
                   ) : (
@@ -583,7 +610,7 @@ function Header() {
                         className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors"
                         style={{ color: "#f04586", background: "rgba(240,69,134,0.06)", border: "1px solid rgba(240,69,134,0.15)" }}
                       >
-                        <span className="text-xl">👠</span>
+                        <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="20" r="12" stroke="currentColor" strokeWidth="3"/><line x1="24" y1="32" x2="24" y2="44" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><line x1="17" y1="38" x2="31" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
                         Переключиться на женскую тему
                       </button>
                       <button
@@ -631,6 +658,40 @@ function Hero() {
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
   const { gender } = useTheme();
   const isMale = gender === "male";
+  useEffect(() => {
+    const hero = ref.current;
+    if (!hero) return;
+    let animating = false;
+    let rafId = 0;
+    let currentPos = 0;
+    let targetPos = 0;
+
+    const lerp = () => {
+      currentPos += (targetPos - currentPos) * 0.045;
+      if (Math.abs(targetPos - currentPos) < 0.5) {
+        currentPos = targetPos;
+        window.scrollTo(0, currentPos);
+        animating = false;
+        return;
+      }
+      window.scrollTo(0, currentPos);
+      rafId = requestAnimationFrame(lerp);
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (window.scrollY > 80 || e.deltaY <= 0) return;
+      e.preventDefault();
+      if (animating) return;
+      const catalog = document.getElementById("catalog");
+      if (!catalog) return;
+      animating = true;
+      currentPos = window.scrollY;
+      targetPos = catalog.getBoundingClientRect().top + window.scrollY;
+      rafId = requestAnimationFrame(lerp);
+    };
+    hero.addEventListener("wheel", onWheel, { passive: false });
+    return () => { hero.removeEventListener("wheel", onWheel); cancelAnimationFrame(rafId); };
+  }, []);
 
   return (
     <section ref={ref} className="flex items-center px-6 relative overflow-hidden min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12">
@@ -649,11 +710,21 @@ function Hero() {
         <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
       </motion.div>
 
+      {/* Dark theme: subtle ambient glow orbs */}
+      {isMale && (
+        <>
+          <div className="ambient-orb absolute top-[10%] right-[5%] w-[400px] h-[400px] pointer-events-none" aria-hidden="true"
+            style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 6%, transparent) 0%, transparent 70%)" }} />
+          <div className="ambient-orb absolute bottom-[5%] left-[0%] w-[350px] h-[350px] pointer-events-none" aria-hidden="true"
+            style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 4%, transparent) 0%, transparent 70%)", animationDelay: "4s" }} />
+        </>
+      )}
+
       <div className="max-w-6xl mx-auto w-full relative z-10 grid md:grid-cols-2 gap-12 md:gap-20 items-center">
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.05 }}
           variants={fadeInUp}
           className="text-center md:text-left"
         >
@@ -703,16 +774,17 @@ function Hero() {
                 </a>
               </div>
               {/* Badges row */}
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                {themeContent.male.hero.badges.map((b) => (
-                  <div key={b.title} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)" }}>
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-base shrink-0" style={{ background: "var(--pm-primary-bg)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)" }}>
+              <div className="flex justify-between w-full">
+                {[
+                  { icon: "✓", label: "Оригинал" },
+                  { icon: "₽", label: "Низкие цены" },
+                  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, label: "Доставка РФ" },
+                ].map((b) => (
+                  <div key={b.label} className="flex flex-col items-center gap-2">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
                       {b.icon}
                     </div>
-                    <div>
-                      <div className="text-[13px] font-bold text-foreground leading-tight">{b.title}</div>
-                      <div className="text-[11px] text-muted-foreground leading-tight">{b.sub}</div>
-                    </div>
+                    <span className="text-[12px] font-semibold text-muted-foreground leading-tight">{b.label}</span>
                   </div>
                 ))}
               </div>
@@ -725,7 +797,7 @@ function Hero() {
           style={{ y: badgesY }}
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.05 }}
           transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0 hidden md:block"
         >
@@ -744,7 +816,7 @@ function Hero() {
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }} className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
                 Живые фото 📸
               </motion.div>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold text-foreground shadow-[0_8px_24px_rgba(61,32,48,0.14)]">
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
                 Низкие цены 💰
               </motion.div>
             </>
@@ -817,27 +889,27 @@ function WhyPickMe() {
   );
 
   return (
-    <section className="pt-8 pb-6 md:py-24 px-6">
+    <section className="pt-8 pb-6 md:py-14 px-6">
       <div className="max-w-5xl mx-auto">
         <SectionTitle titleNode={whyTitle} sub={isMale ? undefined : "мы не такие, мы особенные 💅"} />
 
         <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className="grid grid-cols-2 gap-3 md:gap-6"
+          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={staggerContainer}
+          className="grid grid-cols-2 gap-4 md:gap-6"
         >
           {features.map((f, i) => (
             <motion.div
               key={i}
               variants={fadeInUp}
-              className="why-card-hover glass-card rounded-[16px] md:rounded-[20px] p-4 md:p-10 relative overflow-hidden flex flex-col items-center text-center"
+              className="why-card-hover glass-card rounded-2xl md:rounded-3xl p-5 md:p-8 relative overflow-hidden flex flex-col items-center text-center group"
               style={{ border: "1px solid var(--pm-primary-border)" }}
             >
-              <div className="why-card-glow absolute top-0 right-0 w-[120px] h-[120px] pointer-events-none" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 20%, transparent) 0%, transparent 70%)" }} />
-              <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-[var(--pm-primary-bg)] flex items-center justify-center mb-2 md:mb-4">
-                <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-8 md:[&>svg]:h-8">{f.icon}</span>
+              <div className="why-card-glow absolute -top-[30px] left-1/2 -translate-x-1/2 w-[160px] h-[160px] pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 18%, transparent) 0%, transparent 70%)" }} />
+              <div className="w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-3 md:mb-5" style={{ border: "1.5px solid var(--pm-primary-border)", background: "color-mix(in srgb, var(--pm-primary) 6%, transparent)" }}>
+                <span className="[&>svg]:w-5 [&>svg]:h-5 md:[&>svg]:w-7 md:[&>svg]:h-7">{f.icon}</span>
               </div>
-              <h3 className="font-serif text-[15px] md:text-xl font-bold text-foreground leading-tight">{f.title}</h3>
-              <p className="hidden md:block font-script text-[17px] mt-2 leading-snug" style={{ color: "var(--pm-primary)" }}>{f.desc}</p>
+              <h3 className="font-serif text-[15px] md:text-[20px] font-bold text-foreground leading-tight mb-1 md:mb-2">{f.title}</h3>
+              <p className="hidden md:block text-[14px] leading-relaxed text-muted-foreground">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -1009,7 +1081,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
   };
 
   return (
-    <div ref={cardRootRef} className="product-card-hover rounded-[20px] overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full" style={{ background: "var(--pm-card-bg, white)" }}>
+    <div ref={cardRootRef} className="product-card-hover rounded-2xl overflow-hidden border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col h-full" style={{ background: "var(--pm-card-bg, white)" }}>
       {/* Carousel container */}
       <div
         ref={carouselRef}
@@ -1154,33 +1226,37 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
               {sizeChartOpen && (
                 <div
                   className="mt-1 rounded-xl overflow-hidden"
-                  style={{ border: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)", animation: "fadeIn 200ms ease" }}
+                  style={{ border: "1px solid var(--pm-primary-border)", animation: "fadeIn 200ms ease" }}
                 >
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px", tableLayout: "fixed" }}>
                     <thead>
                       <tr style={{ background: "var(--pm-primary-bg)" }}>
-                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>Стелька (см)</th>
-                        <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>RU</th>
+                        <th style={{ width: "50%", padding: "5px 10px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary)", borderBottom: "1px solid var(--pm-primary-border)" }}>Стелька (см)</th>
+                        <th style={{ width: "50%", padding: "5px 10px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary)", borderBottom: "1px solid var(--pm-primary-border)" }}>RU</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {getVisibleSizeRows(matchedRow).map(({ row, globalIdx }, i, arr) => (
-                        <tr
-                          key={row.cm}
-                          style={{
-                            background: globalIdx === matchedRow ? "var(--pm-primary-bg)" : i % 2 === 0 ? "#fff" : "color-mix(in srgb, var(--pm-primary) 4%, white)",
-                            borderBottom: i < arr.length - 1 ? "1px solid color-mix(in srgb, var(--pm-primary) 15%, white)" : "none",
-                          }}
-                        >
-                          <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
-                            {row.cm}
-                          </td>
-                          <td style={{ padding: "4px 8px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "#c0357a" : "#374151" }}>
-                            {row.ru}
-                            {globalIdx === matchedRow && <span style={{ marginLeft: 4, fontSize: 9 }}>◀</span>}
-                          </td>
-                        </tr>
-                      ))}
+                      {getVisibleSizeRows(matchedRow).map(({ row, globalIdx }, i, arr) => {
+                        const isMatch = globalIdx === matchedRow;
+                        return (
+                          <tr
+                            key={row.cm}
+                            style={{
+                              background: isMatch ? "color-mix(in srgb, var(--pm-primary) 18%, var(--pm-card-bg))" : i % 2 === 0 ? "var(--pm-card-bg)" : "var(--pm-surface-alt)",
+                              borderBottom: i < arr.length - 1 ? "1px solid var(--pm-primary-border)" : "none",
+                              boxShadow: isMatch ? "inset 3px 0 0 var(--pm-primary)" : "none",
+                            }}
+                          >
+                            <td style={{ padding: "5px 10px", textAlign: "center", fontWeight: isMatch ? 700 : 400, color: isMatch ? "var(--pm-primary)" : "var(--pm-text-body)" }}>
+                              {row.cm}
+                            </td>
+                            <td style={{ padding: "5px 10px", textAlign: "center", fontWeight: isMatch ? 700 : 400, color: isMatch ? "var(--pm-primary)" : "var(--pm-text-body)" }}>
+                              {row.ru}
+                              {isMatch && <span style={{ marginLeft: 4, fontSize: 9 }}>◀</span>}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1196,7 +1272,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           {product.badge === "sold" ? (
             <button
               disabled
-              className="px-4 py-2 rounded-full bg-[#f3f4f6] text-[#9ca3af] text-[13px] font-bold cursor-not-allowed"
+              className="px-4 py-2 rounded-full bg-secondary text-muted-foreground text-[13px] font-bold cursor-not-allowed"
             >
               Продано
             </button>
@@ -1204,7 +1280,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
             <button
               disabled
               className="px-4 py-2 rounded-full text-[13px] font-bold cursor-not-allowed"
-              style={{ background: "#fff7ed", color: "#f97316" }}
+              style={{ background: "color-mix(in srgb, #f97316 15%, var(--pm-card-bg, #fff))", color: "#f97316" }}
             >
               Забронировано
             </button>
@@ -1223,7 +1299,7 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
           {(product.badge === "sold" || product.badge === "reserved") ? (
             <div
               className="flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold"
-              style={{ background: "#f3f4f6", color: "#9ca3af", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
+              style={{ background: "var(--pm-surface-alt, #f3f4f6)", color: "var(--pm-text-muted, #9ca3af)", filter: "grayscale(1)", opacity: 0.5, pointerEvents: "none", cursor: "not-allowed" }}
             >
               {product.avitoLink ? (
                 <>
@@ -1283,7 +1359,7 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
   return (
     <a
       href={`/product/${product.id}`}
-      style={{ display: "flex", flexDirection: "column", background: "var(--pm-card-bg)", borderRadius: 10, overflow: "hidden", border: "1px solid var(--pm-primary-border)", boxShadow: "0 2px 8px rgba(61,32,48,0.06)", textDecoration: "none", transition: "background 0.3s ease, border-color 0.3s ease" }}
+      style={{ display: "flex", flexDirection: "column", background: "var(--pm-card-bg)", borderRadius: 12, overflow: "hidden", border: "1px solid var(--pm-primary-border)", boxShadow: "0 2px 8px rgba(61,32,48,0.06)", textDecoration: "none", transition: "background 0.3s ease, border-color 0.3s ease" }}
     >
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "linear-gradient(135deg, var(--pm-primary-bg), var(--pm-primary-light))", flexShrink: 0 }}>
         {image ? (
@@ -1309,13 +1385,13 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
         <p style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", color: "var(--pm-primary)", letterSpacing: "0.06em", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.brand}</p>
         <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pm-text-heading)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.3 }}>{product.name}</p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 4, marginTop: 4 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: isSold ? "#9ca3af" : "var(--pm-text-heading)", textDecoration: isSold ? "line-through" : "none" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: isSold ? "var(--pm-text-muted, #9ca3af)" : "var(--pm-text-heading)", textDecoration: isSold ? "line-through" : "none" }}>
             {product.price.toLocaleString("ru-RU")} ₽
           </span>
           {isSold ? (
-            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20, background: "#f3f4f6", color: "#9ca3af" }}>Продано</span>
+            <span className="bg-secondary text-muted-foreground" style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20 }}>Продано</span>
           ) : isReserved ? (
-            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20, background: "#fff7ed", color: "#f97316" }}>Бронь</span>
+            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 7px", borderRadius: 20, background: "color-mix(in srgb, #f97316 15%, var(--pm-card-bg, #fff))", color: "#f97316" }}>Бронь</span>
           ) : (
             <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 20, background: "var(--pm-primary)", color: "#fff" }}>Купить</span>
           )}
@@ -1342,7 +1418,7 @@ function CategoryScrollSection({ catId, label, genderParam }: { catId: string; l
   }, [products]);
   if (!items || items.length < 2) return null;
   return (
-    <div style={{ background: "var(--pm-surface-alt)", borderRadius: 14, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease" }}>
+    <div style={{ background: "var(--pm-surface-alt)", borderRadius: 16, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 4, height: 20, background: "var(--pm-primary)", borderRadius: 2, flexShrink: 0, transition: "background 0.3s ease" }} />
@@ -1352,11 +1428,11 @@ function CategoryScrollSection({ catId, label, genderParam }: { catId: string; l
       </div>
       <div className="[&::-webkit-scrollbar]:hidden" style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", gap: 8, paddingBottom: 4, scrollbarWidth: "none" } as React.CSSProperties}>
         {items.map(p => (
-          <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid var(--pm-border)", borderRadius: 10, overflow: "hidden" }}>
+          <div key={p.id} style={{ minWidth: 140, maxWidth: 150, flexShrink: 0, scrollSnapAlign: "start", border: "0.5px solid var(--pm-border)", borderRadius: 12, overflow: "hidden" }}>
             <CompactCard product={p} />
           </div>
         ))}
-        <a href={`/catalog?category=${catId}`} style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--pm-surface)", border: "1.5px solid var(--pm-primary-border)", borderRadius: 10, color: "var(--pm-primary)", fontSize: 22, fontWeight: 700, textDecoration: "none", transition: "background 0.3s ease, color 0.3s ease, border-color 0.3s ease" }}>→</a>
+        <a href={`/catalog?category=${catId}`} style={{ minWidth: 56, flexShrink: 0, scrollSnapAlign: "start", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--pm-surface)", border: "1.5px solid var(--pm-primary-border)", borderRadius: 12, color: "var(--pm-primary)", fontSize: 22, fontWeight: 700, textDecoration: "none", transition: "background 0.3s ease, color 0.3s ease, border-color 0.3s ease" }}>→</a>
       </div>
     </div>
   );
@@ -1380,7 +1456,7 @@ function Catalog() {
   const featured = featuredProducts ? (featuredProducts as Array<Record<string, unknown>>).slice(0, 6) : [];
 
   return (
-    <section id="catalog" className="pt-8 pb-12 md:py-24">
+    <section id="catalog" className="pt-8 pb-6 md:pt-24 md:pb-14">
       <div className="max-w-[1100px] mx-auto">
         {/* Desktop: full section title */}
         <div className="hidden md:block px-6">
@@ -1408,7 +1484,7 @@ function Catalog() {
           {featuredLoading ? (
             <div className="grid grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
+                <div key={i} className="rounded-2xl overflow-hidden border border-primary/10 animate-pulse" style={{ background: "var(--pm-card-bg, #fff)" }}>
                   <div className="w-full aspect-[3/4] bg-secondary/50" />
                   <div className="p-5">
                     <div className="h-3 w-16 bg-secondary rounded mb-2" />
@@ -1438,7 +1514,7 @@ function Catalog() {
               <p>Скоро здесь появятся товары. Загляни позже!</p>
             </div>
           )}
-          <div className="flex justify-center mt-12">
+          <div className="flex justify-center mt-8">
             <a
               href="/catalog"
               className="inline-flex items-center gap-2 px-10 py-4 rounded-full border-2 border-primary text-primary font-bold text-base hover:bg-primary hover:text-white transition-all"
@@ -1500,6 +1576,7 @@ function CatalogPage() {
   const [sort, setSort] = useState<"default" | "newest" | "price_asc" | "price_desc">("default");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [hideSold, setHideSold] = useState(false);
+  const [giftOnly, setGiftOnly] = useState(() => new URLSearchParams(window.location.search).get("gift") === "true");
 
   // Sync genderFilter when theme gender changes
   React.useEffect(() => {
@@ -1511,11 +1588,12 @@ function CatalogPage() {
   const { data: allProducts, isLoading } = useProductsFetch({
     category: queryParam,
     gender: genderQueryParam,
+    giftSuggestion: giftOnly || undefined,
   });
 
   React.useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter, genderFilter, search, sort, hideSold]);
+  }, [filter, genderFilter, search, sort, hideSold, giftOnly]);
 
   const categories = [
     { id: "all", label: "Все" },
@@ -1579,7 +1657,6 @@ function CatalogPage() {
           <div className="max-w-[1100px] mx-auto">
             <div className="text-center mb-10">
               <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-3">Каталог</h1>
-              <p className="font-script text-2xl" style={{ color: "var(--pm-primary)" }}>весь мой гардероб — выбирай своё ✨</p>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -1589,7 +1666,10 @@ function CatalogPage() {
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Поиск по бренду или названию..."
-                  className="w-full px-5 py-3 rounded-full border-2 border-secondary focus:border-primary focus:outline-none font-sans text-sm bg-white/80"
+                  className="w-full px-5 py-3 rounded-full border-2 focus:outline-none font-sans text-sm text-foreground placeholder:text-muted-foreground"
+                  style={{ background: "var(--pm-surface)", borderColor: "var(--pm-border)" }}
+                  onFocus={e => e.currentTarget.style.borderColor = "var(--pm-primary)"}
+                  onBlur={e => e.currentTarget.style.borderColor = "var(--pm-border)"}
                 />
                 {search && (
                   <button
@@ -1603,7 +1683,10 @@ function CatalogPage() {
               <select
                 value={sort}
                 onChange={e => setSort(e.target.value as typeof sort)}
-                className="px-5 py-3 rounded-full border-2 border-secondary focus:border-primary focus:outline-none font-sans text-sm bg-white/80 cursor-pointer"
+                className="px-5 py-3 rounded-full border-2 focus:outline-none font-sans text-sm cursor-pointer text-foreground"
+                style={{ background: "var(--pm-surface)", borderColor: "var(--pm-border)" }}
+                onFocus={e => e.currentTarget.style.borderColor = "var(--pm-primary)"}
+                onBlur={e => e.currentTarget.style.borderColor = "var(--pm-border)"}
               >
                 <option value="default">По умолчанию</option>
                 <option value="newest">Новинки</option>
@@ -1656,11 +1739,27 @@ function CatalogPage() {
                     : "bg-transparent border-secondary text-muted-foreground hover:border-foreground hover:text-foreground"
                 }`}
               >
-                <span className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center flex-shrink-0 transition-all ${hideSold ? "border-white bg-white" : "border-current"}`}>
+                <span className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center flex-shrink-0 transition-all ${hideSold ? "border-background bg-background" : "border-current"}`}>
                   {hideSold && <span className="text-foreground text-[10px] font-black leading-none">✓</span>}
                 </span>
                 Скрыть проданные
               </button>
+              {themeGender === "male" && (
+                <button
+                  onClick={() => setGiftOnly(v => !v)}
+                  className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 flex items-center gap-2 ${
+                    giftOnly
+                      ? "text-white shadow-md"
+                      : "bg-transparent text-muted-foreground hover:text-primary"
+                  }`}
+                  style={giftOnly
+                    ? { background: "var(--pm-gift-accent, var(--pm-primary))", borderColor: "var(--pm-gift-accent, var(--pm-primary))" }
+                    : { borderColor: "var(--pm-gift-border, var(--pm-primary-border))", color: "var(--pm-gift-accent, var(--pm-primary))" }
+                  }
+                >
+                  🎁 Подарок для неё
+                </button>
+              )}
             </div>
 
             {isLoading ? (
@@ -1668,7 +1767,7 @@ function CatalogPage() {
                 {/* Mobile loading */}
                 <div className="md:hidden grid grid-cols-2 gap-2">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="bg-white rounded-[10px] overflow-hidden border border-primary/10 animate-pulse">
+                    <div key={i} className="rounded-xl overflow-hidden border border-primary/10 animate-pulse" style={{ background: "var(--pm-card-bg, #fff)" }}>
                       <div className="w-full aspect-square bg-secondary/50" />
                       <div className="p-2">
                         <div className="h-2.5 w-12 bg-secondary rounded mb-1" />
@@ -1681,7 +1780,7 @@ function CatalogPage() {
                 {/* Desktop loading */}
                 <div className="hidden md:grid grid-cols-4 gap-6">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-white rounded-[20px] overflow-hidden border border-primary/10 animate-pulse">
+                    <div key={i} className="rounded-2xl overflow-hidden border border-primary/10 animate-pulse" style={{ background: "var(--pm-card-bg, #fff)" }}>
                       <div className="w-full aspect-[3/4] bg-secondary/50" />
                       <div className="p-5">
                         <div className="h-3 w-16 bg-secondary rounded mb-2" />
@@ -1721,7 +1820,7 @@ function CatalogPage() {
               </>
             ) : filter === "supplements" ? (
               <div className="w-full py-6" style={{ animation: "fadeIn 0.5s ease-out" }}>
-                <div className="w-full rounded-[24px] overflow-hidden flex flex-col md:flex-row"
+                <div className="w-full rounded-3xl overflow-hidden flex flex-col md:flex-row"
                   style={{ boxShadow: "0 8px 40px rgba(247,109,165,0.2), 0 2px 12px rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)", minHeight: 280 }}>
                   {/* Image */}
                   <div className="md:w-1/2 w-full flex-shrink-0" style={{ minHeight: 240 }}>
@@ -1764,16 +1863,16 @@ function About() {
   const c = gender === "male" ? themeContent.male.about : themeContent.female.about;
 
   return (
-    <section id="about" className="py-24 px-6">
+    <section id="about" className="py-14 px-6">
       <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-12 md:gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.05 }}
           transition={{ duration: 0.7 }}
           className="w-full max-w-[280px] mx-auto md:max-w-none"
         >
-          <div className="about-photo-frame w-full aspect-[9/16] rounded-[24px] overflow-hidden">
+          <div className="about-photo-frame w-full aspect-[9/16] rounded-3xl overflow-hidden">
             <img
               src="/about-photo.jpg"
               alt="Валентинка — основательница PickMe Store"
@@ -1785,7 +1884,7 @@ function About() {
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.05 }}
           transition={{ duration: 0.7 }}
         >
           <DecorBar align="responsive" />
@@ -1803,15 +1902,6 @@ function About() {
             {c.paragraphs.map((p, i) => <p key={i} style={{ fontFamily: "var(--pm-font-body, var(--font-sans))", fontStyle: "normal" }}>{p}</p>)}
           </div>
 
-          <a
-            href="https://t.me/V_Limerence"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 mt-8 px-8 py-3 rounded-full font-bold text-[15px] transition-all hover:bg-[var(--pm-primary)] hover:text-white"
-            style={{ border: "2px solid var(--pm-primary)", color: "var(--pm-primary)" }}
-          >
-            {c.ctaLabel}
-          </a>
         </motion.div>
       </div>
     </section>
@@ -1829,52 +1919,74 @@ function GiftSection() {
   const items = gifts as unknown as GiftProduct[];
 
   return (
-    <section className="py-16 px-6">
-      <div className="max-w-[1100px] mx-auto">
+    <section className="py-8 px-6">
+      <div className="max-w-[900px] mx-auto">
         <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
-          className="rounded-[14px] p-8 md:p-10"
-          style={{ background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)" }}
+          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={fadeInUp}
+          className="flex flex-col md:flex-row items-center gap-10 rounded-2xl"
+          style={{ padding: "3rem 2.5rem", background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)" }}
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-7 rounded-full shrink-0" style={{ background: "var(--pm-gift-accent, var(--pm-primary))" }} />
-            <h2 className="text-[26px] md:text-[32px] font-semibold" style={{ fontFamily: "var(--pm-font-heading)", fontStyle: "italic", color: "var(--pm-gift-accent, var(--pm-primary))" }}>
+          {/* Left — text */}
+          <div className="flex-1">
+            <p className="text-[11px] font-bold uppercase mb-4" style={{ letterSpacing: "2px", color: "var(--pm-text-muted)" }}>
+              Идея для подарка
+            </p>
+            <h2 className="text-[32px] font-semibold mb-5" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", color: "var(--pm-text-heading)" }}>
               Подарок для неё
             </h2>
+            <p className="text-[15px] mb-3 max-w-lg" style={{ lineHeight: 1.6, color: "var(--pm-text-muted)" }}>
+              Не знаешь что подарить? Отправь ей ссылку — она увидит подарок и описание без цены.
+            </p>
+            <p className="text-[12px] mb-8" style={{ color: "var(--pm-text-muted)", opacity: 0.6 }}>
+              Стильно, лично, без неловких моментов
+            </p>
+            <a
+              href="/catalog?gift=true"
+              className="inline-flex items-center gap-2 font-semibold text-[15px] transition-all hover:scale-105"
+              style={{
+                padding: "14px 36px",
+                borderRadius: 20,
+                color: "var(--pm-gift-accent, var(--pm-primary))",
+                background: "color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 10%, transparent)",
+                border: "1px solid color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 25%, transparent)",
+              }}
+            >
+              Подобрать подарок
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
           </div>
-          <p className="text-[15px] text-muted-foreground mb-8 max-w-xl">
-            Отправь ссылку на вещь — она увидит подарок без цены. Стильно, лично и без неловких моментов.
-          </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {items.map(p => {
+          {/* Right — stacked fan cards */}
+          <div className="relative shrink-0" style={{ width: 340, height: 230 }}>
+            {items.slice(0, 3).map((p, i) => {
               const img = (p.imageUrls && p.imageUrls.length > 0) ? p.imageUrls[0] : p.imageUrl;
+              const rotation = i === 0 ? -6 : i === 1 ? -2 : 3;
+              const left = i * 80;
+              const zIdx = i + 1;
               return (
-                <a
+                <div
                   key={p.id}
-                  href={`/product/${p.id}`}
-                  className="flex flex-col rounded-xl overflow-hidden no-underline transition-all hover:-translate-y-1"
-                  style={{ border: "1px solid var(--pm-gift-border, var(--pm-primary-border))", background: "var(--pm-card-bg)" }}
+                  className="absolute overflow-hidden"
+                  style={{
+                    width: 160,
+                    height: 200,
+                    left,
+                    top: "50%",
+                    transform: `translateY(-50%) rotate(${rotation}deg)`,
+                    zIndex: zIdx,
+                    borderRadius: 12,
+                    border: "1px solid var(--pm-gift-border, var(--pm-primary-border))",
+                    background: "var(--pm-card-bg)",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                  }}
                 >
-                  <div className="w-full aspect-square overflow-hidden" style={{ background: "var(--pm-primary-light)" }}>
-                    {img ? <img src={img} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-3xl">🎁</div>}
-                  </div>
-                  <div className="p-3 flex flex-col gap-1 flex-1">
-                    <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "var(--pm-primary)" }}>{p.brand}</p>
-                    <p className="text-[12px] font-semibold leading-snug" style={{ color: "var(--pm-text-heading)" }}>{p.name}</p>
-                    <div className="mt-auto pt-2 flex items-center gap-1 text-[13px] font-bold" style={{ color: "var(--pm-primary)" }}>
-                      <span>Подарить</span><span>🎁</span>
-                    </div>
-                  </div>
-                </a>
+                  {img
+                    ? <img src={img} alt={p.name} className="w-full h-full object-cover" />
+                    : <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: "var(--pm-primary-light)" }}>🎁</div>
+                  }
+                </div>
               );
             })}
-          </div>
-
-          <div className="mt-6">
-            <a href="/catalog" className="text-[14px] font-semibold" style={{ color: "var(--pm-primary)" }}>
-              Смотреть все →
-            </a>
           </div>
         </motion.div>
       </div>
@@ -1898,20 +2010,106 @@ function HowItWorks() {
     { num: "4", title: "Получаешь", desc: "Доставка по всей России — СДЭК или Почта" },
   ];
 
+  const maleIcons: Record<string, React.ReactNode> = {
+    "1": (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    ),
+    "2": (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    ),
+    "3": (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+    ),
+    "4": (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    ),
+  };
+
+  const chevronRight = (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--pm-primary)", opacity: 0.5 }}><polyline points="9 18 15 12 9 6"/></svg>
+  );
+  const chevronDown = (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--pm-primary)", opacity: 0.5 }}><polyline points="6 9 12 15 18 9"/></svg>
+  );
+
+  if (isMale) {
+    return (
+      <section className="py-14 px-6">
+        <div className="max-w-[1100px] mx-auto text-center">
+          <SectionTitle title="Как это работает" />
+
+          {/* Desktop: horizontal with chevrons */}
+          <div className="hidden md:flex items-stretch justify-center">
+            {steps.map((step, i) => (
+              <React.Fragment key={i}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.05 }}
+                  transition={{ duration: 0.5, delay: i * 0.12 }}
+                  className="flex-1 rounded-2xl p-6 text-left flex flex-col gap-4"
+                  style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
+                >
+                  <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
+                    {maleIcons[step.num]}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{step.title}</h3>
+                    <p className="text-[13px] text-muted-foreground leading-relaxed">{step.desc}</p>
+                  </div>
+                </motion.div>
+                {i < steps.length - 1 && (
+                  <div className="flex items-center px-3 shrink-0">{chevronRight}</div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          {/* Mobile: vertical with chevrons */}
+          <div className="flex md:hidden flex-col items-center gap-0">
+            {steps.map((step, i) => (
+              <React.Fragment key={i}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.05 }}
+                  transition={{ duration: 0.5, delay: i * 0.12 }}
+                  className="w-full rounded-2xl p-5 text-left flex items-start gap-4"
+                  style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
+                >
+                  <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
+                    {maleIcons[step.num]}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{step.title}</h3>
+                    <p className="text-[13px] text-muted-foreground leading-relaxed">{step.desc}</p>
+                  </div>
+                </motion.div>
+                {i < steps.length - 1 && (
+                  <div className="py-2">{chevronDown}</div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="py-24 px-6">
+    <section className="py-14 px-6">
       <div className="max-w-[1000px] mx-auto text-center">
-        <SectionTitle title="Как это работает" sub={isMale ? undefined : "даже проще, чем пустить стрелку на новых колготках"} />
+        <SectionTitle title="Как это работает" sub="даже проще, чем пустить стрелку на новых колготках" />
 
         <div className="relative">
-          {!isMale && <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />}
+          <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10">
             {steps.map((step, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.05 }}
                 transition={{ duration: 0.5, delay: i * 0.12 }}
                 className="flex flex-col items-center text-center"
               >
@@ -1934,8 +2132,9 @@ function Reviews() {
   const { gender } = useTheme();
   const isMale = gender === "male";
   const reviews = isMale ? [
-    { text: "Заказывал кроссовки — оригинал, отличное состояние. Доставка быстрая, продавец на связи. Рекомендую!", author: "Алексей", source: "Москва" },
-    { text: "Брал поло Tommy Hilfiger в подарок жене — она в восторге. Цена ниже, чем в магазине, а качество идеальное.", author: "Дмитрий", source: "Санкт-Петербург" },
+    { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
+    { text: "Суперр!! Спасибо вам, Валентина. Все соответствует", author: "Чика", source: "Авито" },
+    { text: "Спасибо большое за чудесное платье!", author: "Наталья", source: "Авито" },
   ] : [
     { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
     { text: "Суперр!! Спасибо вам, Валентина. Все соответствует", author: "Чика", source: "Авито" },
@@ -1943,36 +2142,80 @@ function Reviews() {
   ];
 
   return (
-    <section id="reviews" className="py-24 px-6">
+    <section id="reviews" className="pt-14 pb-8 px-6">
       <div className="max-w-[900px] mx-auto text-center">
         <SectionTitle title="Отзывы" sub={isMale ? undefined : "нас уже выбрали 💕"} />
 
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-          className={`grid gap-6 ${isMale ? "md:grid-cols-2 max-w-[640px] mx-auto" : "md:grid-cols-3"}`}
-        >
-          {reviews.map((r, i) => (
-            <motion.a
-              key={i}
-              variants={fadeInUp}
-              href={isMale ? undefined : "https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"}
-              target={isMale ? undefined : "_blank"}
-              rel={isMale ? undefined : "noopener noreferrer"}
-              className="review-card group rounded-[20px] p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
-              style={{ textDecoration: "none", color: "inherit", cursor: isMale ? "default" : "pointer" }}
+        {isMale ? (
+          <>
+            <motion.div
+              initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={staggerContainer}
+              className="grid gap-5 md:grid-cols-3 max-w-[960px] mx-auto"
             >
-              <div className="flex gap-1 mb-4" style={{ color: "var(--pm-primary)" }}>
-                {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
-              </div>
-              <p className="italic text-[15px] leading-relaxed text-muted-foreground mb-6 flex-grow">«{r.text}»</p>
-              <div className="mb-3">
-                <div className="text-[14px] font-bold text-foreground">{r.author}</div>
-                <div className="text-[12px] text-muted-foreground">{r.source}</div>
-              </div>
-              {!isMale && <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>}
-            </motion.a>
-          ))}
-        </motion.div>
+              {reviews.map((r, i) => (
+                <motion.div
+                  key={i}
+                  variants={fadeInUp}
+                  className="rounded-2xl p-6 text-left flex flex-col"
+                  style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
+                >
+                  <div className="flex gap-1 mb-3" style={{ color: "var(--pm-primary)" }}>
+                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={14} fill="currentColor" />)}
+                  </div>
+                  <p className="text-[14px] leading-relaxed text-muted-foreground mb-5 flex-grow">«{r.text}»</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
+                      {r.author[0]}
+                    </div>
+                    <div>
+                      <div className="text-[13px] font-bold text-foreground leading-tight">{r.author}</div>
+                      <div className="text-[11px] text-muted-foreground leading-tight">{r.source}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+            <div className="mt-8">
+              <a
+                href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661#open-reviews-list"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[14px] font-semibold transition-all hover:scale-105"
+                style={{ color: "var(--pm-primary)" }}
+              >
+                <img src="https://www.avito.ru/favicon.ico" width={16} height={16} alt="" aria-hidden="true" className="shrink-0" />
+                Смотреть на Авито →
+              </a>
+            </div>
+          </>
+        ) : (
+          <motion.div
+            initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={staggerContainer}
+            className="grid gap-6 md:grid-cols-3"
+          >
+            {reviews.map((r, i) => (
+              <motion.a
+                key={i}
+                variants={fadeInUp}
+                href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="review-card group rounded-2xl p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
+                style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
+              >
+                <div className="flex gap-1 mb-4" style={{ color: "var(--pm-primary)" }}>
+                  {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
+                </div>
+                <p className="italic text-[15px] leading-relaxed text-muted-foreground mb-6 flex-grow">«{r.text}»</p>
+                <div className="mb-3">
+                  <div className="text-[14px] font-bold text-foreground">{r.author}</div>
+                  <div className="text-[12px] text-muted-foreground">{r.source}</div>
+                </div>
+                <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>
+              </motion.a>
+            ))}
+          </motion.div>
+        )}
       </div>
     </section>
   );
@@ -1995,11 +2238,11 @@ function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-24 px-6">
+    <section id="faq" className="pt-8 pb-14 px-6">
       <div className="max-w-[700px] mx-auto">
         <SectionTitle title="Частые вопросы" sub={isMale ? undefined : <>отвечаю, пока ты не спросила <img src="/faq-emoji.png" width={28} height={28} alt="" aria-hidden="true" style={{ display: "inline", verticalAlign: "middle" }} /></>} />
 
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.05 }} transition={{ duration: 0.6 }}>
           <Accordion type="single" collapsible className="w-full space-y-3">
             {faqs.map((faq, i) => (
               <AccordionItem
@@ -2030,11 +2273,12 @@ function FinalCTA() {
   const isMale = gender === "male";
 
   return (
-    <section className="py-28 px-6 section-cta relative overflow-hidden text-center">
-      {!isMale && <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--pm-primary) 18%, transparent), transparent 60%)" }} />}
+    <section className={`px-6 section-cta relative overflow-hidden text-center ${isMale ? "py-16" : "pt-16 pb-24"}`}>
+      {/* Male-only glow */}
+      {isMale && <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 160% at 50% 110%, color-mix(in srgb, var(--pm-primary) 20%, transparent), transparent 70%)" }} />}
 
       <motion.div
-        initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+        initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={fadeInUp}
         className="max-w-[700px] mx-auto relative z-10"
       >
         <DecorBar />
@@ -2069,14 +2313,14 @@ function FinalCTA() {
             </a>
             <a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-1"
-              style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
+              style={{ background: "rgba(255,255,255,0.55)", color: "var(--pm-primary-hover)" }}
               data-testid="button-final-avito">
               <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
               Профиль на Авито
             </a>
             <a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-[17px] transition-colors sm:order-3"
-              style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
+              style={{ background: "rgba(255,255,255,0.55)", color: "var(--pm-primary-hover)" }}
               data-testid="button-final-max">
               <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
               Написать в MAX
@@ -2088,7 +2332,7 @@ function FinalCTA() {
         {isMale && (
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-all hover:scale-105"
               style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
               data-testid="button-final-avito">
               <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
@@ -2101,7 +2345,7 @@ function FinalCTA() {
               Написать в Telegram ✈️
             </a>
             <a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-all hover:scale-105"
               style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
               data-testid="button-final-max">
               <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
@@ -2124,12 +2368,12 @@ function Footer() {
       style={{ background: isMale ? "var(--pm-surface)" : "hsl(var(--foreground))" }}
     >
       
-      <div className="font-serif text-xl font-bold mb-1">
+      <div className="text-xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
         <span style={{ color: "var(--pm-primary)" }}>Pick</span>
-        <span className="font-script text-[24px]" style={{ color: isMale ? "var(--pm-primary)" : "var(--pm-primary-light)" }}>Me</span>
+        <span className="text-[24px] font-semibold" style={{ color: "var(--pm-primary)", fontFamily: "'Caveat', cursive" }}>Me</span>
         <span style={{ color: isMale ? "var(--pm-text-muted)" : "var(--pm-primary)" }}> Store</span>
       </div>
-      <p className="text-[10px] font-sans mb-4" style={{ color: isMale ? "var(--pm-text-muted)" : "color-mix(in srgb, var(--pm-primary) 60%, transparent)" }}>ПикМи — магазин брендовых {gender === "male" ? "товаров" : "вещей"}</p>
+      <p className="text-[10px] font-sans mb-4" style={{ color: isMale ? "var(--pm-text-muted)" : "color-mix(in srgb, var(--pm-primary) 35%, transparent)" }}>ПикМи — магазин брендовых вещей</p>
       <div className="flex items-center justify-center gap-6 mb-4">
         <a
           href="https://t.me/V_Limerence"
@@ -2256,7 +2500,7 @@ function GiftShareButton({ productId, brand, name }: { productId: number; brand:
       <button
         onClick={handleShare}
         style={{
-          flex: 1, padding: "10px 24px", borderRadius: 8,
+          flex: 1, padding: "10px 24px", borderRadius: 12,
           border: "1px solid var(--pm-gift-border)", background: copied ? "var(--pm-gift-bg)" : "transparent",
           color: "var(--pm-gift-accent)", fontSize: 13, fontWeight: 500, cursor: "pointer",
           transition: "background 150ms, transform 150ms",
@@ -2282,7 +2526,7 @@ function GiftShareButton({ productId, brand, name }: { productId: number; brand:
           <div style={{
             position: "absolute", bottom: "calc(100% + 8px)", right: 0, width: 280,
             background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)",
-            borderRadius: 8, padding: "12px 16px", fontSize: 12, color: "var(--pm-text-body)",
+            borderRadius: 12, padding: "12px 16px", fontSize: 12, color: "var(--pm-text-body)",
             boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 50, lineHeight: 1.5,
           }}>
             Нажми, чтобы поделиться ссылкой на этот товар. Получатель увидит фото и описание, но цена будет скрыта — удобно, чтобы согласовать подарок.
@@ -2307,6 +2551,8 @@ type ProductDetail = {
 
 function ProductPage() {
   const { id } = useParams<{ id: string }>();
+  const { gender } = useTheme();
+  const isMale = gender === "male";
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -2450,7 +2696,7 @@ function ProductPage() {
             <div className="w-full md:w-1/2">
               <div
                 ref={carouselRef}
-                className="relative w-full aspect-[3/4] overflow-hidden rounded-[24px] bg-gradient-to-br from-[var(--pm-primary-bg)] to-secondary"
+                className="relative w-full aspect-[3/4] overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--pm-primary-bg)] to-secondary"
                 style={{ touchAction: "pan-y" }}
               >
                 {images.length > 0 ? (
@@ -2491,8 +2737,18 @@ function ProductPage() {
 
                 {images.length > 1 && (
                   <>
-                    <button onClick={prevImg} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md hover:bg-primary hover:text-white text-xl font-bold transition-colors" style={{ zIndex: 10 }}>‹</button>
-                    <button onClick={nextImg} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md hover:bg-primary hover:text-white text-xl font-bold transition-colors" style={{ zIndex: 10 }}>›</button>
+                    <button onClick={prevImg}
+                      className={isMale
+                        ? "absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all opacity-70 hover:opacity-100 hover:scale-110 text-xl font-bold"
+                        : "absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md hover:bg-primary hover:text-white text-xl font-bold transition-colors"}
+                      style={isMale ? { zIndex: 10, background: "var(--pm-card-bg)", color: "var(--pm-primary)", border: "1px solid var(--pm-primary-border)" } : { zIndex: 10 }}
+                    >‹</button>
+                    <button onClick={nextImg}
+                      className={isMale
+                        ? "absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all opacity-70 hover:opacity-100 hover:scale-110 text-xl font-bold"
+                        : "absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 text-primary flex items-center justify-center shadow-md hover:bg-primary hover:text-white text-xl font-bold transition-colors"}
+                      style={isMale ? { zIndex: 10, background: "var(--pm-card-bg)", color: "var(--pm-primary)", border: "1px solid var(--pm-primary-border)" } : { zIndex: 10 }}
+                    >›</button>
                     <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2" style={{ zIndex: 10 }}>
                       {images.map((_, i) => (
                         <button key={i} onClick={e => { e.preventDefault(); setAnimating(true); setImgIdx(i); }} className={`rounded-full transition-all ${i === imgIdx ? "w-5 h-2 bg-primary" : "w-2 h-2 bg-white/70"}`} />
@@ -2504,7 +2760,9 @@ function ProductPage() {
             </div>
 
             {/* ── Info ── */}
-            <div className="w-full md:w-1/2 md:aspect-[3/4] flex flex-col gap-5 min-h-0">
+            <div
+              className="w-full md:w-1/2 flex flex-col gap-5"
+            >
               {/* Brand + badges */}
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-[13px] font-bold tracking-[1.5px] uppercase text-primary">{product.brand}</span>
@@ -2528,7 +2786,7 @@ function ProductPage() {
 
               {/* Size chart — shoes only */}
               {product.category === "shoes" && (
-                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--pm-primary-border)" }}>
                   <button
                     type="button"
                     onClick={() => setSizeChartOpen(v => !v)}
@@ -2541,22 +2799,25 @@ function ProductPage() {
                     </svg>
                   </button>
                   {sizeChartOpen && (
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px", tableLayout: "fixed" }}>
                       <thead>
                         <tr style={{ background: "var(--pm-primary-bg)" }}>
-                          <th style={{ padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>Стелька (см)</th>
-                          <th style={{ padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary-hover)", borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>RU</th>
+                          <th style={{ width: "50%", padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary)", borderBottom: "1px solid var(--pm-primary-border)" }}>Стелька (см)</th>
+                          <th style={{ width: "50%", padding: "6px 12px", textAlign: "center", fontWeight: 700, color: "var(--pm-primary)", borderBottom: "1px solid var(--pm-primary-border)" }}>RU</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {getVisibleSizeRows(matchedRow).map(({ row, globalIdx }, i, arr) => (
-                          <tr key={row.cm} style={{ background: globalIdx === matchedRow ? "var(--pm-primary-bg)" : i % 2 === 0 ? "#fff" : "color-mix(in srgb, var(--pm-primary) 4%, white)", borderBottom: i < arr.length - 1 ? "1px solid color-mix(in srgb, var(--pm-primary) 15%, white)" : "none" }}>
-                            <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "var(--pm-primary-hover)" : "#374151" }}>{row.cm}</td>
-                            <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: globalIdx === matchedRow ? 700 : 400, color: globalIdx === matchedRow ? "var(--pm-primary-hover)" : "#374151" }}>
-                              {row.ru}{globalIdx === matchedRow && <span style={{ marginLeft: 4, fontSize: 10 }}>◀</span>}
-                            </td>
-                          </tr>
-                        ))}
+                        {getVisibleSizeRows(matchedRow).map(({ row, globalIdx }, i, arr) => {
+                          const isMatch = globalIdx === matchedRow;
+                          return (
+                            <tr key={row.cm} style={{ background: isMatch ? "color-mix(in srgb, var(--pm-primary) 18%, var(--pm-card-bg))" : i % 2 === 0 ? "var(--pm-card-bg)" : "var(--pm-surface-alt)", borderBottom: i < arr.length - 1 ? "1px solid var(--pm-primary-border)" : "none", boxShadow: isMatch ? "inset 3px 0 0 var(--pm-primary)" : "none" }}>
+                              <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: isMatch ? 700 : 400, color: isMatch ? "var(--pm-primary)" : "var(--pm-text-body)" }}>{row.cm}</td>
+                              <td style={{ padding: "6px 12px", textAlign: "center", fontWeight: isMatch ? 700 : 400, color: isMatch ? "var(--pm-primary)" : "var(--pm-text-body)" }}>
+                                {row.ru}{isMatch && <span style={{ marginLeft: 4, fontSize: 10 }}>◀</span>}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   )}
@@ -2575,7 +2836,7 @@ function ProductPage() {
                 if (product.model) rows.push({ label: "Модель", value: product.model });
                 if (rows.length === 0) return null;
                 return (
-                  <div className="rounded-xl overflow-hidden" style={{ border: "1px solid color-mix(in srgb, var(--pm-primary) 30%, white)" }}>
+                  <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--pm-primary-border)" }}>
                     <button
                       type="button"
                       onClick={() => setMeasOpen(v => !v)}
@@ -2591,9 +2852,9 @@ function ProductPage() {
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
                         <tbody>
                           {rows.map(({ label, value }, i) => (
-                            <tr key={label} style={{ background: i % 2 === 0 ? "#fff" : "color-mix(in srgb, var(--pm-primary) 4%, white)", borderBottom: i < rows.length - 1 ? "1px solid color-mix(in srgb, var(--pm-primary) 15%, white)" : "none" }}>
-                              <td style={{ padding: "7px 12px", color: "var(--pm-primary-hover)", fontWeight: 600, width: "60%" }}>{label}</td>
-                              <td style={{ padding: "7px 12px", color: "#374151", textAlign: "right" }}>{value}</td>
+                            <tr key={label} style={{ background: i % 2 === 0 ? "var(--pm-card-bg)" : "var(--pm-surface-alt)", borderBottom: i < rows.length - 1 ? "1px solid var(--pm-primary-border)" : "none" }}>
+                              <td style={{ padding: "7px 12px", color: "var(--pm-primary)", fontWeight: 600, width: "60%" }}>{label}</td>
+                              <td style={{ padding: "7px 12px", color: "var(--pm-text-body)", textAlign: "right" }}>{value}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -2610,9 +2871,9 @@ function ProductPage() {
 
               {/* Buy button */}
               {isSold ? (
-                <button disabled className="w-full py-4 rounded-full bg-[#f3f4f6] text-[#9ca3af] text-[15px] font-bold cursor-not-allowed">Продано</button>
+                <button disabled className="w-full py-4 rounded-full bg-secondary text-muted-foreground text-[15px] font-bold cursor-not-allowed">Продано</button>
               ) : isReserved ? (
-                <button disabled className="w-full py-4 rounded-full text-[15px] font-bold cursor-not-allowed" style={{ background: "#fff7ed", color: "#f97316" }}>Забронировано</button>
+                <button disabled className="w-full py-4 rounded-full text-[15px] font-bold cursor-not-allowed" style={{ background: "color-mix(in srgb, #f97316 15%, var(--pm-card-bg, #fff))", color: "#f97316" }}>Забронировано</button>
               ) : product.avitoLink ? (
                 <a
                   href={product.avitoLink}
@@ -2663,9 +2924,9 @@ function ProductPage() {
 
               {/* Description — fills all remaining height, always ends at photo bottom */}
               {product.description && (
-                <div className="flex-1 min-h-0 overflow-hidden p-5 flex flex-col gap-2" style={{ borderRadius: 24, background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
-                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50 shrink-0">О товаре</p>
-                  <p className="text-[14px] text-foreground/80 leading-relaxed whitespace-pre-line overflow-hidden">{product.description}</p>
+                <div className="flex-1 min-h-0 overflow-hidden p-5 flex flex-col gap-2 rounded-3xl" style={{ background: "var(--pm-surface)", backdropFilter: "blur(12px)", border: "1px solid var(--pm-primary-border)" }}>
+                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] shrink-0" style={{ color: "var(--pm-primary)" }}>О товаре</p>
+                  <p className="text-[14px] leading-relaxed whitespace-pre-line overflow-hidden" style={{ color: "var(--pm-text-body)" }}>{product.description}</p>
                 </div>
               )}
             </div>
@@ -2677,18 +2938,21 @@ function ProductPage() {
 
         {/* ── CTA block ── */}
         <div className="mt-16">
-          <div className="max-w-[700px] mx-auto rounded-[28px] p-8 md:p-12 text-center" style={{ background: "linear-gradient(135deg, var(--pm-primary-hover) 0%, var(--pm-primary) 60%, var(--pm-primary-light) 100%)" }}>
-            <p className="font-serif text-[24px] md:text-[30px] font-bold text-white mb-2">Есть вопросы по этому товару?</p>
-            <p className="text-white/80 text-[15px] mb-8">Пиши мне, отвечу на все вопросы и помогу с выбором 💗</p>
+          <div className="max-w-[700px] mx-auto relative p-8 md:p-12 text-center">
+            <div className="absolute inset-[-60%] pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--pm-primary) 22%, transparent), transparent 70%)" }} />
+            <div className="relative z-10">
+            <p className="font-serif text-[24px] md:text-[30px] font-bold text-foreground mb-2">Есть вопросы по этому товару?</p>
+            <p className="text-muted-foreground text-[15px] mb-8">Пиши мне, отвечу на все вопросы и помогу с выбором</p>
             <div className="flex items-stretch justify-center gap-4 flex-wrap">
               {/* Авито */}
               <a
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white hover:bg-[var(--pm-primary-bg)] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
+                className="flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] transition-all hover:scale-105 text-white min-w-[120px]"
+                style={{ background: "color-mix(in srgb, var(--pm-primary) 35%, transparent)" }}
               >
-                <img src="https://www.avito.ru/favicon.ico" width={24} height={24} alt="" aria-hidden="true" className="shrink-0" />
+                <img src="https://www.avito.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
                 <span className="leading-snug">Профиль на<br/>Авито</span>
               </a>
 
@@ -2697,13 +2961,14 @@ function ProductPage() {
                 href={product.telegramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white hover:bg-[var(--pm-primary-bg)] text-primary px-9 py-5 rounded-full font-bold text-[16px] transition-colors shadow-lg min-w-[165px]"
+                className="btn-glow flex items-center gap-3 text-white px-9 py-5 rounded-full font-bold text-[16px] transition-all shadow-lg min-w-[165px]"
+                style={{ background: "var(--pm-primary)" }}
                 onClick={() => trackClick(product.id, "telegram_click")}
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="shrink-0" aria-hidden="true">
                   <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.01 13.585l-2.94-.918c-.64-.203-.653-.64.136-.954l11.5-4.43c.533-.194 1-.131.818.938z"/>
                 </svg>
-                <span className="leading-snug">Написать в<br/>Telegram ✈️</span>
+                <span className="leading-snug">Написать в<br/>Telegram</span>
               </a>
 
               {/* MAX */}
@@ -2711,11 +2976,13 @@ function ProductPage() {
                 href="https://tinyurl.com/5h4bbmkr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white hover:bg-[var(--pm-primary-bg)] text-primary px-6 py-4 rounded-full font-semibold text-[14px] transition-colors min-w-[140px]"
+                className="flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[13px] transition-all hover:scale-105 text-white min-w-[120px]"
+                style={{ background: "color-mix(in srgb, var(--pm-primary) 35%, transparent)" }}
               >
-                <img src="https://max.ru/favicon.ico" width={24} height={24} alt="" aria-hidden="true" className="shrink-0" />
+                <img src="https://max.ru/favicon.ico" width={20} height={20} alt="" aria-hidden="true" className="shrink-0" />
                 <span className="leading-snug">Написать в<br/>MAX</span>
               </a>
+            </div>
             </div>
           </div>
         </div>
@@ -2861,7 +3128,7 @@ function GiftPage() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)",
-            borderRadius: 8, padding: "8px 16px", fontSize: 13,
+            borderRadius: 12, padding: "8px 16px", fontSize: 13,
             color: "var(--pm-gift-accent)", marginBottom: 24,
           }}>
             🎁 Подарочная ссылка — цена скрыта
@@ -2872,7 +3139,7 @@ function GiftPage() {
             <div className="w-full md:w-1/2">
               <div
                 ref={carouselRef}
-                className="relative w-full aspect-[3/4] overflow-hidden rounded-[24px] bg-gradient-to-br from-[var(--pm-primary-bg)] to-secondary"
+                className="relative w-full aspect-[3/4] overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--pm-primary-bg)] to-secondary"
                 style={{ touchAction: "pan-y" }}
               >
                 {images.length > 0 ? (
@@ -2956,9 +3223,9 @@ function GiftPage() {
 
               {/* Description */}
               {product.description && (
-                <div className="flex-1 min-h-0 overflow-hidden p-5 flex flex-col gap-2" style={{ borderRadius: 24, background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)", border: "1px solid rgba(247,109,165,0.15)" }}>
-                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-primary/50 shrink-0">О товаре</p>
-                  <p className="text-[14px] text-foreground/80 leading-relaxed whitespace-pre-line overflow-hidden">{product.description}</p>
+                <div className="flex-1 min-h-0 overflow-hidden p-5 flex flex-col gap-2 rounded-3xl" style={{ background: "var(--pm-surface)", backdropFilter: "blur(12px)", border: "1px solid var(--pm-primary-border)" }}>
+                  <p className="text-[11px] font-bold uppercase tracking-[1.5px] shrink-0" style={{ color: "var(--pm-primary)" }}>О товаре</p>
+                  <p className="text-[14px] leading-relaxed whitespace-pre-line overflow-hidden" style={{ color: "var(--pm-text-body)" }}>{product.description}</p>
                 </div>
               )}
             </div>

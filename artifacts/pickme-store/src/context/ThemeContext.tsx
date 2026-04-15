@@ -59,6 +59,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       "data-theme",
       resolveDataTheme(gender, mode)
     );
+    // Toggle .dark class for shadcn/Tailwind compatibility
+    if (gender === "male" && mode === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, [gender, mode]);
 
   const setGender = (g: ThemeGender) => {

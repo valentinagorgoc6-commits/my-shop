@@ -64,9 +64,14 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: "https://pickmestore.ru",
         changeOrigin: true,
-        secure: false,
+        secure: true,
+      },
+      "/uploads": {
+        target: "https://pickmestore.ru",
+        changeOrigin: true,
+        secure: true,
       },
     },
     fs: {
