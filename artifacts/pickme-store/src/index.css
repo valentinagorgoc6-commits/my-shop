@@ -477,9 +477,9 @@
 }
 
 [data-theme="male"] .product-card-hover:hover {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08);
   border-color: var(--pm-primary-border);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
 }
 
 [data-theme="male-dark"] .product-card-hover:hover {
@@ -567,8 +567,8 @@
 }
 
 [data-theme="male"] .review-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  transform: translateY(-1px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
 }
 
 [data-theme="male-dark"] .review-card:hover {
@@ -621,8 +621,9 @@
 }
 
 [data-theme="male"] .page-gradient {
-  background: linear-gradient(135deg, #f5c0d0 0%, #e8d0f0 30%, #c0d8f8 70%, #7bb8e8 100%);
+  background: linear-gradient(135deg, #e8c0d0 0%, #d0c8f0 20%, #b0d0f8 45%, #7bb8e8 75%, #60a8e0 100%);
   background-attachment: fixed;
+  isolation: isolate;
 }
 
 [data-theme="male-dark"] .page-gradient {
@@ -643,6 +644,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
 }
 
 [data-theme="male"] .review-card {
@@ -650,6 +652,108 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* ═══ MALE LIGHT: section glow (between gradient bg and content, via isolation on main) ═══ */
+[data-theme="male"] .section-glow {
+  position: relative;
+}
+[data-theme="male"] .section-glow::before {
+  content: "";
+  position: absolute;
+  top: -150px;
+  left: 5%;
+  right: 5%;
+  bottom: -150px;
+  background: radial-gradient(ellipse 80% 100% at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 25%, rgba(255,255,255,0.45) 50%, transparent 75%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(50px);
+}
+
+/* Softer glow variant for catalog */
+[data-theme="male"] .section-glow-soft::before {
+  background: radial-gradient(ellipse 80% 100% at center, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 30%, rgba(255,255,255,0.25) 55%, transparent 75%);
+}
+
+/* Hero has overflow-hidden, so use inset:0 with stronger glow */
+[data-theme="male"] .section-glow-hero::before {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 30%, rgba(255,255,255,0.55) 55%, transparent 80%);
+}
+
+/* ═══ MALE LIGHT: CTA text black ═══ */
+[data-theme="male"] .cta-quote,
+[data-theme="male"] .cta-sub {
+  color: #1a1d28 !important;
+}
+
+/* ═══ MALE LIGHT: footer ═══ */
+[data-theme="male"] .footer-male-light {
+  background: rgba(0,80,160,0.65);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-top: 0.5px solid rgba(255,255,255,0.3);
+}
+[data-theme="male"] .footer-male-light,
+[data-theme="male"] .footer-male-light span,
+[data-theme="male"] .footer-male-light p,
+[data-theme="male"] .footer-male-light a {
+  color: #fff !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+[data-theme="male"] .footer-male-light a {
+  font-size: 14px !important;
+  letter-spacing: 0.3px;
+}
+[data-theme="male"] .footer-male-light a:hover {
+  color: rgba(255,255,255,0.8) !important;
+  text-shadow: 0 0 12px rgba(255,255,255,0.4);
+}
+
+/* ═══ MALE LIGHT: CTA secondary buttons white bg ═══ */
+[data-theme="male"] .cta-secondary-btn {
+  background: rgba(255,255,255,0.72) !important;
+}
+
+/* ═══ MALE LIGHT: how-it-works cards ═══ */
+[data-theme="male"] .hiw-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+[data-theme="male"] .hiw-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+
+/* ═══ MALE LIGHT: gift section frame ═══ */
+/* ═══ MALE LIGHT: gift CTA button ═══ */
+[data-theme="male"] .gift-cta-btn {
+  animation: giftShimmer 3s ease-in-out infinite;
+}
+[data-theme="male"] .gift-cta-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 28px rgba(232,67,147,0.5), 0 0 50px rgba(232,67,147,0.25) !important;
+}
+@keyframes giftShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+[data-theme="male"] .gift-frame {
+  background: rgba(180,40,80,0.12) !important;
+  border: 2px solid rgba(180,40,80,0.35) !important;
+}
+[data-theme="male"] .gift-frame h2,
+[data-theme="male"] .gift-frame p {
+  color: #1a1d28 !important;
 }
 
 .section-cta {

@@ -694,7 +694,7 @@ function Hero() {
   }, []);
 
   return (
-    <section ref={ref} className="flex items-center px-6 relative overflow-hidden min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12">
+    <section ref={ref} className={`flex items-center px-6 relative min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12 ${isMale ? "section-glow section-glow-hero" : "overflow-hidden"}`}>
       <motion.div
         style={{ y: bgY }}
         className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none"
@@ -1456,16 +1456,16 @@ function Catalog() {
   const featured = featuredProducts ? (featuredProducts as Array<Record<string, unknown>>).slice(0, 6) : [];
 
   return (
-    <section id="catalog" className="pt-8 pb-6 md:pt-24 md:pb-14">
+    <section id="catalog" className={`pt-8 pb-6 md:pt-24 md:pb-14 ${gender === "male" ? "section-glow section-glow-soft" : ""}`}>
       <div className="max-w-[1100px] mx-auto">
         {/* Desktop: full section title */}
-        <div className="hidden md:block px-6">
+        <div className={`hidden md:block px-6 ${gender === "male" ? "section-glow" : ""}`}>
           <SectionTitle title="Каталог" sub={gender === "female" ? "тут все мои сокровища 🛍️" : undefined} />
         </div>
 
         {/* Mobile: subtitle + CTA + category sections */}
         <div className="md:hidden">
-          <div className="text-center mb-5 px-6">
+          <div className={`text-center mb-5 px-6 ${gender === "male" ? "section-glow" : ""}`}>
             <DecorBar />
             {gender === "female" && <p className="font-script text-[30px] font-medium text-foreground mt-2 leading-tight whitespace-nowrap">Тут все мои сокровища 🛍️</p>}
             <a
@@ -1873,7 +1873,7 @@ function About() {
   const c = gender === "male" ? themeContent.male.about : themeContent.female.about;
 
   return (
-    <section id="about" className="py-14 px-6">
+    <section id="about" className={`py-14 px-6 ${gender === "male" ? "section-glow" : ""}`}>
       <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-12 md:gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -1929,11 +1929,11 @@ function GiftSection() {
   const items = gifts as unknown as GiftProduct[];
 
   return (
-    <section className="py-8 px-6">
+    <section className="py-8 px-6 section-glow">
       <div className="max-w-[900px] mx-auto">
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={fadeInUp}
-          className="flex flex-col md:flex-row items-center gap-10 rounded-2xl"
+          className="flex flex-col md:flex-row items-center gap-10 rounded-2xl gift-frame"
           style={{ padding: "3rem 2.5rem", background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)" }}
         >
           {/* Left — text */}
@@ -1952,17 +1952,19 @@ function GiftSection() {
             </p>
             <a
               href="/catalog?gift=true"
-              className="inline-flex items-center gap-2 font-semibold text-[15px] transition-all hover:scale-105"
+              className="gift-cta-btn inline-flex items-center gap-2 font-bold text-[16px] transition-all"
               style={{
-                padding: "14px 36px",
-                borderRadius: 20,
-                color: "var(--pm-gift-accent, var(--pm-primary))",
-                background: "color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 10%, transparent)",
-                border: "1px solid color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 25%, transparent)",
+                padding: "16px 40px",
+                borderRadius: 24,
+                color: "#fff",
+                background: "linear-gradient(135deg, #c0386a 0%, #e84393 50%, #c0386a 100%)",
+                backgroundSize: "200% 200%",
+                border: "none",
+                boxShadow: "0 4px 20px rgba(232,67,147,0.4), 0 0 40px rgba(232,67,147,0.15)",
               }}
             >
-              Подобрать подарок
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              🎁 Подобрать подарок
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
           </div>
 
@@ -2044,7 +2046,7 @@ function HowItWorks() {
 
   if (isMale) {
     return (
-      <section className="py-14 px-6">
+      <section className="py-14 px-6 section-glow section-glow-soft">
         <div className="max-w-[1100px] mx-auto text-center">
           <SectionTitle title="Как это работает" />
 
@@ -2057,7 +2059,7 @@ function HowItWorks() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.05 }}
                   transition={{ duration: 0.5, delay: i * 0.12 }}
-                  className="flex-1 rounded-2xl p-6 text-left flex flex-col gap-4"
+                  className="flex-1 rounded-2xl p-6 text-left flex flex-col gap-4 hiw-card"
                   style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
                 >
                   <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
@@ -2084,7 +2086,7 @@ function HowItWorks() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.05 }}
                   transition={{ duration: 0.5, delay: i * 0.12 }}
-                  className="w-full rounded-2xl p-5 text-left flex items-start gap-4"
+                  className="w-full rounded-2xl p-5 text-left flex items-start gap-4 hiw-card"
                   style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
                 >
                   <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
@@ -2142,8 +2144,8 @@ function Reviews() {
   const { gender } = useTheme();
   const isMale = gender === "male";
   const reviews = isMale ? [
-    { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
     { text: "Суперр!! Спасибо вам, Валентина. Все соответствует", author: "Чика", source: "Авито" },
+    { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
     { text: "Спасибо большое за чудесное платье!", author: "Наталья", source: "Авито" },
   ] : [
     { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
@@ -2152,7 +2154,7 @@ function Reviews() {
   ];
 
   return (
-    <section id="reviews" className="pt-14 pb-8 px-6">
+    <section id="reviews" className={`pt-14 pb-8 px-6 ${isMale ? "section-glow section-glow-soft" : ""}`}>
       <div className="max-w-[900px] mx-auto text-center">
         <SectionTitle title="Отзывы" sub={isMale ? undefined : "нас уже выбрали 💕"} />
 
@@ -2166,7 +2168,7 @@ function Reviews() {
                 <motion.div
                   key={i}
                   variants={fadeInUp}
-                  className="rounded-2xl p-6 text-left flex flex-col"
+                  className="rounded-2xl p-6 text-left flex flex-col hiw-card"
                   style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
                 >
                   <div className="flex gap-1 mb-3" style={{ color: "var(--pm-primary)" }}>
@@ -2283,7 +2285,7 @@ function FinalCTA() {
   const isMale = gender === "male";
 
   return (
-    <section className={`px-6 section-cta relative overflow-hidden text-center ${isMale ? "py-16" : "pt-16 pb-24"}`}>
+    <section className={`px-6 section-cta relative text-center ${isMale ? "py-16 section-glow section-glow-soft" : "pt-16 pb-24 overflow-hidden"}`}>
       {/* Male-only glow */}
       {isMale && <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 160% at 50% 110%, color-mix(in srgb, var(--pm-primary) 20%, transparent), transparent 70%)" }} />}
 
@@ -2306,10 +2308,10 @@ function FinalCTA() {
         {/* Male: italic quote + hint */}
         {isMale && c.quote && (
           <>
-            <p className="font-serif text-[18px] md:text-[20px] italic mb-4 max-w-[580px] mx-auto" style={{ color: "var(--pm-text-body)", fontStyle: "italic" }}>
-              «{c.quote}»
+            <p className="font-serif text-[18px] md:text-[20px] italic mb-4 max-w-[580px] mx-auto cta-quote" style={{ color: "var(--pm-text-body)", fontStyle: "italic" }}>
+              {c.quote}
             </p>
-            <p className="text-[16px] font-medium mb-10 text-muted-foreground">{c.sub}</p>
+            <p className="text-[16px] font-medium mb-10 cta-sub" style={{ color: "var(--pm-text-body)" }}>{c.sub}</p>
           </>
         )}
 
@@ -2342,7 +2344,7 @@ function FinalCTA() {
         {isMale && (
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-all hover:scale-105"
+              className="cta-secondary-btn inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-all hover:scale-105"
               style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
               data-testid="button-final-avito">
               <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
@@ -2355,7 +2357,7 @@ function FinalCTA() {
               Написать в Telegram ✈️
             </a>
             <a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-all hover:scale-105"
+              className="cta-secondary-btn inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-bold text-[15px] transition-all hover:scale-105"
               style={{ background: "var(--pm-primary-bg)", color: "var(--pm-primary-hover)" }}
               data-testid="button-final-max">
               <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />
@@ -2374,8 +2376,8 @@ function Footer() {
   const isMale = gender === "male";
   return (
     <footer
-      className="py-10 px-6 text-center"
-      style={{ background: isMale ? "var(--pm-surface)" : "hsl(var(--foreground))" }}
+      className={`py-10 px-6 text-center ${isMale ? "footer-male-light" : ""}`}
+      style={{ background: isMale ? undefined : "hsl(var(--foreground))" }}
     >
       
       <div className="text-xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -2417,7 +2419,7 @@ function Footer() {
           MAX
         </a>
       </div>
-      <p className="text-[13px] text-muted-foreground/40">
+      <p className="text-[13px] text-muted-foreground/65">
         © 2026 · Оригинальные бренды с любовью · Доставка по всей России
       </p>
     </footer>
@@ -2426,6 +2428,8 @@ function Footer() {
 
 // -- Main App --
 function Home() {
+  const { gender } = useTheme();
+  const isMale = gender === "male";
   return (
     <>
       <div className="noise-overlay" aria-hidden="true" />
@@ -2440,8 +2444,9 @@ function Home() {
         <Reviews />
         <FAQ />
         <FinalCTA />
+        {isMale && <Footer />}
       </main>
-      <Footer />
+      {!isMale && <Footer />}
     </>
   );
 }
