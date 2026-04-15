@@ -126,7 +126,7 @@ const themeContent = {
     },
     about: {
       label: "Обо мне",
-      title: <>Привет, я Валентинка ♡</>,
+      title: <>Привет, я — <em className="italic text-primary">Валентинка</em></>,
       sub: null as null | string,
       paragraphs: [
         "Раньше я спасала пассажиров на высоте 10 000 метров от плачущих детей, внезапных болезней, фобий и просто плохого настроения. А теперь с удовольствием спасаю твой гардероб и помогаю подобрать подарок для «той самой».",
@@ -161,10 +161,10 @@ function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsiv
   if (gender === "male") {
     const justifyClass = align === "left" ? "justify-start" : align === "responsive" ? "justify-center md:justify-start" : "justify-center";
     return (
-      <div className={`flex items-center ${justifyClass} mb-4 w-full`}>
-        <div className="h-[1px] w-16 md:w-20" style={{ background: "linear-gradient(to right, transparent, var(--pm-primary-border))" }} />
-        <div className="w-1.5 h-1.5 rounded-full mx-3" style={{ background: "var(--pm-primary)", opacity: mode === "dark" ? 0.6 : 0.3 }} />
-        <div className="h-[1px] w-16 md:w-20" style={{ background: "linear-gradient(to left, transparent, var(--pm-primary-border))" }} />
+      <div className={`flex items-center ${justifyClass} mb-4 w-full relative z-10`}>
+        <div className="h-[2px] w-20 md:w-28" style={{ background: `linear-gradient(to right, transparent, var(--pm-primary))`, opacity: mode === "dark" ? 0.5 : 0.7 }} />
+        <div className="w-2 h-2 rounded-full mx-3" style={{ background: "var(--pm-primary)", opacity: mode === "dark" ? 0.6 : 0.8 }} />
+        <div className="h-[2px] w-20 md:w-28" style={{ background: `linear-gradient(to left, transparent, var(--pm-primary))`, opacity: mode === "dark" ? 0.5 : 0.7 }} />
       </div>
     );
   }
@@ -200,9 +200,9 @@ function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub?: Rea
 // -- Logo Word --
 function LogoWord() {
   return (
-    <span className="text-[26px] font-bold no-underline tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+    <span className="text-[20px] md:text-[26px] font-bold no-underline tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
       <span style={{ color: "var(--pm-primary)" }}>Pick</span>
-      <span className="text-[30px] font-semibold" style={{ color: "var(--pm-primary)", fontFamily: "'Caveat', cursive" }}>Me</span>
+      <span className="text-[24px] md:text-[30px] font-semibold" style={{ color: "var(--pm-primary)", fontFamily: "'Caveat', cursive" }}>Me</span>
       <span style={{ color: "var(--pm-text-heading, var(--foreground))" }}> Store</span>
     </span>
   );
@@ -352,10 +352,10 @@ function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between ${
-          scrolled ? "glass-card shadow-[0_4px_24px_rgba(0,0,0,0.06)]" : "bg-transparent"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between max-w-[100vw] overflow-hidden ${
+          scrolled || gender === "male" ? "glass-card shadow-[0_4px_24px_rgba(0,0,0,0.06)]" : "bg-transparent"
         }`}
-        style={scrolled ? { borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 20%, transparent)" } : undefined}
+        style={(scrolled || gender === "male") ? { borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 20%, transparent)" } : undefined}
       >
         <a href="/" className="no-underline flex flex-col leading-none cursor-pointer" data-testid="link-logo">
           <LogoWord />
@@ -363,14 +363,14 @@ function Header() {
         </a>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-3">
-          <ul className="flex gap-5 list-none m-0 p-0 items-center mr-1">
+        <nav className="hidden md:flex items-center gap-2">
+          <ul className="flex gap-4 list-none m-0 p-0 items-center mr-1">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <a
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide"
+                  className="text-[14px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide"
                   data-testid={`link-nav-${link.href.replace("#", "")}`}
                 >
                   {link.name}
@@ -384,7 +384,7 @@ function Header() {
                     href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
+                    className="text-[14px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
                     data-testid="link-nav-avito"
                   >
                     <img src="https://www.avito.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
@@ -396,7 +396,7 @@ function Header() {
                     href="https://tinyurl.com/5h4bbmkr"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[12px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
+                    className="text-[14px] font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide flex items-center gap-1"
                   >
                     <img src="https://max.ru/favicon.ico" width={14} height={14} alt="" aria-hidden="true" className="shrink-0" />
                     MAX
@@ -766,10 +766,10 @@ function Hero() {
                 {themeContent.male.hero.body}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-8">
-                <a href="/catalog" className="btn-glow inline-flex items-center justify-center text-white px-8 py-4 rounded-full font-bold text-base" style={{ background: "var(--pm-primary)" }} data-testid="button-hero-catalog">
+                <a href="/catalog" className="btn-glow hidden md:inline-flex items-center justify-center text-white px-8 py-4 rounded-full font-bold text-base" style={{ background: "var(--pm-primary)" }} data-testid="button-hero-catalog">
                   {themeContent.male.hero.ctaPrimary}
                 </a>
-                <a href="#about" className="inline-flex items-center justify-center bg-transparent border-2 text-muted-foreground px-7 py-4 rounded-full font-bold text-[15px] transition-all" style={{ borderColor: "var(--pm-primary-border)" }}>
+                <a href="#about" className="about-btn inline-flex items-center justify-center border-2 px-7 py-4 rounded-full font-bold text-[15px] transition-all" style={{ borderColor: "var(--pm-primary)", color: "var(--pm-primary)", background: "color-mix(in srgb, var(--pm-primary) 10%, transparent)" }}>
                   О магазине
                 </a>
               </div>
@@ -1418,7 +1418,7 @@ function CategoryScrollSection({ catId, label, genderParam }: { catId: string; l
   }, [products]);
   if (!items || items.length < 2) return null;
   return (
-    <div style={{ background: "var(--pm-surface-alt)", borderRadius: 16, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease" }}>
+    <div className="cat-scroll-block" style={{ background: "var(--pm-surface-alt)", borderRadius: 16, padding: 16, margin: "0 12px 12px", transition: "background 0.3s ease", border: "1px solid color-mix(in srgb, var(--pm-border) 30%, transparent)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 4, height: 20, background: "var(--pm-primary)", borderRadius: 2, flexShrink: 0, transition: "background 0.3s ease" }} />
@@ -1562,7 +1562,7 @@ function applyDefaultSort<T extends { badge?: string | null; sortOrder?: number 
 
 // -- Full Catalog Page --
 function CatalogPage() {
-  const { gender: themeGender } = useTheme();
+  const { gender: themeGender, mode } = useTheme();
   const [filter, setFilter] = useState<string>(() => {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get("category");
@@ -1653,7 +1653,7 @@ function CatalogPage() {
       <div className="noise-overlay" aria-hidden="true" />
       <Header />
       <main className="page-gradient min-h-screen">
-        <section className="py-16 px-6">
+        <section className="pt-28 pb-16 px-6">
           <div className="max-w-[1100px] mx-auto">
             <div className="text-center mb-10">
               <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-3">Каталог</h1>
@@ -1709,7 +1709,7 @@ function CatalogPage() {
                   className={`px-5 py-2 rounded-full font-sans text-sm font-bold transition-all border-2 ${
                     genderFilter === g.id
                       ? "bg-primary border-primary text-white shadow-md"
-                      : "bg-transparent border-secondary text-muted-foreground hover:border-[var(--pm-primary)] hover:text-primary"
+                      : "catalog-filter-btn bg-transparent border-secondary text-muted-foreground hover:border-[var(--pm-primary)] hover:text-primary"
                   }`}
                 >
                   {g.label}
@@ -1726,7 +1726,7 @@ function CatalogPage() {
                   className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 ${
                     filter === c.id
                       ? "bg-primary border-primary text-white shadow-md"
-                      : "bg-transparent border-secondary text-muted-foreground hover:border-[var(--pm-primary)] hover:text-primary"
+                      : "catalog-filter-btn bg-transparent border-secondary text-muted-foreground hover:border-[var(--pm-primary)] hover:text-primary"
                   }`}
                 >
                   {c.label}
@@ -1737,7 +1737,7 @@ function CatalogPage() {
                 className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 flex items-center gap-2 ${
                   hideSold
                     ? "bg-foreground border-foreground text-white shadow-md"
-                    : "bg-transparent border-secondary text-muted-foreground hover:border-foreground hover:text-foreground"
+                    : "catalog-filter-btn bg-transparent border-secondary text-muted-foreground hover:border-foreground hover:text-foreground"
                 }`}
               >
                 <span className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center flex-shrink-0 transition-all ${hideSold ? "border-background bg-background" : "border-current"}`}>
@@ -1751,7 +1751,7 @@ function CatalogPage() {
                   className={`px-6 py-2.5 rounded-full font-sans text-sm font-bold transition-all border-2 flex items-center gap-2 ${
                     giftOnly
                       ? "text-white shadow-md"
-                      : "bg-transparent text-muted-foreground hover:text-primary"
+                      : "catalog-filter-btn bg-transparent text-muted-foreground hover:text-primary"
                   }`}
                   style={giftOnly
                     ? { background: "var(--pm-gift-accent, var(--pm-primary))", borderColor: "var(--pm-gift-accent, var(--pm-primary))" }
@@ -1764,9 +1764,11 @@ function CatalogPage() {
             </div>
 
             {giftOnly && themeGender === "male" && (
-              <div className="mb-10 text-center relative py-8">
-                <div className="absolute inset-[-30%] pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 25%, transparent), transparent 70%)" }} />
-                <p className="relative text-[16px] md:text-[18px] mx-auto whitespace-nowrap" style={{ color: "var(--pm-text-body)", lineHeight: 1.7 }}>
+              <div className="mb-4 text-center relative py-3">
+                {mode === "dark" && (
+                  <div className="absolute inset-[-30%] pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--pm-gift-accent, var(--pm-primary)) 25%, transparent), transparent 70%)" }} />
+                )}
+                <p className={`relative text-[16px] md:text-[18px] mx-auto whitespace-nowrap ${mode === "light" ? "gift-pill" : ""}`} style={{ color: "var(--pm-text-body)", lineHeight: 1.7 }}>
                   ✨ Открываю от сердца самые популярные и любимые женские позиции ✨
                 </p>
               </div>
@@ -1873,8 +1875,8 @@ function About() {
   const c = gender === "male" ? themeContent.male.about : themeContent.female.about;
 
   return (
-    <section id="about" className={`py-14 px-6 ${gender === "male" ? "section-glow" : ""}`}>
-      <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-12 md:gap-16 items-center">
+    <section id="about" className={`py-4 px-4 md:py-14 md:px-6 ${gender === "male" ? "section-glow" : ""}`}>
+      <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-6 md:gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -1901,14 +1903,14 @@ function About() {
           {c.label && (
             <p className="text-[11px] font-bold uppercase tracking-[1.5px] mb-2" style={{ color: "var(--pm-primary)" }}>{c.label}</p>
           )}
-          <h2 className="font-serif text-[32px] md:text-[40px] font-bold text-foreground mb-2">
+          <h2 className="font-serif text-[5.2vw] md:text-[40px] font-bold text-foreground mb-2 whitespace-nowrap">
             {c.title}
           </h2>
           {c.sub && (
             <p className="font-script text-[22px] md:text-[24px] font-medium mb-6" style={{ color: "var(--pm-primary)" }}>{c.sub}</p>
           )}
 
-          <div className="space-y-4 text-[16px] leading-[1.8] text-muted-foreground font-sans">
+          <div className="space-y-3 md:space-y-4 text-[15px] md:text-[16px] leading-[1.7] md:leading-[1.8] font-sans" style={{ color: "var(--pm-text-body)" }}>
             {c.paragraphs.map((p, i) => <p key={i} style={{ fontFamily: "var(--pm-font-body, var(--font-sans))", fontStyle: "normal" }}>{p}</p>)}
           </div>
 
@@ -1920,7 +1922,7 @@ function About() {
 
 // -- Gift Section (male only) --
 function GiftSection() {
-  const { gender } = useTheme();
+  const { gender, mode } = useTheme();
   const { data: gifts } = useProductsFetch({ giftSuggestion: true, limit: 4 }, gender === "male");
   if (gender !== "male") return null;
   if (!gifts || gifts.length === 0) return null;
@@ -1937,22 +1939,28 @@ function GiftSection() {
           style={{ padding: "3rem 2.5rem", background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)" }}
         >
           {/* Left — text */}
-          <div className="flex-1">
-            <p className="text-[11px] font-bold uppercase mb-4" style={{ letterSpacing: "2px", color: "var(--pm-text-muted)" }}>
+          <div className="flex-1 text-center md:text-left relative">
+            {mode === "light" && (
+              <>
+                <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 90% 80% at 50% 50%, rgba(255,130,180,0.35), rgba(255,182,213,0.18) 50%, transparent 75%)", filter: "blur(25px)" }} />
+                <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 45%, rgba(255,255,255,0.85), rgba(255,255,255,0.4) 50%, transparent 75%)", filter: "blur(15px)" }} />
+              </>
+            )}
+            <p className="relative text-[11px] font-extrabold uppercase mb-4" style={{ letterSpacing: "2px", color: "var(--pm-text-muted)" }}>
               Идея для подарка
             </p>
-            <h2 className="text-[32px] font-semibold mb-5" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", color: "var(--pm-text-heading)" }}>
+            <h2 className="relative text-[32px] font-bold mb-5" style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: "italic", color: "var(--pm-text-heading)" }}>
               Подарок для неё
             </h2>
-            <p className="text-[15px] mb-3 max-w-lg" style={{ lineHeight: 1.6, color: "var(--pm-text-muted)" }}>
+            <p className="relative text-[15px] font-medium mb-3 max-w-lg mx-auto md:mx-0" style={{ lineHeight: 1.6, color: "var(--pm-text-muted)" }}>
               Не знаешь что подарить? Отправь ей ссылку — она увидит подарок и описание без цены.
             </p>
-            <p className="text-[12px] mb-8" style={{ color: "var(--pm-text-muted)", opacity: 0.6 }}>
+            <p className="relative text-[12px] font-semibold mb-8" style={{ color: "var(--pm-text-muted)", opacity: 0.6 }}>
               Стильно, лично, без неловких моментов
             </p>
             <a
               href="/catalog?gift=true"
-              className="gift-cta-btn inline-flex items-center gap-2 font-bold text-[16px] transition-all"
+              className="gift-cta-btn inline-flex items-center gap-2 font-bold text-[16px] transition-all whitespace-nowrap"
               style={{
                 padding: "16px 40px",
                 borderRadius: 24,
@@ -2476,9 +2484,9 @@ function SimilarProducts({ currentId, category }: { currentId: number; category:
 
   return (
     <div className="mt-16">
-      <div className="mb-8 text-center">
+      <div className={`mb-8 text-center ${gender === "male" ? "section-glow" : ""}`}>
         <DecorBar />
-        <h2 className="font-serif text-[26px] md:text-[32px] font-bold text-foreground">Тебе также понравится</h2>
+        <h2 className="font-serif text-[26px] md:text-[32px] font-bold text-foreground similar-title">Тебе также понравится</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {similar.map(p => (
@@ -2712,7 +2720,7 @@ function ProductPage() {
       <Header />
       <main className="page-gradient min-h-screen pt-24 pb-24 px-6">
         <div className="max-w-[1100px] mx-auto">
-          <a href="/catalog" className="inline-flex items-center gap-1 text-primary font-semibold text-sm hover:underline mt-6 mb-8 block">
+          <a href="/catalog" className="back-btn inline-flex items-center gap-1 text-primary font-semibold text-sm mt-6 mb-8 px-6 py-2.5 rounded-full transition-all hover:scale-105">
             ← Назад в каталог
           </a>
 
@@ -2788,16 +2796,16 @@ function ProductPage() {
             <div
               className="w-full md:w-1/2 flex flex-col gap-5"
             >
-              {/* Brand + badges */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="text-[13px] font-bold tracking-[1.5px] uppercase text-primary">{product.brand}</span>
-                {product.badge === "new" && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary">New</span>}
-                {isSold && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "var(--pm-primary)" }}>Продано</span>}
-                {isReserved && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "#f97316" }}>Забронировано</span>}
+              {/* Brand + badges + Name */}
+              <div className={isMale ? "section-glow section-glow-wide" : ""}>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-[13px] font-bold tracking-[1.5px] uppercase text-primary">{product.brand}</span>
+                  {product.badge === "new" && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white bg-primary">New</span>}
+                  {isSold && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "var(--pm-primary)" }}>Продано</span>}
+                  {isReserved && <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-white" style={{ background: "#f97316" }}>Забронировано</span>}
+                </div>
+                <h1 className="font-serif text-[28px] md:text-[36px] font-bold text-foreground leading-tight mt-5">{product.name}</h1>
               </div>
-
-              {/* Name */}
-              <h1 className="font-serif text-[28px] md:text-[36px] font-bold text-foreground leading-tight">{product.name}</h1>
 
               {/* Caption — space always reserved */}
               <p className="font-script text-[22px] leading-tight -mt-2 min-h-[28px]" style={{ color: "var(--pm-primary)" }}>
@@ -2805,13 +2813,13 @@ function ProductPage() {
               </p>
 
               {/* Size */}
-              <p className="text-[15px] text-muted-foreground">
+              <p className="text-[15px] text-muted-foreground size-label">
                 {product.category === "shoes" ? `Длина стельки: ${product.size} см` : `Размер: ${product.size}`}
               </p>
 
               {/* Size chart — shoes only */}
               {product.category === "shoes" && (
-                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--pm-primary-border)" }}>
+                <div className="rounded-xl overflow-hidden size-chart-block" style={{ border: "1px solid var(--pm-primary-border)" }}>
                   <button
                     type="button"
                     onClick={() => setSizeChartOpen(v => !v)}
@@ -2861,7 +2869,7 @@ function ProductPage() {
                 if (product.model) rows.push({ label: "Модель", value: product.model });
                 if (rows.length === 0) return null;
                 return (
-                  <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--pm-primary-border)" }}>
+                  <div className="rounded-xl overflow-hidden size-chart-block" style={{ border: "1px solid var(--pm-primary-border)" }}>
                     <button
                       type="button"
                       onClick={() => setMeasOpen(v => !v)}
@@ -2937,7 +2945,7 @@ function ProductPage() {
                       toast({ title: "Не удалось скопировать ссылку", duration: 2000 });
                     });
                 }}
-                className="w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[var(--pm-primary-bg)] transition-colors flex items-center justify-center gap-2"
+                className="share-btn w-full py-3 rounded-full border-2 border-primary text-primary text-[14px] font-semibold hover:bg-[var(--pm-primary-bg)] transition-colors flex items-center justify-center gap-2"
               >
                 🔗 Поделиться
               </button>
@@ -2963,11 +2971,11 @@ function ProductPage() {
 
         {/* ── CTA block ── */}
         <div className="mt-16">
-          <div className="max-w-[700px] mx-auto relative p-8 md:p-12 text-center">
+          <div className={`max-w-[700px] mx-auto relative p-8 md:p-12 text-center ${isMale ? "section-glow section-glow-wide" : ""}`}>
             <div className="absolute inset-[-60%] pointer-events-none" style={{ background: "radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--pm-primary) 22%, transparent), transparent 70%)" }} />
             <div className="relative z-10">
-            <p className="font-serif text-[24px] md:text-[30px] font-bold text-foreground mb-2">Есть вопросы по этому товару?</p>
-            <p className="text-muted-foreground text-[15px] mb-8">Пиши мне, отвечу на все вопросы и помогу с выбором</p>
+            <p className="font-serif text-[30px] md:text-[38px] font-black text-foreground mb-2">Есть вопросы по этому товару?</p>
+            <p className={`text-[17px] mb-8 ${isMale ? "product-cta-sub" : "text-muted-foreground"}`}>Пиши мне, отвечу на все вопросы и помогу с выбором</p>
             <div className="flex items-stretch justify-center gap-4 flex-wrap">
               {/* Авито */}
               <a
@@ -3206,7 +3214,7 @@ function GiftPage() {
               {product.caption && (
                 <p className="font-script text-[22px] leading-tight -mt-2" style={{ color: "var(--pm-primary)" }}>{product.caption}</p>
               )}
-              <p className="text-[15px] text-muted-foreground">
+              <p className="text-[15px] text-muted-foreground size-label">
                 {product.category === "shoes" ? `Длина стельки: ${product.size} см` : `Размер: ${product.size}`}
               </p>
 

@@ -47,6 +47,11 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 :root {
   --background: 30 100% 98%;
   --foreground: 327 31% 18%;
@@ -162,7 +167,7 @@
 
   --pm-gift-bg: rgba(180,40,80,0.04);
   --pm-gift-border: rgba(180,40,80,0.12);
-  --pm-gift-accent: #b83060;
+  --pm-gift-accent: #e8578a;
 
   --pm-font-heading: 'Cormorant Garamond', serif;
   --pm-font-accent: 'Montserrat', sans-serif;
@@ -663,13 +668,20 @@
   content: "";
   position: absolute;
   top: -150px;
-  left: 5%;
-  right: 5%;
+  left: -10%;
+  right: -10%;
   bottom: -150px;
-  background: radial-gradient(ellipse 80% 100% at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 25%, rgba(255,255,255,0.45) 50%, transparent 75%);
+  background: radial-gradient(ellipse 90% 100% at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 25%, rgba(255,255,255,0.45) 50%, transparent 75%);
   z-index: -1;
   pointer-events: none;
   filter: blur(50px);
+}
+
+/* Wider glow variant for product name */
+[data-theme="male"] .section-glow-wide::before {
+  left: -20%;
+  right: -20%;
+  background: radial-gradient(ellipse 100% 100% at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.85) 25%, rgba(255,255,255,0.45) 50%, transparent 75%);
 }
 
 /* Softer glow variant for catalog */
@@ -684,6 +696,84 @@
   right: 0;
   bottom: 0;
   background: radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 30%, rgba(255,255,255,0.55) 55%, transparent 80%);
+}
+
+/* ═══ MALE LIGHT: gift phrase glass pill ═══ */
+[data-theme="male"] .gift-pill {
+  display: block;
+  width: 100%;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 0.5px solid rgba(255,255,255,0.5);
+  border-radius: 50px;
+  padding: 18px 44px;
+  color: #1a1d28 !important;
+  font-weight: 600;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 24px;
+  letter-spacing: 0.3px;
+}
+
+/* ═══ MALE: section title size compensation (Cormorant Garamond is visually smaller than Playfair) ═══ */
+[data-theme="male"] h2.font-serif,
+[data-theme="male-dark"] h2.font-serif {
+  font-size: 51px;
+}
+@media (min-width: 768px) {
+  [data-theme="male"] h2.font-serif,
+  [data-theme="male-dark"] h2.font-serif {
+    font-size: 65px;
+  }
+}
+
+/* ═══ MALE: similar products title size reset ═══ */
+[data-theme="male"] .similar-title,
+[data-theme="male-dark"] .similar-title {
+  font-size: 26px !important;
+}
+@media (min-width: 768px) {
+  [data-theme="male"] .similar-title,
+  [data-theme="male-dark"] .similar-title {
+    font-size: 32px !important;
+  }
+}
+
+/* ═══ MALE LIGHT: product CTA subtitle ═══ */
+[data-theme="male"] .product-cta-sub {
+  color: #1a1d28;
+}
+
+/* ═══ MALE LIGHT: back to catalog button ═══ */
+[data-theme="male"] .back-btn {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.5);
+}
+
+/* ═══ MALE LIGHT: size label black text ═══ */
+[data-theme="male"] .size-label {
+  color: #1a1d28 !important;
+}
+
+/* ═══ MALE LIGHT: share button ═══ */
+[data-theme="male"] .share-btn {
+  background: rgba(255,255,255,0.75);
+}
+
+/* ═══ MALE LIGHT: size chart block ═══ */
+[data-theme="male"] .size-chart-block {
+  background: rgba(255,255,255,0.75);
+}
+
+/* ═══ MALE LIGHT: category scroll blocks transparent bg ═══ */
+[data-theme="male"] .cat-scroll-block {
+  background: rgba(255,255,255,0.6) !important;
+}
+
+/* ═══ MALE LIGHT: catalog filter buttons ═══ */
+[data-theme="male"] .catalog-filter-btn {
+  background: rgba(255,255,255,0.75) !important;
 }
 
 /* ═══ MALE LIGHT: CTA text black ═══ */
@@ -750,6 +840,11 @@
 [data-theme="male"] .gift-frame {
   background: rgba(180,40,80,0.12) !important;
   border: 2px solid rgba(180,40,80,0.35) !important;
+}
+@media (max-width: 767px) {
+  [data-theme="male"] .gift-frame {
+    background: rgba(180,40,80,0.30) !important;
+  }
 }
 [data-theme="male"] .gift-frame h2,
 [data-theme="male"] .gift-frame p {
