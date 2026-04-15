@@ -223,9 +223,10 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.42, ease: "easeInOut" }}
       className="fixed inset-0 z-[1000] flex items-center justify-center p-6"
-      style={{ background: "linear-gradient(135deg, #fff5f9 0%, #faf8ff 50%, #f5f9ff 100%)" }}
+      style={{ background: "linear-gradient(135deg, #f8a4c8 0%, #d4a5e5 35%, #a8b8f0 65%, #7ecbf5 100%)" }}
     >
-      <div className="text-center max-w-lg w-full">
+      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.5) 50%, transparent 75%)" }} />
+      <div className="text-center max-w-lg w-full relative">
         <div className="mb-1">
           <span className="font-serif text-[40px] font-bold">
             <span style={{ color: "#f04586" }}>Pick</span>
