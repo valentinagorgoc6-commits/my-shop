@@ -206,14 +206,20 @@ function LogoWord() {
   );
 }
 
-// -- Splash Screen --
+// -- Splash Screen (modal popup) --
 function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
   const [leaving, setLeaving] = useState(false);
 
   const choose = (g: ThemeGender) => {
     if (leaving) return;
     setLeaving(true);
-    setTimeout(() => onSelect(g), 420);
+    setTimeout(() => onSelect(g), 380);
+  };
+
+  const close = () => {
+    if (leaving) return;
+    setLeaving(true);
+    setTimeout(() => onSelect("female"), 380);
   };
 
   return (
@@ -221,85 +227,107 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: leaving ? 0 : 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.42, ease: "easeInOut" }}
-      className="fixed inset-0 z-[1000] flex items-center justify-center p-6"
-      style={{ background: "linear-gradient(135deg, #f8a4c8 0%, #d4a5e5 35%, #a8b8f0 65%, #7ecbf5 100%)" }}
+      transition={{ duration: 0.38, ease: "easeInOut" }}
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
+      onClick={close}
     >
-      <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 25%, rgba(255,255,255,0.5) 50%, transparent 75%)" }} />
-      <div className="text-center max-w-lg w-full relative">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        animate={{ opacity: leaving ? 0 : 1, scale: leaving ? 0.95 : 1, y: leaving ? 10 : 0 }}
+        transition={{ duration: 0.38, ease: "easeOut" }}
+        className="relative w-[420px] max-w-[90vw] rounded-[20px] p-8 text-center"
+        style={{ background: "#fff", boxShadow: "0 24px 80px rgba(0,0,0,0.18), 0 4px 20px rgba(0,0,0,0.08)" }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          onClick={close}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-colors duration-150"
+          style={{ background: "rgba(0,0,0,0.05)", color: "#999", border: "none" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.1)"; e.currentTarget.style.color = "#555"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,0,0,0.05)"; e.currentTarget.style.color = "#999"; }}
+          aria-label="Закрыть"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/></svg>
+        </button>
+
         <div className="mb-1">
-          <span className="font-serif text-[40px] font-bold">
+          <span className="font-serif text-[28px] font-bold">
             <span style={{ color: "#f04586" }}>Pick</span>
-            <span className="font-script text-[44px] font-semibold" style={{ color: "#f76da5" }}>Me</span>
+            <span className="font-script text-[32px] font-semibold" style={{ color: "#f76da5" }}>Me</span>
             <span style={{ color: "#2d1520" }}> Store</span>
           </span>
         </div>
-        <p className="font-script text-[22px] font-medium mb-10" style={{ color: "#b06090" }}>
-          Выбери свой стиль ✨
+        <p className="font-serif text-[18px] font-semibold mb-1" style={{ color: "#2d1520" }}>
+          Добро пожаловать в PickMe Store
+        </p>
+        <p className="font-script text-[17px] font-medium mb-7" style={{ color: "#b06090" }}>
+          Выбери, что тебе интереснее
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
+        <div className="flex flex-row gap-4 justify-center items-center">
           <button
             onClick={() => choose("female")}
             disabled={leaving}
-            className="w-[200px] rounded-3xl p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
+            className="flex-1 max-w-[160px] rounded-2xl p-5 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border-2 focus:outline-none active:scale-95"
             style={{
               background: "rgba(240,69,134,0.04)",
               borderColor: "rgba(240,69,134,0.25)",
-              boxShadow: "0 4px 20px rgba(240,69,134,0.08)",
+              boxShadow: "0 4px 16px rgba(240,69,134,0.08)",
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 16px 48px rgba(240,69,134,0.22)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 12px 36px rgba(240,69,134,0.2)";
               (e.currentTarget as HTMLButtonElement).style.borderColor = "#f04586";
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(240,69,134,0.08)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(240,69,134,0.08)";
               (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(240,69,134,0.25)";
             }}
           >
-            <div className="flex justify-center mb-4">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div className="flex justify-center mb-3">
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="24" cy="20" r="12" stroke="#f04586" strokeWidth="1.75"/>
                 <line x1="24" y1="32" x2="24" y2="44" stroke="#f04586" strokeWidth="1.75" strokeLinecap="round"/>
                 <line x1="17" y1="38" x2="31" y2="38" stroke="#f04586" strokeWidth="1.75" strokeLinecap="round"/>
               </svg>
             </div>
-            <div className="font-serif text-[20px] font-bold" style={{ color: "#f04586" }}>Для неё</div>
+            <div className="font-serif text-[17px] font-bold" style={{ color: "#f04586" }}>Для неё</div>
           </button>
 
           <button
             onClick={() => choose("male")}
             disabled={leaving}
-            className="w-[200px] rounded-3xl p-8 text-center cursor-pointer transition-all duration-200 hover:-translate-y-2 border-2 focus:outline-none active:scale-95"
+            className="flex-1 max-w-[160px] rounded-2xl p-5 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1 border-2 focus:outline-none active:scale-95"
             style={{
               background: "rgba(0,116,196,0.04)",
               borderColor: "rgba(0,116,196,0.25)",
-              boxShadow: "0 4px 20px rgba(0,116,196,0.08)",
+              boxShadow: "0 4px 16px rgba(0,116,196,0.08)",
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 16px 48px rgba(0,116,196,0.22)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 12px 36px rgba(0,116,196,0.2)";
               (e.currentTarget as HTMLButtonElement).style.borderColor = "#0074c4";
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 20px rgba(0,116,196,0.08)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,116,196,0.08)";
               (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(0,116,196,0.25)";
             }}
           >
-            <div className="flex justify-center mb-4">
-              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div className="flex justify-center mb-3">
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="20" cy="28" r="12" stroke="#0074c4" strokeWidth="1.75"/>
                 <line x1="29.5" y1="18.5" x2="42" y2="6" stroke="#0074c4" strokeWidth="1.75" strokeLinecap="round"/>
                 <polyline points="33,6 42,6 42,15" stroke="#0074c4" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
             </div>
-            <div className="font-serif text-[20px] font-bold" style={{ color: "#0074c4" }}>Для него</div>
+            <div className="font-serif text-[17px] font-bold" style={{ color: "#0074c4" }}>Для него</div>
           </button>
         </div>
 
-        <p className="mt-8 text-[12px] text-center" style={{ color: "#aaa" }}>
-          Не переживай — переключиться можно в любой момент в меню
+        <p className="mt-6 text-[11px] text-center" style={{ color: "#bbb" }}>
+          Переключиться можно в любой момент в меню
         </p>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -804,7 +832,10 @@ function Hero() {
           {!isMale && (
             <>
               <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 64px color-mix(in srgb, var(--pm-primary) 18%, transparent), 0 8px 24px rgba(61,32,48,0.08)" }}>
-                <img src="/hero-photo.png" alt="PickMe Store — модная одежда" className="w-full h-full object-cover object-center" />
+                <picture>
+                  <source srcSet="/hero-photo.webp" type="image/webp" />
+                  <img src="/hero-photo.png" alt="PickMe Store — модная одежда" className="w-full h-full object-cover object-center" />
+                </picture>
               </div>
               <motion.span animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 right-0 text-2xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</motion.span>
               <motion.span animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</motion.span>
@@ -825,7 +856,10 @@ function Hero() {
           {isMale && (
             <>
               <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 48px rgba(0,0,0,0.32), 0 8px 20px rgba(0,0,0,0.18)", border: "1px solid var(--pm-primary-border)" }}>
-                <img src="/hero-photo-male.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
+                <picture>
+                  <source srcSet="/hero-photo-male.webp" type="image/webp" />
+                  <img src="/hero-photo-male.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
+                </picture>
               </div>
 
               {/* Floating badges — male style: glass with blur */}
@@ -1110,6 +1144,8 @@ function ProductCard({ product }: { product: { id: number; brand: string; name: 
                   src={src}
                   alt={product.name}
                   className="product-img-zoom"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             ))}
@@ -1362,7 +1398,7 @@ function CompactCard({ product }: { product: { id: number; brand: string; name: 
     >
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "linear-gradient(135deg, var(--pm-primary-bg), var(--pm-primary-light))", flexShrink: 0 }}>
         {image ? (
-          <img src={image} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          <img src={image} alt={product.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👗</div>
         )}
@@ -1837,11 +1873,16 @@ function CatalogPage() {
                   style={{ boxShadow: "0 8px 40px rgba(247,109,165,0.2), 0 2px 12px rgba(247,109,165,0.12)", border: "1.5px solid rgba(247,109,165,0.3)", minHeight: 280 }}>
                   {/* Image */}
                   <div className="md:w-1/2 w-full flex-shrink-0" style={{ minHeight: 240 }}>
-                    <img
-                      src="/bad-detective.png"
-                      alt="Детектив ищет БАДы"
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", minHeight: 240 }}
-                    />
+                    <picture>
+                      <source srcSet="/bad-detective.webp" type="image/webp" />
+                      <img
+                        src="/bad-detective.png"
+                        alt="Детектив ищет БАДы"
+                        loading="lazy"
+                        decoding="async"
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", minHeight: 240 }}
+                      />
+                    </picture>
                   </div>
                   {/* Text */}
                   <div className="md:w-1/2 w-full flex items-center justify-center p-8 md:p-10"
@@ -2002,7 +2043,7 @@ function GiftSection() {
                   }}
                 >
                   {img
-                    ? <img src={img} alt={p.name} className="w-full h-full object-cover" />
+                    ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: "var(--pm-primary-light)" }}>🎁</div>
                   }
                 </div>
@@ -2747,7 +2788,7 @@ function ProductPage() {
                   >
                     {images.map((src, i) => (
                       <div key={i} style={{ width: `${100 / images.length}%`, flexShrink: 0, height: "100%", overflow: "hidden" }}>
-                        <img src={src} alt={product.name} className="w-full h-full object-cover" loading="eager" />
+                        <img src={src} alt={product.name} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} decoding={i === 0 ? "auto" : "async"} />
                       </div>
                     ))}
                   </div>
@@ -3187,7 +3228,7 @@ function GiftPage() {
                   >
                     {images.map((src, i) => (
                       <div key={i} style={{ width: `${100 / images.length}%`, flexShrink: 0, height: "100%", overflow: "hidden" }}>
-                        <img src={src} alt={product.name} className="w-full h-full object-cover" loading="eager" />
+                        <img src={src} alt={product.name} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} decoding={i === 0 ? "auto" : "async"} />
                       </div>
                     ))}
                   </div>
@@ -3287,7 +3328,8 @@ function Router() {
   const { hasChoice, setGender } = useTheme();
 
   const isGiftPage = location.startsWith("/gift/");
-  const showSplash = !hasChoice && location === "/" && !isGiftPage;
+  const isProductPage = location.startsWith("/product/");
+  const showSplash = !hasChoice && location === "/" && !isGiftPage && !isProductPage;
 
   return (
     <>
