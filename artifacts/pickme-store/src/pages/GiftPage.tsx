@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "wouter";
 import { Header, Footer, type ProductDetail } from "@/shared";
+import { getImageSrcSet, SIZES_PRODUCT } from "@/lib/image-utils";
 
 function GiftPage() {
   const { id } = useParams<{ id: string }>();
@@ -162,7 +163,9 @@ function GiftPage() {
                   >
                     {images.map((src, i) => (
                       <div key={i} style={{ width: `${100 / images.length}%`, flexShrink: 0, height: "100%", overflow: "hidden" }}>
-                        <img src={src} alt={product.name} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} decoding={i === 0 ? "auto" : "async"} />
+                        {(() => { const img = getImageSrcSet(src); return (
+                          <img src={img.src} srcSet={img.srcSet} sizes={SIZES_PRODUCT} alt={product.name} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} decoding={i === 0 ? "auto" : "async"} />
+                        ); })()}
                       </div>
                     ))}
                   </div>

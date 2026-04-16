@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X, Moon, Sun } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
+import { getImageSrcSet, SIZES_CARD } from "@/lib/image-utils";
 
 // ─── Analytics ────────────────────────────────────────────────────
 export function getOrCreateVisitorId(): string {
@@ -325,7 +326,9 @@ export function ProductCard({ product }: { product: { id: number; brand: string;
           <div style={{ display: "flex", width: `${images.length * 100}%`, height: "100%", transform: `translateX(calc(${-(imgIdx / images.length) * 100}% + ${dragX}px))`, transition: animating ? "transform 300ms ease-out" : "none", willChange: "transform" }} onTransitionEnd={() => setAnimating(false)}>
             {images.map((src, i) => (
               <div key={i} style={{ width: `${100 / images.length}%`, flexShrink: 0, height: "100%", overflow: "hidden", position: "relative" }}>
-                <img src={src} alt={product.name} className="product-img-zoom" loading="lazy" decoding="async" />
+                {(() => { const img = getImageSrcSet(src); return (
+                  <img src={img.src} srcSet={img.srcSet} sizes={SIZES_CARD} alt={product.name} className="product-img-zoom" loading="lazy" decoding="async" />
+                ); })()}
               </div>
             ))}
           </div>
@@ -455,7 +458,7 @@ export function CompactCard({ product }: { product: { id: number; brand: string;
     >
       <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", overflow: "hidden", background: "linear-gradient(135deg, var(--pm-primary-bg), var(--pm-primary-light))", flexShrink: 0 }}>
         {image ? (
-          <img src={image} alt={product.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          <img src={getImageSrcSet(image).src} srcSet={getImageSrcSet(image).srcSet} sizes={SIZES_CARD} alt={product.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         ) : (
           <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👗</div>
         )}

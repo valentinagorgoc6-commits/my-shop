@@ -13,6 +13,7 @@ import {
   Header, Footer, ProductCard, CompactCard, applyDefaultSort,
   PageLoading,
 } from "@/shared";
+import { getImageSrcSet, SIZES_CARD } from "@/lib/image-utils";
 
 const CatalogPage = React.lazy(() => import("@/pages/CatalogPage"));
 const ProductPage = React.lazy(() => import("@/pages/ProductPage"));
@@ -682,7 +683,7 @@ function GiftSection() {
                   }}
                 >
                   {img
-                    ? <img src={img} alt={p.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                    ? (() => { const imgData = getImageSrcSet(img); return <img src={imgData.src} srcSet={imgData.srcSet} sizes={SIZES_CARD} alt={p.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />; })()
                     : <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: "var(--pm-primary-light)" }}>🎁</div>
                   }
                 </div>

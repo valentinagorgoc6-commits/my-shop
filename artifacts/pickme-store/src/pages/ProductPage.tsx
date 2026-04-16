@@ -8,6 +8,7 @@ import {
   SHOE_SIZE_CHART, matchShoeSizeRow, getVisibleSizeRows,
   type ProductDetail,
 } from "@/shared";
+import { getImageSrcSet, SIZES_PRODUCT } from "@/lib/image-utils";
 
 // ─── Similar Products ─────────────────────────────────────────────
 function SimilarProducts({ currentId, category }: { currentId: number; category: string }) {
@@ -286,7 +287,9 @@ function ProductPage() {
                   >
                     {images.map((src, i) => (
                       <div key={i} style={{ width: `${100 / images.length}%`, flexShrink: 0, height: "100%", overflow: "hidden" }}>
-                        <img src={src} alt={product.name} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} decoding={i === 0 ? "auto" : "async"} />
+                        {(() => { const img = getImageSrcSet(src); return (
+                          <img src={img.src} srcSet={img.srcSet} sizes={SIZES_PRODUCT} alt={product.name} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} decoding={i === 0 ? "auto" : "async"} />
+                        ); })()}
                       </div>
                     ))}
                   </div>

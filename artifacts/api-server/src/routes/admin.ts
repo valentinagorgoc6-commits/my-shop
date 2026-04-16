@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import { db, productsTable } from "@workspace/db";
 import { eq, inArray, desc } from "drizzle-orm";
+import { processUploadedImage } from "../lib/image-processing.js";
 
 const router: IRouter = Router();
 
@@ -75,23 +76,40 @@ router.post("/admin/login", (req: Request, res: Response): void => {
   res.json({ token: adminPassword });
 });
 
-router.post("/admin/upload", adminAuth, upload.single("image"), (req: Request, res: Response): void => {
+router.post("/admin/upload", adminAuth, upload.single("image"), async (req: Request, res: Response): Promise<void> => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;
   }
-  const imageUrl = `/api/uploads/${req.file.filename}`;
-  res.json({ imageUrl });
+  try {
+    const { baseName } = await processUploadedImage(req.file.path, uploadsDir);
+    const imageUrl = `/api/uploads/${baseName}.webp`;
+    res.json({ imageUrl });
+  } catch (err) {
+    req.log.error({ err }, "Image processing failed");
+    // Fallback to original file if processing fails
+    res.json({ imageUrl: `/api/uploads/${req.file.filename}` });
+  }
 });
 
-router.post("/admin/upload-multiple", adminAuth, upload.array("images", 3), (req: Request, res: Response): void => {
+router.post("/admin/upload-multiple", adminAuth, upload.array("images", 3), async (req: Request, res: Response): Promise<void> => {
   const files = req.files as Express.Multer.File[] | undefined;
   if (!files || files.length === 0) {
     res.status(400).json({ error: "No files uploaded" });
     return;
   }
-  const imageUrls = files.map(f => `/api/uploads/${f.filename}`);
-  res.json({ imageUrls });
+  try {
+    const imageUrls: string[] = [];
+    for (const file of files) {
+      const { baseName } = await processUploadedImage(file.path, uploadsDir);
+      imageUrls.push(`/api/uploads/${baseName}.webp`);
+    }
+    res.json({ imageUrls });
+  } catch (err) {
+    req.log.error({ err }, "Image processing failed");
+    // Fallback to original files
+    res.json({ imageUrls: files.map(f => `/api/uploads/${f.filename}`) });
+  }
 });
 
 // Admin: get ALL products (published and pending)
