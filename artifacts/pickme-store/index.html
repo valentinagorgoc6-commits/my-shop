@@ -6,18 +6,16 @@
     <meta name="description" content="Оригинальные Nike, Guess, Lacoste, Puma, Adidas и другие бренды по низким ценам. Доставка по России" />
     <title>PickMe Store — магазин брендовых вещей</title>
 
-    <!-- Preconnect to font CDN -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <!-- Preload: hero image (LCP candidate, female theme = default) -->
     <link rel="preload" as="image" href="/hero-photo.webp" type="image/webp" fetchpriority="high" />
 
-    <!-- Preload: Google Fonts CSS (accelerates font discovery) -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Caveat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" />
-
-    <!-- Load fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Caveat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Preload: critical fonts for first screen (female theme) -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/playfair-display-cyrillic-700.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/playfair-display-latin-700.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-cyrillic-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/nunito-latin-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/caveat-cyrillic-600.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/caveat-latin-600.woff2" crossorigin />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
