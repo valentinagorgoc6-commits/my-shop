@@ -317,14 +317,9 @@ html, body {
   outline-offset: 2px;
 }
 
-/* ═══ DARK AMBIENT PULSE ═══ */
-@keyframes ambientPulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%      { opacity: 1; transform: scale(1.08); }
-}
-
+/* ═══ DARK AMBIENT ORB — static, no animation ═══ */
 [data-theme="male-dark"] .ambient-orb {
-  animation: ambientPulse 8s ease-in-out infinite;
+  opacity: 0.8;
 }
 
 /* ═══ DARK THEME POLISH ═══ */
@@ -378,25 +373,7 @@ html, body {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ═══ NOISE TEXTURE ═══ */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-}
-
-/* Male light: flat background — hide noise texture */
-[data-theme="male"] .noise-overlay {
-  display: none;
-}
-
-/* Male dark: very subtle grain texture for depth */
-[data-theme="male-dark"] .noise-overlay {
-  opacity: 0.03;
-  mix-blend-mode: overlay;
-}
+/* noise-overlay removed — invisible at 0.025 opacity but caused GPU compositing on every frame */
 
 /* ═══ SCRIPT FONT ═══ */
 .font-script {
@@ -423,24 +400,22 @@ html, body {
 }
 
 .btn-glow {
-  animation: glowPulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 12px 2px color-mix(in srgb, var(--pm-primary) 25%, transparent), 0 8px 32px color-mix(in srgb, var(--pm-primary) 20%, transparent);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .btn-glow:hover {
   transform: translateY(-3px);
-  animation: none;
   box-shadow: 0 0 32px 10px color-mix(in srgb, var(--pm-primary) 50%, transparent), 0 16px 48px color-mix(in srgb, var(--pm-primary) 35%, transparent);
 }
 
 .btn-glow-strong {
-  animation: glowPulseStrong 2s ease-in-out infinite;
+  box-shadow: 0 0 16px 4px color-mix(in srgb, var(--pm-primary) 35%, transparent), 0 10px 36px color-mix(in srgb, var(--pm-primary) 25%, transparent);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .btn-glow-strong:hover {
   transform: translateY(-4px);
-  animation: none;
   box-shadow: 0 0 48px 16px color-mix(in srgb, var(--pm-primary) 60%, transparent), 0 20px 56px color-mix(in srgb, var(--pm-primary) 45%, transparent);
 }
 
@@ -838,7 +813,7 @@ html, body {
 /* ═══ MALE LIGHT: gift section frame ═══ */
 /* ═══ MALE LIGHT: gift CTA button ═══ */
 [data-theme="male"] .gift-cta-btn {
-  animation: giftShimmer 3s ease-in-out infinite;
+  background-position: 0% 50%;
 }
 [data-theme="male"] .gift-cta-btn:hover {
   transform: scale(1.07);

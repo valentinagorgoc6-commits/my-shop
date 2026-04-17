@@ -308,18 +308,18 @@ function Hero() {
                   <img src="/hero-photo.png" alt="PickMe Store — модная одежда" className="w-full h-full object-cover object-center" />
                 </picture>
               </div>
-              <motion.span animate={{ y: [0, -10, 0], opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="absolute top-4 right-0 text-2xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</motion.span>
-              <motion.span animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</motion.span>
-              <motion.span animate={{ y: [0, -12, 0], opacity: [0.3, 0.7, 0.3] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }} className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✿</motion.span>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+              <span className="absolute top-4 right-0 text-2xl pointer-events-none select-none opacity-70" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</span>
+              <span className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none opacity-60" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</span>
+              <span className="absolute top-1/3 -left-2 text-lg pointer-events-none select-none opacity-50" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✿</span>
+              <div className="absolute -top-4 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
                 💯 Только оригиналы
-              </motion.div>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }} className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+              </div>
+              <div className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
                 Живые фото 📸
-              </motion.div>
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
+              </div>
+              <div className="absolute bottom-8 -right-4 md:-right-8 glass-card px-7 py-4 rounded-2xl text-base font-bold" style={{ color: "var(--pm-primary-hover)", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 22%, transparent)" }}>
                 Низкие цены 💰
-              </motion.div>
+              </div>
             </>
           )}
 
@@ -333,31 +333,25 @@ function Hero() {
                 </picture>
               </div>
 
-              {/* Floating badges — male style: glass with blur */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              {/* Floating badges — male style: glass with blur, static */}
+              <div
                 className="absolute -top-4 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
                 style={{ background: "color-mix(in srgb, var(--pm-card-bg) 75%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 ✓ Только оригиналы
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+              </div>
+              <div
                 className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-10 px-5 py-3 rounded-2xl text-[13px] font-bold"
                 style={{ background: "color-mix(in srgb, var(--pm-card-bg) 75%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 До −70% от розницы
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+              </div>
+              <div
                 className="absolute bottom-8 -right-4 md:-right-8 px-5 py-3 rounded-2xl text-[13px] font-bold"
                 style={{ background: "color-mix(in srgb, var(--pm-card-bg) 75%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid var(--pm-primary-border)", color: "var(--pm-primary)", boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}
               >
                 Доставка по России
-              </motion.div>
+              </div>
             </>
           )}
         </motion.div>
@@ -1066,7 +1060,6 @@ function Home() {
   const isMale = gender === "male";
   return (
     <>
-      <div className="noise-overlay" aria-hidden="true" />
       <Header />
       <main className="page-gradient">
         <Hero />

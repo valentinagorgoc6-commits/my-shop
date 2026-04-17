@@ -220,7 +220,6 @@ function ProductPage() {
   if (loading) {
     return (
       <>
-        <div className="noise-overlay" aria-hidden="true" />
         <Header />
         <main className="page-gradient min-h-screen pt-32 pb-24 px-6 flex items-center justify-center">
           <div className="text-center">
@@ -236,7 +235,6 @@ function ProductPage() {
   if (notFound || !product) {
     return (
       <>
-        <div className="noise-overlay" aria-hidden="true" />
         <Header />
         <main className="page-gradient min-h-screen pt-32 pb-24 px-6 flex flex-col items-center justify-center gap-6">
           <p className="font-serif text-3xl font-bold text-foreground">Товар не найден</p>

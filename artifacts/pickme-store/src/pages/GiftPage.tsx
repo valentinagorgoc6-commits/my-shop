@@ -91,7 +91,6 @@ function GiftPage() {
   if (loading) {
     return (
       <>
-        <div className="noise-overlay" aria-hidden="true" />
         <Header />
         <main className="page-gradient min-h-screen pt-32 pb-24 px-6 flex items-center justify-center">
           <div className="text-center">
@@ -107,7 +106,6 @@ function GiftPage() {
   if (notFound || !product) {
     return (
       <>
-        <div className="noise-overlay" aria-hidden="true" />
         <Header />
         <main className="page-gradient min-h-screen pt-32 pb-24 px-6 flex flex-col items-center justify-center gap-4 text-center">
           <span className="text-6xl">💝</span>

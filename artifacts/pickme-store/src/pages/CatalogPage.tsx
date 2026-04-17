@@ -139,7 +139,6 @@ export default function CatalogPage() {
 
   return (
     <>
-      <div className="noise-overlay" aria-hidden="true" />
       <Header />
       <main className="page-gradient min-h-screen">
         <section className="pt-28 pb-16 px-6">
