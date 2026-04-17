@@ -140,18 +140,24 @@ export const staggerContainer = {
   visible: { opacity: 1, transition: { staggerChildren: 0.13 } }
 };
 
-// -- Shared Decorator Bar --
+// -- Shared Decorator — delegates to SectionDivider component --
+import SectionDivider from "@/components/SectionDivider";
+
 export function DecorBar({ align = "center" }: { align?: "center" | "left" | "responsive" }) {
-  const cls = align === "center" ? "mx-auto" : align === "left" ? "" : "md:mx-0 mx-auto";
-  return <div className={`w-10 h-[3px] bg-primary rounded-full mb-3 ${cls}`} />;
+  return <SectionDivider align={align} />;
 }
 
 export function SectionTitle({ title, sub, titleNode, id }: { title?: string; sub?: React.ReactNode; titleNode?: React.ReactNode; id?: string }) {
   const { gender } = useTheme();
+  const headingFont = "var(--pm-font-heading, 'Playfair Display', serif)";
   return (
     <div className={`text-center mb-12 ${gender === "male" ? "section-glow" : ""}`} id={id}>
       <DecorBar />
-      {titleNode ?? <h2 className="font-serif text-[28px] md:text-[36px] font-bold text-foreground">{title}</h2>}
+      {titleNode ? (
+        <h2 className="text-[28px] md:text-[36px] font-bold text-foreground" style={{ fontFamily: headingFont }}>{titleNode}</h2>
+      ) : (
+        <h2 className="text-[28px] md:text-[36px] font-bold text-foreground" style={{ fontFamily: headingFont }}>{title}</h2>
+      )}
       {sub && <p className="font-script text-[20px] mt-2" style={{ color: "var(--pm-primary)" }}>{sub}</p>}
     </div>
   );

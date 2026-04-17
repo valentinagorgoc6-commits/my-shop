@@ -3,15 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="description" content="Оригинальные Nike, Guess, Lacoste, Puma, Adidas и другие бренды по низким ценам. Доставка по России" />
     <title>PickMe Store — магазин брендовых вещей</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" as="image" href="/hero-photo.webp" type="image/webp" />
+
+    <!-- Preconnect to font CDN -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Preload: hero image (LCP candidate, female theme = default) -->
+    <link rel="preload" as="image" href="/hero-photo.webp" type="image/webp" fetchpriority="high" />
+
+    <!-- Preload: Google Fonts CSS (accelerates font discovery) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Caveat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" />
+
+    <!-- Load fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Caveat:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- SEO -->
-    <meta name="description" content="Оригинальные Nike, Guess, Lacoste, Puma, Adidas и другие бренды по низким ценам. Доставка по России" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -24,6 +32,12 @@
     <meta property="og:image:height" content="720" />
     <meta property="og:image:alt" content="PickMe Store — магазин брендовых вещей" />
 
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PickMe Store — магазин брендовых вещей" />
+    <meta name="twitter:description" content="Оригинальные Nike, Guess, Lacoste, Puma, Adidas и другие бренды по низким ценам. Доставка по России" />
+    <meta name="twitter:image" content="https://pickmestore.ru/og-image.jpg" />
+
     <!-- Yandex.Metrika counter -->
     <script async type="text/javascript">
       (function(m,e,t,r,i,k,a){
@@ -35,12 +49,6 @@
       ym(108416864, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
     </script>
     <!-- /Yandex.Metrika counter -->
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="PickMe Store — магазин брендовых вещей" />
-    <meta name="twitter:description" content="Оригинальные Nike, Guess, Lacoste, Puma, Adidas и другие бренды по низким ценам. Доставка по России" />
-    <meta name="twitter:image" content="https://pickmestore.ru/og-image.jpg" />
   </head>
   <body>
     <noscript><div><img src="https://mc.yandex.ru/watch/108416864" style="position:absolute; left:-9999px;" alt="" /></div></noscript>

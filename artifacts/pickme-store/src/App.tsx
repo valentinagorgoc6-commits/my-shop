@@ -382,7 +382,7 @@ function WhyPickMe() {
     <>
       Почему{" "}
       <span style={{ color: "var(--pm-primary-hover)" }}>Pick</span>
-      <span className="font-script text-[28px] md:text-[40px] font-medium" style={{ color: "var(--pm-primary)" }}>Me</span>?
+      <span style={{ fontFamily: "var(--pm-font-accent, 'Caveat', cursive)", color: "var(--pm-primary)", fontWeight: 500, fontSize: "1.1em" }}>Me</span>?
     </>
   );
 
