@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Menu, Star, Check, Camera, DollarSign, Clock, ArrowRight, X, Moon, Sun } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+// framer-motion removed — using CSS animations instead
 import { useTheme } from "@/context/ThemeContext";
 import { getImageSrcSet, SIZES_CARD } from "@/lib/image-utils";
 
@@ -494,7 +494,13 @@ export function CompactCard({ product }: { product: { id: number; brand: string;
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false);
   const { gender, mode, setGender, toggleMode } = useTheme();
+
+  const closeMenu = () => {
+    setMenuClosing(true);
+    setTimeout(() => { setMobileOpen(false); setMenuClosing(false); }, 250);
+  };
   const [location, navigate] = useLocation();
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -590,58 +596,56 @@ export function Header() {
           <button className="p-2 text-primary" onClick={() => setMobileOpen(true)} aria-label="Открыть меню" data-testid="button-mobile-menu"><Menu size={28} /></button>
         </div>
       </header>
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-            <motion.div key="panel" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="fixed top-0 right-0 bottom-0 z-[70] w-[300px] sm:w-[340px] flex flex-col" style={{ background: "linear-gradient(160deg, var(--pm-surface) 0%, var(--pm-bg-page) 100%)", borderLeft: "1px solid var(--pm-primary-border)", boxShadow: "-8px 0 48px color-mix(in srgb, var(--pm-primary) 12%, transparent)" }}>
-              <div className="flex items-center justify-between px-7 pt-7 pb-6" style={{ borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 15%, transparent)" }}>
-                <a href="/" className="no-underline cursor-pointer" onClick={() => setMobileOpen(false)}><LogoWord /></a>
-                <button onClick={() => setMobileOpen(false)} className="w-9 h-9 rounded-full text-primary flex items-center justify-center transition-colors" style={{ background: "var(--pm-surface-alt, rgba(255,255,255,0.6))" }} aria-label="Закрыть меню"><X size={20} /></button>
-              </div>
-              <div className="flex flex-col gap-1 px-5 pt-6 flex-1">
-                {navLinks.map((link, i) => (
-                  <motion.a key={link.name} href={link.href} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + i * 0.07 }} onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { setMobileOpen(false); handleNavClick(e, link.href); }} className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all">
-                    <span className="text-primary text-sm">✦</span>{link.name}
-                  </motion.a>
-                ))}
-                {gender === "female" && (
+      {mobileOpen && (
+        <>
+          <div className={`fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm mobile-menu-backdrop ${menuClosing ? "closing" : ""}`} onClick={closeMenu} />
+          <div className={`fixed top-0 right-0 bottom-0 z-[70] w-[300px] sm:w-[340px] flex flex-col mobile-menu-panel ${menuClosing ? "closing" : ""}`} style={{ background: "linear-gradient(160deg, var(--pm-surface) 0%, var(--pm-bg-page) 100%)", borderLeft: "1px solid var(--pm-primary-border)", boxShadow: "-8px 0 48px color-mix(in srgb, var(--pm-primary) 12%, transparent)" }}>
+            <div className="flex items-center justify-between px-7 pt-7 pb-6" style={{ borderBottom: "1px solid color-mix(in srgb, var(--pm-primary) 15%, transparent)" }}>
+              <a href="/" className="no-underline cursor-pointer" onClick={closeMenu}><LogoWord /></a>
+              <button onClick={closeMenu} className="w-9 h-9 rounded-full text-primary flex items-center justify-center transition-colors" style={{ background: "var(--pm-surface-alt, rgba(255,255,255,0.6))" }} aria-label="Закрыть меню"><X size={20} /></button>
+            </div>
+            <div className="flex flex-col gap-1 px-5 pt-6 flex-1">
+              {navLinks.map((link, i) => (
+                <a key={link.name} href={link.href} onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { closeMenu(); handleNavClick(e, link.href); }} className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all" style={{ animation: `fadeIn 0.3s ease ${0.05 + i * 0.07}s both` }}>
+                  <span className="text-primary text-sm">✦</span>{link.name}
+                </a>
+              ))}
+              {gender === "female" && (
+                <>
+                  <a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer" onClick={closeMenu} className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all" style={{ animation: `fadeIn 0.3s ease ${0.05 + navLinks.length * 0.07}s both` }}>
+                    <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />Авито
+                  </a>
+                  <a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer" onClick={closeMenu} className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all" style={{ animation: `fadeIn 0.3s ease ${0.05 + navLinks.length * 0.07 + 0.07}s both` }}>
+                    <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />MAX
+                  </a>
+                </>
+              )}
+              <div className="mt-4 flex flex-col gap-2 px-1">
+                {gender === "female" ? (
+                  <button onClick={() => { setGender("male"); closeMenu(); }} className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors" style={{ color: "#0074c4", background: "rgba(0,100,190,0.06)", border: "1px solid rgba(0,100,190,0.15)" }}>
+                    <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><circle cx="20" cy="28" r="12" stroke="currentColor" strokeWidth="3"/><line x1="29.5" y1="18.5" x2="42" y2="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><polyline points="33,6 42,6 42,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
+                    Переключиться на мужскую тему
+                  </button>
+                ) : (
                   <>
-                    <motion.a href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661" target="_blank" rel="noreferrer" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + navLinks.length * 0.07 }} onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all">
-                      <img src="https://www.avito.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />Авито
-                    </motion.a>
-                    <motion.a href="https://tinyurl.com/5h4bbmkr" target="_blank" rel="noreferrer" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 + navLinks.length * 0.07 + 0.07 }} onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-4 rounded-2xl font-serif text-[20px] font-bold text-muted-foreground hover:text-primary hover:bg-[var(--pm-primary-bg)] transition-all">
-                      <img src="https://max.ru/favicon.ico" width={18} height={18} alt="" aria-hidden="true" className="shrink-0" />MAX
-                    </motion.a>
+                    <button onClick={() => { setGender("female"); closeMenu(); }} className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors" style={{ color: "#f04586", background: "rgba(240,69,134,0.06)", border: "1px solid rgba(240,69,134,0.15)" }}>
+                      <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="20" r="12" stroke="currentColor" strokeWidth="3"/><line x1="24" y1="32" x2="24" y2="44" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><line x1="17" y1="38" x2="31" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
+                      Переключиться на женскую тему
+                    </button>
+                    <button onClick={() => { toggleMode(); closeMenu(); }} className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors" style={{ background: "var(--pm-surface-alt)", border: "1px solid var(--pm-border)", color: "var(--pm-text-body)" }}>
+                      <span>{mode === "light" ? "☽" : "☀"}</span>{mode === "light" ? "Тёмная тема" : "Светлая тема"}
+                    </button>
                   </>
                 )}
-                <div className="mt-4 flex flex-col gap-2 px-1">
-                  {gender === "female" ? (
-                    <button onClick={() => { setGender("male"); setMobileOpen(false); }} className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors" style={{ color: "#0074c4", background: "rgba(0,100,190,0.06)", border: "1px solid rgba(0,100,190,0.15)" }}>
-                      <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><circle cx="20" cy="28" r="12" stroke="currentColor" strokeWidth="3"/><line x1="29.5" y1="18.5" x2="42" y2="6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><polyline points="33,6 42,6 42,15" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
-                      Переключиться на мужскую тему
-                    </button>
-                  ) : (
-                    <>
-                      <button onClick={() => { setGender("female"); setMobileOpen(false); }} className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors" style={{ color: "#f04586", background: "rgba(240,69,134,0.06)", border: "1px solid rgba(240,69,134,0.15)" }}>
-                        <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="20" r="12" stroke="currentColor" strokeWidth="3"/><line x1="24" y1="32" x2="24" y2="44" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><line x1="17" y1="38" x2="31" y2="38" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
-                        Переключиться на женскую тему
-                      </button>
-                      <button onClick={() => { toggleMode(); setMobileOpen(false); }} className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-semibold text-left transition-colors" style={{ background: "var(--pm-surface-alt)", border: "1px solid var(--pm-border)", color: "var(--pm-text-body)" }}>
-                        <span>{mode === "light" ? "☽" : "☀"}</span>{mode === "light" ? "Тёмная тема" : "Светлая тема"}
-                      </button>
-                    </>
-                  )}
-                </div>
               </div>
-              <div className="px-7 pb-10 pt-4" style={{ borderTop: "1px solid color-mix(in srgb, var(--pm-primary) 15%, transparent)" }}>
-                <a href="https://t.me/V_Limerence" target="_blank" rel="noreferrer" onClick={() => setMobileOpen(false)} className="btn-glow-strong block w-full bg-primary text-white px-6 py-4 rounded-2xl font-bold text-center text-[16px] tracking-wide">Написать мне ✈️</a>
-                <p className="font-script text-[14px] text-center mt-3" style={{ color: "var(--pm-primary)" }}>на связи 24/7 💕</p>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+            <div className="px-7 pb-10 pt-4" style={{ borderTop: "1px solid color-mix(in srgb, var(--pm-primary) 15%, transparent)" }}>
+              <a href="https://t.me/V_Limerence" target="_blank" rel="noreferrer" onClick={closeMenu} className="btn-glow-strong block w-full bg-primary text-white px-6 py-4 rounded-2xl font-bold text-center text-[16px] tracking-wide">Написать мне ✈️</a>
+              <p className="font-script text-[14px] text-center mt-3" style={{ color: "var(--pm-primary)" }}>на связи 24/7 💕</p>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

@@ -5,11 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Star, Check, Camera, DollarSign, Clock } from "lucide-react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 import { useTheme, type ThemeGender } from "@/context/ThemeContext";
 import {
   trackPageview, useProductsFetch, themeContent,
-  fadeInUp, staggerContainer, DecorBar, SectionTitle,
+  DecorBar, SectionTitle,
   Header, Footer, ProductCard, CompactCard, applyDefaultSort,
   PageLoading,
 } from "@/shared";
@@ -39,20 +40,13 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: leaving ? 0 : 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.38, ease: "easeInOut" }}
-      className="fixed inset-0 z-[1000] flex items-center justify-center p-4"
+    <div
+      className={`modal-overlay fixed inset-0 z-[1000] flex items-center justify-center p-4 ${leaving ? 'closing' : ''}`}
       style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}
       onClick={close}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92, y: 20 }}
-        animate={{ opacity: leaving ? 0 : 1, scale: leaving ? 0.95 : 1, y: leaving ? 10 : 0 }}
-        transition={{ duration: 0.38, ease: "easeOut" }}
-        className="relative w-[420px] max-w-[90vw] rounded-[20px] p-8 text-center"
+      <div
+        className={`modal-content relative w-[420px] max-w-[90vw] rounded-[20px] p-8 text-center ${leaving ? 'closing' : ''}`}
         style={{ background: "#fff", boxShadow: "0 24px 80px rgba(0,0,0,0.18), 0 4px 20px rgba(0,0,0,0.08)" }}
         onClick={e => e.stopPropagation()}
       >
@@ -143,8 +137,8 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
         <p className="mt-6 text-[11px] text-center" style={{ color: "#bbb" }}>
           Переключиться можно в любой момент в меню
         </p>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -156,6 +150,7 @@ function Hero() {
   const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
   const { gender } = useTheme();
   const isMale = gender === "male";
+  const heroTextInView = useInView();
   useEffect(() => {
     const hero = ref.current;
     if (!hero) return;
@@ -219,12 +214,9 @@ function Hero() {
       )}
 
       <div className="max-w-6xl mx-auto w-full relative z-10 grid md:grid-cols-2 gap-12 md:gap-20 items-center">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.05 }}
-          variants={fadeInUp}
-          className="text-center md:text-left"
+        <div
+          ref={heroTextInView.ref}
+          className={`animate-fade-up ${heroTextInView.inView ? 'in-view' : ''} text-center md:text-left`}
         >
           {/* Female version */}
           {!isMale && (
@@ -288,15 +280,11 @@ function Hero() {
               </div>
             </>
           )}
-        </motion.div>
+        </div>
 
         {/* Right side — photo column (both themes) */}
         <motion.div
           style={{ y: badgesY }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.05 }}
-          transition={{ duration: 0.8 }}
           className="relative mt-12 md:mt-0 hidden md:block"
         >
           {/* Female: single tall photo with floating badges */}
@@ -372,6 +360,7 @@ function Hero() {
 function WhyPickMe() {
   const { gender } = useTheme();
   const isMale = gender === "male";
+  const { ref, inView } = useInView();
   if (isMale) return null;
   const features = isMale ? [
     { icon: <Check className="text-primary w-8 h-8" />, title: "Только оригиналы", desc: "Гарантия подлинности на каждый товар" },
@@ -399,16 +388,15 @@ function WhyPickMe() {
       <div className="max-w-5xl mx-auto">
         <SectionTitle titleNode={whyTitle} sub={isMale ? undefined : "мы не такие, мы особенные 💅"} />
 
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={staggerContainer}
-          className="grid grid-cols-2 gap-4 md:gap-6"
+        <div
+          ref={ref}
+          className={`animate-fade-up-stagger ${inView ? 'in-view' : ''} grid grid-cols-2 gap-4 md:gap-6`}
         >
           {features.map((f, i) => (
-            <motion.div
+            <div
               key={i}
-              variants={fadeInUp}
+              style={{ '--stagger-index': i, border: "1px solid var(--pm-primary-border)" } as React.CSSProperties}
               className="why-card-hover glass-card rounded-2xl md:rounded-3xl p-5 md:p-8 relative overflow-hidden flex flex-col items-center text-center group"
-              style={{ border: "1px solid var(--pm-primary-border)" }}
             >
               <div className="why-card-glow absolute -top-[30px] left-1/2 -translate-x-1/2 w-[160px] h-[160px] pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--pm-primary) 18%, transparent) 0%, transparent 70%)" }} />
               <div className="w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-3 md:mb-5" style={{ border: "1.5px solid var(--pm-primary-border)", background: "color-mix(in srgb, var(--pm-primary) 6%, transparent)" }}>
@@ -416,9 +404,9 @@ function WhyPickMe() {
               </div>
               <h3 className="font-serif text-[15px] md:text-[20px] font-bold text-foreground leading-tight mb-1 md:mb-2">{f.title}</h3>
               <p className="hidden md:block text-[14px] leading-relaxed text-muted-foreground">{f.desc}</p>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -479,6 +467,7 @@ function Catalog() {
   const featured = featuredProducts
     ? applyDefaultSort(featuredProducts as Array<Record<string, unknown> & { badge?: string | null; sortOrder?: number | null; category: string }>).slice(0, 6)
     : [];
+  const { ref: catalogRef, inView: catalogInView } = useInView();
 
   return (
     <section id="catalog" className={`pt-8 pb-6 md:pt-24 md:pb-14 ${gender === "male" ? "section-glow section-glow-soft" : ""}`}>
@@ -524,16 +513,16 @@ function Catalog() {
               ))}
             </div>
           ) : featured.length > 0 ? (
-            <motion.div
-              initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
-              className="grid grid-cols-3 gap-6"
+            <div
+              ref={catalogRef}
+              className={`animate-fade-up-stagger ${catalogInView ? 'in-view' : ''} grid grid-cols-3 gap-6`}
             >
-              {(featured as Parameters<typeof ProductCard>[0]["product"][]).map((product) => (
-                <motion.div key={(product as {id: number}).id} variants={fadeInUp} className="h-full">
+              {(featured as Parameters<typeof ProductCard>[0]["product"][]).map((product, i) => (
+                <div key={(product as {id: number}).id} style={{ '--stagger-index': i } as React.CSSProperties} className="h-full">
                   <ProductCard product={product as Parameters<typeof ProductCard>[0]["product"]} />
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           ) : (
             <div className="text-center py-20 text-muted-foreground font-medium">
               <p>Скоро здесь появятся товары. Загляни позже!</p>
@@ -557,16 +546,15 @@ function Catalog() {
 function About() {
   const { gender } = useTheme();
   const c = gender === "male" ? themeContent.male.about : themeContent.female.about;
+  const { ref: aboutLeftRef, inView: aboutLeftInView } = useInView();
+  const { ref: aboutRightRef, inView: aboutRightInView } = useInView();
 
   return (
     <section id="about" className={`py-4 px-4 md:py-14 md:px-6 ${gender === "male" ? "section-glow" : ""}`}>
       <div className="max-w-[900px] mx-auto grid md:grid-cols-[300px_1fr] gap-6 md:gap-16 items-center">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.05 }}
-          transition={{ duration: 0.7 }}
-          className="w-full max-w-[280px] mx-auto md:max-w-none"
+        <div
+          ref={aboutLeftRef}
+          className={`animate-fade-up ${aboutLeftInView ? 'in-view' : ''} w-full max-w-[280px] mx-auto md:max-w-none`}
         >
           <div className="about-photo-frame w-full aspect-[9/16] rounded-3xl overflow-hidden">
             <img
@@ -575,13 +563,11 @@ function About() {
               className="w-full h-full object-cover object-top"
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.05 }}
-          transition={{ duration: 0.7 }}
+        <div
+          ref={aboutRightRef}
+          className={`animate-fade-up ${aboutRightInView ? 'in-view' : ''}`}
         >
           <DecorBar align="responsive" />
           {c.label && (
@@ -598,7 +584,7 @@ function About() {
             {c.paragraphs.map((p, i) => <p key={i} style={{ fontFamily: "var(--pm-font-body, var(--font-sans))", fontStyle: "normal" }}>{p}</p>)}
           </div>
 
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -608,6 +594,7 @@ function About() {
 function GiftSection() {
   const { gender, mode } = useTheme();
   const { data: gifts } = useProductsFetch({ gender: "women", featured: true, limit: 4 }, gender === "male");
+  const { ref, inView } = useInView();
   if (gender !== "male") return null;
   if (!gifts || gifts.length === 0) return null;
 
@@ -617,9 +604,9 @@ function GiftSection() {
   return (
     <section className="py-8 px-6 section-glow">
       <div className="max-w-[900px] mx-auto">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={fadeInUp}
-          className="flex flex-col md:flex-row items-center gap-10 rounded-2xl gift-frame"
+        <div
+          ref={ref}
+          className={`animate-fade-up ${inView ? 'in-view' : ''} flex flex-col md:flex-row items-center gap-10 rounded-2xl gift-frame`}
           style={{ padding: "3rem 2.5rem", background: "var(--pm-gift-bg)", border: "1px solid var(--pm-gift-border)" }}
         >
           {/* Left — text */}
@@ -692,7 +679,7 @@ function GiftSection() {
               );
             })}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -702,6 +689,7 @@ function GiftSection() {
 function HowItWorks() {
   const { gender } = useTheme();
   const isMale = gender === "male";
+  const { ref: hiwRef, inView: hiwInView } = useInView();
   const steps = isMale ? [
     { num: "1", title: "Выбери", desc: "Находишь нужную вещь в каталоге. Все товары с фото и замерами" },
     { num: "2", title: "Напиши", desc: "Пишешь мне в мессенджер — оперативно отвечу на все вопросы" },
@@ -743,16 +731,12 @@ function HowItWorks() {
           <SectionTitle title="Как это работает" />
 
           {/* Desktop: horizontal with chevrons */}
-          <div className="hidden md:flex items-stretch justify-center">
+          <div ref={hiwRef} className={`animate-fade-up-stagger ${hiwInView ? 'in-view' : ''} hidden md:flex items-stretch justify-center`}>
             {steps.map((step, i) => (
               <React.Fragment key={i}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.05 }}
-                  transition={{ duration: 0.5, delay: i * 0.12 }}
+                <div
+                  style={{ '--stagger-index': i, background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" } as React.CSSProperties}
                   className="flex-1 rounded-2xl p-6 text-left flex flex-col gap-4 hiw-card"
-                  style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
                 >
                   <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ border: "1.5px solid var(--pm-primary)", color: "var(--pm-primary)" }}>
                     {maleIcons[step.num]}
@@ -761,7 +745,7 @@ function HowItWorks() {
                     <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{step.title}</h3>
                     <p className="text-[13px] text-muted-foreground leading-relaxed">{step.desc}</p>
                   </div>
-                </motion.div>
+                </div>
                 {i < steps.length - 1 && (
                   <div className="flex items-center px-3 shrink-0">{chevronRight}</div>
                 )}
@@ -773,11 +757,7 @@ function HowItWorks() {
           <div className="flex md:hidden flex-col items-center gap-0">
             {steps.map((step, i) => (
               <React.Fragment key={i}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.05 }}
-                  transition={{ duration: 0.5, delay: i * 0.12 }}
+                <div
                   className="w-full rounded-2xl p-5 text-left flex items-start gap-4 hiw-card"
                   style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
                 >
@@ -788,7 +768,7 @@ function HowItWorks() {
                     <h3 className="font-serif text-[17px] font-bold text-foreground mb-1">{step.title}</h3>
                     <p className="text-[13px] text-muted-foreground leading-relaxed">{step.desc}</p>
                   </div>
-                </motion.div>
+                </div>
                 {i < steps.length - 1 && (
                   <div className="py-2">{chevronDown}</div>
                 )}
@@ -807,14 +787,11 @@ function HowItWorks() {
 
         <div className="relative">
           <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10">
+          <div ref={hiwRef} className={`animate-fade-up-stagger ${hiwInView ? 'in-view' : ''} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10`}>
             {steps.map((step, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.05 }}
-                transition={{ duration: 0.5, delay: i * 0.12 }}
+                style={{ '--stagger-index': i } as React.CSSProperties}
                 className="flex flex-col items-center text-center"
               >
                 <div className="w-14 h-14 rounded-full text-white font-serif text-[22px] font-bold flex items-center justify-center mb-5" style={{ background: "linear-gradient(135deg, var(--pm-primary), var(--pm-primary-hover))", boxShadow: "0 8px 24px color-mix(in srgb, var(--pm-primary) 30%, transparent)" }}>
@@ -822,7 +799,7 @@ function HowItWorks() {
                 </div>
                 <h3 className="font-serif text-[18px] font-bold text-foreground mb-2">{step.title}</h3>
                 <p className="text-[14px] text-muted-foreground leading-relaxed max-w-[200px]">{step.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -835,6 +812,7 @@ function HowItWorks() {
 function Reviews() {
   const { gender } = useTheme();
   const isMale = gender === "male";
+  const { ref, inView } = useInView();
   const reviews = isMale ? [
     { text: "Суперр!! Спасибо вам, Валентина. Все соответствует", author: "Чика", source: "Авито" },
     { text: "Спасибо большое за брюки! Замечательный продавец — ответила на все вопросы и очень быстро отправила посылку!", author: "Еленишна", source: "Авито" },
@@ -852,16 +830,15 @@ function Reviews() {
 
         {isMale ? (
           <>
-            <motion.div
-              initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={staggerContainer}
-              className="grid gap-5 md:grid-cols-3 max-w-[960px] mx-auto"
+            <div
+              ref={ref}
+              className={`animate-fade-up-stagger ${inView ? 'in-view' : ''} grid gap-5 md:grid-cols-3 max-w-[960px] mx-auto`}
             >
               {reviews.map((r, i) => (
-                <motion.div
+                <div
                   key={i}
-                  variants={fadeInUp}
+                  style={{ '--stagger-index': i, background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" } as React.CSSProperties}
                   className="rounded-2xl p-6 text-left flex flex-col hiw-card"
-                  style={{ background: "var(--pm-card-bg)", border: "1px solid var(--pm-border)" }}
                 >
                   <div className="flex gap-1 mb-3" style={{ color: "var(--pm-primary)" }}>
                     {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={14} fill="currentColor" />)}
@@ -876,9 +853,9 @@ function Reviews() {
                       <div className="text-[11px] text-muted-foreground leading-tight">{r.source}</div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
             <div className="mt-8">
               <a
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661#open-reviews-list"
@@ -893,19 +870,18 @@ function Reviews() {
             </div>
           </>
         ) : (
-          <motion.div
-            initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={staggerContainer}
-            className="grid gap-6 md:grid-cols-3"
+          <div
+            ref={ref}
+            className={`animate-fade-up-stagger ${inView ? 'in-view' : ''} grid gap-6 md:grid-cols-3`}
           >
             {reviews.map((r, i) => (
-              <motion.a
+              <a
                 key={i}
-                variants={fadeInUp}
+                style={{ '--stagger-index': i, textDecoration: "none", color: "inherit", cursor: "pointer" } as React.CSSProperties}
                 href="https://www.avito.ru/brands/946d93799084015ab8a605574a5b3661"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="review-card group rounded-2xl p-8 text-left border border-primary/10 shadow-[0_4px_12px_rgba(61,32,48,0.06)] flex flex-col transition-all duration-200 hover:shadow-[0_12px_32px_rgba(61,32,48,0.14)] hover:-translate-y-1"
-                style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
               >
                 <div className="flex gap-1 mb-4" style={{ color: "var(--pm-primary)" }}>
                   {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={16} fill="currentColor" />)}
@@ -916,9 +892,9 @@ function Reviews() {
                   <div className="text-[12px] text-muted-foreground">{r.source}</div>
                 </div>
                 <div className="font-script text-[14px] text-primary mt-auto">Смотреть на Авито →</div>
-              </motion.a>
+              </a>
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </section>
@@ -929,6 +905,7 @@ function Reviews() {
 function FAQ() {
   const { gender } = useTheme();
   const isMale = gender === "male";
+  const { ref, inView } = useInView();
   const faqs = isMale ? [
     { q: "Это точно оригинал?", a: "Да, все товары оригинальные. Они поступают со склада невыкупленных товаров крупного магазина. Могу предоставить дополнительные фото бирок и этикеток." },
     { q: "Как происходит доставка?", a: "Отправляю Авито Доставкой или Почтой России. Также возможен самовывоз из Зеленограда." },
@@ -946,7 +923,7 @@ function FAQ() {
       <div className="max-w-[700px] mx-auto">
         <SectionTitle title="Частые вопросы" sub={isMale ? undefined : <>отвечаю, пока ты не спросила <img src="/faq-emoji.png" width={28} height={28} alt="" aria-hidden="true" style={{ display: "inline", verticalAlign: "middle" }} /></>} />
 
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.05 }} transition={{ duration: 0.6 }}>
+        <div ref={ref} className={`animate-fade-up ${inView ? 'in-view' : ''}`}>
           <Accordion type="single" collapsible className="w-full space-y-3">
             {faqs.map((faq, i) => (
               <AccordionItem
@@ -964,7 +941,7 @@ function FAQ() {
               </AccordionItem>
             ))}
           </Accordion>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -975,15 +952,16 @@ function FinalCTA() {
   const { gender } = useTheme();
   const c = gender === "male" ? themeContent.male.cta : themeContent.female.cta;
   const isMale = gender === "male";
+  const { ref, inView } = useInView();
 
   return (
     <section className={`px-6 section-cta relative text-center ${isMale ? "py-16 section-glow section-glow-soft" : "pt-16 pb-24 overflow-hidden"}`}>
       {/* Male-only glow */}
       {isMale && <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 80% 160% at 50% 110%, color-mix(in srgb, var(--pm-primary) 20%, transparent), transparent 70%)" }} />}
 
-      <motion.div
-        initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.05 }} variants={fadeInUp}
-        className="max-w-[700px] mx-auto relative z-10"
+      <div
+        ref={ref}
+        className={`animate-fade-up ${inView ? 'in-view' : ''} max-w-[700px] mx-auto relative z-10`}
       >
         <DecorBar />
         <h2 className="font-serif text-[32px] md:text-[48px] font-bold text-foreground mb-4">
@@ -1057,7 +1035,7 @@ function FinalCTA() {
             </a>
           </div>
         )}
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -1108,11 +1086,7 @@ function Router() {
   return (
     <>
       <YmTracker />
-      <AnimatePresence>
-        {showSplash && (
-          <SplashScreen key="splash" onSelect={setGender} />
-        )}
-      </AnimatePresence>
+      {showSplash && <SplashScreen key="splash" onSelect={setGender} />}
       <Suspense fallback={<PageLoading />}>
         <Switch>
           <Route path="/" component={Home} />
