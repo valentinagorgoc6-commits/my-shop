@@ -6,12 +6,8 @@
     <meta name="description" content="Оригинальные Nike, Guess, Lacoste, Puma, Adidas и другие бренды по низким ценам. Доставка по России" />
     <title>PickMe Store — магазин брендовых вещей</title>
 
-    <!-- Preload: hero image with srcset (LCP candidate, female theme = default) -->
-    <link rel="preload" as="image"
-          href="/hero-photo-medium.webp"
-          imagesrcset="/hero-photo-thumb.webp 400w, /hero-photo-medium.webp 800w, /hero-photo-full.webp 1600w"
-          imagesizes="(max-width: 768px) 100vw, 440px"
-          fetchpriority="high" />
+    <!-- Preload: hero image (LCP on desktop, hidden on mobile) -->
+    <link rel="preload" as="image" href="/hero-photo-medium.webp" fetchpriority="high" />
 
     <!-- Preload: only 2 critical fonts for first screen (cyrillic, female theme) -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/playfair-display-cyrillic-700.woff2" crossorigin />
