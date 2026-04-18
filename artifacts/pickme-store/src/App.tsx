@@ -303,10 +303,14 @@ function Hero() {
           {!isMale && (
             <>
               <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 64px color-mix(in srgb, var(--pm-primary) 18%, transparent), 0 8px 24px rgba(61,32,48,0.08)" }}>
-                <picture>
-                  <source srcSet="/hero-photo.webp" type="image/webp" />
-                  <img src="/hero-photo.png" alt="PickMe Store — модная одежда" className="w-full h-full object-cover object-center" />
-                </picture>
+                <img
+                  src="/hero-photo-medium.webp"
+                  srcSet="/hero-photo-thumb.webp 400w, /hero-photo-medium.webp 800w, /hero-photo-full.webp 1600w"
+                  sizes="(max-width: 768px) 100vw, 440px"
+                  alt="PickMe Store — модная одежда"
+                  className="w-full h-full object-cover object-center"
+                  fetchpriority="high"
+                />
               </div>
               <span className="absolute top-4 right-0 text-2xl pointer-events-none select-none opacity-70" style={{ color: "var(--pm-primary)" }} aria-hidden="true">✦</span>
               <span className="absolute bottom-24 -right-2 text-xl pointer-events-none select-none opacity-60" style={{ color: "var(--pm-primary)" }} aria-hidden="true">♡</span>
@@ -327,10 +331,14 @@ function Hero() {
           {isMale && (
             <>
               <div className="w-full aspect-[3/4] max-w-[440px] mx-auto rounded-3xl relative overflow-hidden" style={{ boxShadow: "0 24px 48px rgba(0,0,0,0.32), 0 8px 20px rgba(0,0,0,0.18)", border: "1px solid var(--pm-primary-border)" }}>
-                <picture>
-                  <source srcSet="/hero-photo-male.webp" type="image/webp" />
-                  <img src="/hero-photo-male.png" alt="PickMe Store" className="w-full h-full object-cover object-center" />
-                </picture>
+                <img
+                  src="/hero-photo-male-medium.webp"
+                  srcSet="/hero-photo-male-thumb.webp 400w, /hero-photo-male-medium.webp 800w, /hero-photo-male-full.webp 1600w"
+                  sizes="(max-width: 768px) 100vw, 440px"
+                  alt="PickMe Store"
+                  className="w-full h-full object-cover object-center"
+                  fetchpriority="high"
+                />
               </div>
 
               {/* Floating badges — male style: glass with blur, static */}
