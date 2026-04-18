@@ -560,7 +560,7 @@ function About() {
             <img
               src="/about-photo.jpg"
               alt="Валентинка — основательница PickMe Store"
-              className="w-full h-full object-cover object-top"
+              className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
             />
           </div>
         </div>
@@ -690,6 +690,7 @@ function HowItWorks() {
   const { gender } = useTheme();
   const isMale = gender === "male";
   const { ref: hiwRef, inView: hiwInView } = useInView();
+  const { ref: hiwRef2, inView: hiwInView2 } = useInView();
   const steps = isMale ? [
     { num: "1", title: "Выбери", desc: "Находишь нужную вещь в каталоге. Все товары с фото и замерами" },
     { num: "2", title: "Напиши", desc: "Пишешь мне в мессенджер — оперативно отвечу на все вопросы" },
@@ -787,7 +788,7 @@ function HowItWorks() {
 
         <div className="relative">
           <div className="hidden md:block absolute top-[28px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-secondary via-[var(--pm-primary)] to-secondary z-0" />
-          <div ref={hiwRef} className={`animate-fade-up-stagger ${hiwInView ? 'in-view' : ''} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10`}>
+          <div ref={hiwRef2} className={`animate-fade-up-stagger ${hiwInView2 ? 'in-view' : ''} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 relative z-10`}>
             {steps.map((step, i) => (
               <div
                 key={i}

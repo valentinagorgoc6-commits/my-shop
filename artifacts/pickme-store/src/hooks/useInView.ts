@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export function useInView<T extends HTMLElement = HTMLDivElement>(
-  options: IntersectionObserverInit = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+  options: IntersectionObserverInit = { threshold: 0, rootMargin: "0px 0px -20px 0px" }
 ) {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
@@ -9,6 +9,13 @@ export function useInView<T extends HTMLElement = HTMLDivElement>(
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
+
+    // If element is already in viewport on mount — show immediately
+    const rect = element.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setInView(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
