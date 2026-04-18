@@ -521,7 +521,7 @@ function Catalog() {
         </div>
 
         {/* Desktop: featured grid */}
-        <div className="hidden md:block px-6">
+        <div ref={catalogRef} className="hidden md:block px-6">
           {featuredLoading ? (
             <div className="grid grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
@@ -541,7 +541,6 @@ function Catalog() {
             </div>
           ) : featured.length > 0 ? (
             <div
-              ref={catalogRef}
               className={`animate-fade-up-stagger ${catalogInView ? 'in-view' : ''} grid grid-cols-3 gap-6`}
             >
               {(featured as Parameters<typeof ProductCard>[0]["product"][]).map((product, i) => (
