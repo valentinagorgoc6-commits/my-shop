@@ -71,7 +71,6 @@ export default defineConfig({
             "@radix-ui/react-tooltip",
             "@radix-ui/react-slot",
           ],
-          "motion-vendor": ["framer-motion"],
           "query-vendor": ["@tanstack/react-query"],
         },
       },

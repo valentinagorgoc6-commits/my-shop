@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Star, Check, Camera, DollarSign, Clock } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+// framer-motion fully removed — parallax via native scroll + rAF
 import { useInView } from "@/hooks/useInView";
 import { useTheme, type ThemeGender } from "@/context/ThemeContext";
 import {
@@ -145,20 +145,42 @@ function SplashScreen({ onSelect }: { onSelect: (g: ThemeGender) => void }) {
 // -- Hero Section --
 function Hero() {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const badgesY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  const bgLayerRef = useRef<HTMLDivElement>(null);
+  const bgLayer2Ref = useRef<HTMLDivElement>(null);
+  const photoColRef = useRef<HTMLDivElement>(null);
   const { gender } = useTheme();
   const isMale = gender === "male";
   const heroTextInView = useInView();
+  // Parallax via native scroll + rAF (replaces framer-motion useScroll/useTransform)
   useEffect(() => {
     const hero = ref.current;
     if (!hero) return;
+    let scrollRafId: number | null = null;
+
+    const applyParallax = () => {
+      const rect = hero.getBoundingClientRect();
+      const heroH = hero.offsetHeight;
+      // scrollYProgress: 0 when top of hero at top of viewport, 1 when bottom of hero at top
+      const progress = Math.max(0, Math.min(1, -rect.top / heroH));
+      const bgOffset = progress * 30;    // 0% → 30%
+      const badgeOffset = progress * 15; // 0% → 15%
+      if (bgLayerRef.current) bgLayerRef.current.style.transform = `translate3d(0, ${bgOffset}%, 0)`;
+      if (bgLayer2Ref.current) bgLayer2Ref.current.style.transform = `translate3d(0, ${bgOffset}%, 0)`;
+      if (photoColRef.current) photoColRef.current.style.transform = `translate3d(0, ${badgeOffset}%, 0)`;
+      scrollRafId = null;
+    };
+
+    const onScroll = () => {
+      if (!scrollRafId) scrollRafId = requestAnimationFrame(applyParallax);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    applyParallax(); // initial position
+
+    // Wheel-to-catalog smooth scroll
     let animating = false;
-    let rafId = 0;
+    let wheelRafId = 0;
     let currentPos = 0;
     let targetPos = 0;
-
     const lerp = () => {
       currentPos += (targetPos - currentPos) * 0.045;
       if (Math.abs(targetPos - currentPos) < 0.5) {
@@ -168,9 +190,8 @@ function Hero() {
         return;
       }
       window.scrollTo(0, currentPos);
-      rafId = requestAnimationFrame(lerp);
+      wheelRafId = requestAnimationFrame(lerp);
     };
-
     const onWheel = (e: WheelEvent) => {
       if (window.scrollY > 80 || e.deltaY <= 0) return;
       e.preventDefault();
@@ -180,28 +201,34 @@ function Hero() {
       animating = true;
       currentPos = window.scrollY;
       targetPos = catalog.getBoundingClientRect().top + window.scrollY;
-      rafId = requestAnimationFrame(lerp);
+      wheelRafId = requestAnimationFrame(lerp);
     };
     hero.addEventListener("wheel", onWheel, { passive: false });
-    return () => { hero.removeEventListener("wheel", onWheel); cancelAnimationFrame(rafId); };
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      hero.removeEventListener("wheel", onWheel);
+      if (scrollRafId) cancelAnimationFrame(scrollRafId);
+      cancelAnimationFrame(wheelRafId);
+    };
   }, []);
 
   return (
     <section ref={ref} className={`flex items-center px-6 relative min-h-fit md:min-h-[100dvh] pt-20 pb-4 md:pb-12 ${isMale ? "section-glow section-glow-hero" : "overflow-hidden"}`}>
-      <motion.div
-        style={{ y: bgY }}
-        className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none"
+      <div
+        ref={bgLayerRef}
+        className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] pointer-events-none will-change-transform"
         aria-hidden="true"
       >
         <div className="w-full h-full bg-[radial-gradient(circle,rgba(253,228,239,0.8)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
-      </motion.div>
-      <motion.div
-        style={{ y: bgY }}
-        className="absolute -bottom-[100px] -left-[150px] w-[500px] h-[500px] pointer-events-none"
+      </div>
+      <div
+        ref={bgLayer2Ref}
+        className="absolute -bottom-[100px] -left-[150px] w-[500px] h-[500px] pointer-events-none will-change-transform"
         aria-hidden="true"
       >
         <div className="w-full h-full bg-[radial-gradient(circle,rgba(254,241,246,0.7)_0%,transparent_70%)]" style={{ opacity: isMale ? 0 : 1, transition: "opacity 0.4s ease" }} />
-      </motion.div>
+      </div>
 
       {/* Dark theme: subtle ambient glow orbs */}
       {isMale && (
@@ -283,9 +310,9 @@ function Hero() {
         </div>
 
         {/* Right side — photo column (both themes) */}
-        <motion.div
-          style={{ y: badgesY }}
-          className="relative mt-12 md:mt-0 hidden md:block"
+        <div
+          ref={photoColRef}
+          className="relative mt-12 md:mt-0 hidden md:block will-change-transform"
         >
           {/* Female: single tall photo with floating badges */}
           {!isMale && (
@@ -350,7 +377,7 @@ function Hero() {
               </div>
             </>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
